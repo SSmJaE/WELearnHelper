@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WELearn网课助手
 // @namespace    http://tampermonkey.net/
-// @version      0.7.1
+// @version      0.7.2
 // @description  悬浮窗显示we learn随行课堂题目答案，不支持班级测试；自动答题；挂机时长；开放自定义参数
 // @author       SSmJaE
 // @match        https://centercourseware.sflep.com/*
@@ -62,7 +62,7 @@ function create_container() {
     setting.id = 'container-setting';
     container.appendChild(setting);
     setting.addEventListener('click', () => {
-        settingBase.style.visibility = (settingBase.style.visibility == 'visible') ? 'hidden' : 'visible';
+        settingBase.style.display = (settingBase.style.display == 'table') ? 'none' : 'table';
     }, false)
 
     let style = document.createElement('style');
@@ -82,10 +82,6 @@ function create_container() {
             min-height: 100px;
             max-height: 600px; 
             overflow: auto;
-        }
-
-        #container:not(:hover) {
-            filter: brightness(98%);
         }
 
         #containerTitle {
@@ -112,6 +108,7 @@ function create_container() {
             top: 0px;
             left: 0px;
             width: 25px;
+            cursor: pointer;
         }
 
         #container-setting:hover {
@@ -119,8 +116,7 @@ function create_container() {
         }
 
         #container-setting-base {
-            display: table;
-            visibility: hidden;
+            display: none;
             font-size: 16px;
             width: auto;
             margin: 20px;
@@ -134,94 +130,219 @@ function create_container() {
             border-radius: 20px;
         }
 
-        #container-setting-base input {
-            width: 50px;
-            padding: 0px;
-            margin: 0px;
-            border: black 1px solid;
+        #container-setting-base div.record {
+            margin: 5px 0px;
+            display: table-row;
             text-align: center;
         }
 
-        #container-setting-base div.right {
-            display: inline;
+        #container-setting-base div.record>label:first-child {
+            display: table-cell;
         }
 
-        #container-setting-base div.record {
+        #container-setting-base input {
+            width: 50px;
+            height: 25px;
+            padding: 0px;
+            margin: 0px;
+            border: black 1px solid;
+            display: table-cell;
+            margin: 2px 5px;
+            text-align: center;
+        }
+
+        #container-setting-base hr {
             margin: 5px;
+        }
+
+        #container-setting-base div.right {
+            display: table-cell;
+            text-align: left;
         }
 
         #setting-save {
             position: relative;
             margin: 5px;
             left: 50%;
-            transform: translate(-50%, 5%);
+            transform: translate(-55%, 5%);
+            border-radius: 10px;
+        }
+
+        #container:not(:hover) {
+            filter: brightness(98%);
+        }
+
+        #container-setting-base .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+            margin: 2px 5px;
+        }
+
+        #container-setting-base .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        #container-setting-base .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 38px;
+        }
+
+        #container-setting-base .slider:before {
+            position: absolute;
+            content: "";
+            height: 23px;
+            width: 23px;
+            left: 1px;
+            bottom: 1px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        #container-setting-base input:checked+.slider {
+            background-color: #2196F3;
+        }
+
+        #container-setting-base input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        #container-setting-base input:checked+.slider:before {
+            transform: translateX(25px);
+        }
+
+        #container-setting-base svg.arrow-down {
+            position: relative;
+            top: 5px;
+            left: 0px;
+            transform: rotate(180deg);
+        }
+        
+        #container-setting-base div.title {
+            font-size: 24px;
+            text-align: center;
+            cursor: pointer;
         }`;
 
     let settingBase = document.createElement('div');
     settingBase.id = 'container-setting-base';
     settingBase.innerHTML = `
-        <div class="record">
-            <label for="checkInterval">查询延迟</label>
-            <input id='checkInterval'>
-            <div class="setting right">答案查询间隔，单位毫秒；多久检测一次是否切换了页面，如果页面改变了就会查询答案</div>
-        </div>
-        <div class="record">
-            <label for="showReference">显示参考</label>
-            <input type="checkbox" id='showReference'>
-            <div class="setting right">是否显示听力、口语参考(适用视听说)</div>
-        </div>
-        <div class="record">
-            <label for="autoCopy">自动复制</label>
-            <input type="checkbox" id='autoCopy'>
-            <div class="setting right">点击答案时，是否自动复制到粘贴板</div>
-        </div>
-        <hr>
-        <div class="record">
-            <label for="autoSolve">自动答题</label>
-            <input type="checkbox" id='autoSolve'>
-            <div class="setting right">自动答题开关</div>
-        </div>
-        <div class="record">
-            <label for="solveInterval">答题间隔</label>
-            <input id='solveInterval'>
-            <div class="setting right">自动答题间隔，单位毫秒</div>
-        </div>
-        <div class="record">
-            <label for="defaultBlankAnswer">默认填空</label>
-            <input id='defaultBlankAnswer'>
-            <div class="setting right">填空题没有固定|正确答案时，填入的默认值</div>
+        <div class="main">
+            <div class="title">答案显示
+                <svg class="arrow-down" width="24" height="24">
+                    <path
+                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
+                        fill-rule="evenodd"></path>
+                </svg></div>
+            <div class="record">
+                <label for="checkInterval">查询延迟</label>
+                <input id='checkInterval'>
+                <div class="setting right">答案查询间隔，单位毫秒；多久检测一次是否切换了页面，如果页面改变了就会查询答案</div>
+            </div>
+            <div class="record">
+                <label for="showReference">显示参考</label>
+                <label class="switch"><input type="checkbox" id='showReference'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">是否显示听力、口语参考(适用视听说)</div>
+            </div>
+            <div class="record">
+                <label for="autoCopy">自动复制</label>
+                <label class="switch"><input type="checkbox" id='autoCopy'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">点击答案时，是否自动复制到粘贴板</div>
+            </div>
         </div>
         <hr>
-        <div class="record">
-            <label for="autoRefresh">自动挂机</label>
-            <input type="checkbox" id='autoRefresh'>
-            <div class="setting right">是否定时切换下一页，仅用于刷时长</div>
-        </div>
-        <div class="record">
-            <label for="randomRefresh">随机延时</label>
-            <input type="checkbox" id='randomRefresh'>
-            <div class="setting right">是否开启随机时长；关闭将以上限为切换时长，开启将取区间内随机时长</div>
-        </div>
-        <div class="record">
-            <label for="refreshInterval">切换下限</label>
-            <input id='refreshInterval'>
-            <div class="setting right">单位分钟；we learn允许一个页面最多挂30分钟，所以不要大于30</div>
-        </div>
-        <div class="record">
-            <label for="refreshIntervalMax">切换上限</label>
-            <input id='refreshIntervalMax'>
-            <div class="setting right">单位分钟</div>
+        <div class="main">
+            <div class="title">答题功能<svg class="arrow-down" width="24" height="24">
+                    <path
+                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
+                        fill-rule="evenodd"></path>
+                </svg></div>
+            <div class="record">
+                <label for="autoSolve">自动答题</label>
+                <label class="switch"><input type="checkbox" id='autoSolve'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">自动答题开关</div>
+            </div>
+            <div class="record">
+                <label for="solveInterval">答题间隔</label>
+                <input id='solveInterval'>
+                <div class="setting right">自动答题间隔，单位毫秒</div>
+            </div>
+            <div class="record">
+                <label for="defaultBlankAnswer">默认填空</label>
+                <input id='defaultBlankAnswer'>
+                <div class="setting right">填空题没有固定|正确答案时，填入的默认值</div>
+            </div>
         </div>
         <hr>
-        <div class="record">
-            <label for="collapsible">默认折叠</label>
-            <input type="checkbox" id='collapsible'>
-            <div class="setting right">默认折叠还是不折叠悬浮窗，开启==折叠，关闭==显示</div>
+        <div class="main">
+            <div class="title">挂机功能<svg class="arrow-down" width="24" height="24">
+                    <path
+                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
+                        fill-rule="evenodd"></path>
+                </svg></div>
+            <div class="record">
+                <label for="autoRefresh">自动挂机</label>
+                <label class="switch"><input type="checkbox" id='autoRefresh'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">是否定时切换下一页，仅用于刷时长</div>
+            </div>
+            <div class="record">
+                <label for="randomRefresh">随机延时</label>
+                <label class="switch"><input type="checkbox" id='randomRefresh'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">是否开启随机时长；关闭将以上限为切换时长，开启将取区间内随机时长</div>
+            </div>
+            <div class="record">
+                <label for="refreshInterval">切换下限</label>
+                <input id='refreshInterval'>
+                <div class="setting right">单位分钟；we learn允许一个页面最多挂30分钟，所以不要大于30</div>
+            </div>
+            <div class="record">
+                <label for="refreshIntervalMax">切换上限</label>
+                <input id='refreshIntervalMax'>
+                <div class="setting right">单位分钟</div>
+            </div>
         </div>
-        <div class="record">
-            <label for="debugMode">调试模式</label>
-            <input type="checkbox" id='debugMode'>
-            <div class="setting right">调试用，正常使用不用开</div>
+        <hr>
+        <div class="main">
+            <div class="title">辅助设定<svg class="arrow-down" width="24" height="24">
+                    <path
+                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
+                        fill-rule="evenodd"></path>
+                </svg></div>
+            <div class="record">
+                <label for="collapsible">默认折叠</label>
+                <label class="switch"><input type="checkbox" id='collapsible'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">默认折叠还是不折叠悬浮窗，开启==折叠，关闭==显示</div>
+            </div>
+            <div class="record">
+                <label for="debugMode">调试模式</label>
+                <label class="switch"><input type="checkbox" id='debugMode'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">调试用，正常使用不用开</div>
+            </div>
         </div>
         <button id="setting-save">保存&刷新</button>
         `;
@@ -233,6 +354,15 @@ function create_container() {
     if (!document.querySelector('#container-setting-base')) {
         document.body.appendChild(settingBase);
     }
+    document.querySelectorAll('#container-setting-base .title').forEach(e => {
+        e.addEventListener('click', () => {
+            e.parentElement.querySelectorAll('.record').forEach(e => {
+                e.style.display = (e.style.display == "none") ? "" : "none";
+            })
+            let arrow = e.querySelector('.arrow-down')
+            arrow.style.display = (arrow.style.display == "none") ? "" : "none";
+        }, false);
+    })
     for (let [key, value] of Object.entries(USER_SETTINGS)) {
         let element = document.querySelector('#' + String(key))
         if (String(value) == "true") {
