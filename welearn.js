@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WELearn网课助手
 // @namespace    http://tampermonkey.net/
-// @version      0.7.4
+// @version      0.7.5
 // @description  悬浮窗显示we learn随行课堂题目答案，不支持班级测试；自动答题；挂机时长；开放自定义参数
 // @author       SSmJaE
 // @match        https://centercourseware.sflep.com/*
@@ -65,24 +65,6 @@ function create_container() {
         settingBase.style.display = (settingBase.style.display == 'table') ? 'none' : 'table';
     }, false)
 
-    let settingStyle = document.createElement('style');
-    settingStyle.setAttribute('type', 'text/css');
-    settingStyle.innerHTML = `
-        #container-setting {
-            z-index: 100;
-            width: 23px;
-            cursor: pointer;
-            position: relative;
-            top: 20px;
-            left: 50%;
-            transform: translate(-50%, 0%);
-        }
-
-        #container-setting:hover {
-            filter: brightness(70%);
-            color: rgb(0,230,227);
-        }`;
-
     let style = document.createElement('style');
     style.setAttribute('type', 'text/css');
     style.innerHTML = `
@@ -114,15 +96,31 @@ function create_container() {
         .showAnswer {
             margin: 10px 10px;
             padding: 0px;
+            line-height: 120%;
             color: orange; 
             font-size: medium;
             font-family: Georgia, 'Times New Roman', Times, serif;
             white-space: pre-wrap;
         }
 
+        #container-setting {
+            z-index: 100;
+            width: 23px;
+            cursor: pointer;
+            position: absolute;
+            top: 98%;
+            left: 0;
+        }
+
+        #container-setting:hover {
+            filter: brightness(70%);
+            color: rgb(0,230,227);
+        }
+
         #container-setting-base {
             display: none;
             font-size: 16px;
+            line-height: 100%;
             width: auto;
             margin: 20px;
             z-index: 101;
@@ -406,10 +404,9 @@ function create_container() {
 
     if (!document.querySelector('#container')) {
         document.body.appendChild(container);
-        document.body.appendChild(style);
+        document.body.appendChild(setting);
         document.body.appendChild(settingBase);
-        top.document.querySelector('.courseware_sidebar_2 ul').appendChild(setting);
-        top.document.body.appendChild(settingStyle);
+        document.body.appendChild(style);
     }
 
     //淡入淡出效果
@@ -461,13 +458,14 @@ function create_container() {
         <li>本脚本仅供个人学习交流使用，勿用于任何违法与商业行为</li>
         <li>本脚本完全开源免费，基于GPL3.0，欢迎一起<a href="https://github.com/SSmJaE/WELearnHelper">开发</a></li>
         <li>本脚本不会收集任何用户信息</li>
+        <li>因使用本脚本造成的任何问题，均由使用者本人承担</li>
         <li>反馈问题请带截图+链接+具体描述，否则不回</li>
     `
     let hint = document.createElement('ul');
     hint.style.textAlign = 'left';
     hint.innerHTML = `
         <li>此处仅包含部分使用方法，详情请自行阅读安装页面</li>
-        <li>点击右上角齿轮进行功能设定</li>
+        <li>点击左下角齿轮进行功能设定</li>
         <li>左键按住“参考文本”方可拖动答案</li>
         <li>双击“参考文本”折叠悬浮窗</li>
     `
