@@ -65,3 +65,4 @@
 - [问题反馈qq群](https://jq.qq.com/?_wv=1027&k=5AyCT4l)
 - [github](https://github.com/SSmJaE/WELearnHelper)
 - [更新日志](https://github.com/SSmJaE/WELearnHelper/blob/master/HISTORY.md)
+- [捐赠](https://github.com/SSmJaE/WELearnHelper/blob/master/%E5%9B%BE%E5%B1%82%201.png)
