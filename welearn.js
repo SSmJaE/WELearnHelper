@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WELearn网课助手
 // @namespace    http://tampermonkey.net/
-// @version      0.7.2
+// @version      0.7.3
 // @description  悬浮窗显示we learn随行课堂题目答案，不支持班级测试；自动答题；挂机时长；开放自定义参数
 // @author       SSmJaE
 // @match        https://centercourseware.sflep.com/*
@@ -122,22 +122,67 @@ function create_container() {
             margin: 20px;
             z-index: 101;
             position: absolute;
-            top: 50%;
+            top: 20%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, 0%);
             background: rgba(255, 255, 255, 0.95);
             border: black 2px solid;
             border-radius: 20px;
+            animation: slide_in 0.8s;
+            animation-timing-function: ease-out;
         }
 
         #container-setting-base div.record {
             margin: 5px 0px;
+            padding: 5px;
             display: table-row;
             text-align: center;
+            animation: fade_in 0.5s;
+        }
+
+        #container-setting-base div.record.hidden {
+            animation: fade_out 0.5s;
+        }
+
+        @keyframes fade_in {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fade_out {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes slide_in {
+            from {
+                left: 0%;
+                opacity: 0;
+            }
+
+            80% {
+                left: 53%;
+            }
+
+            to {
+                left: 50%;
+                opacity: 1;
+            }
         }
 
         #container-setting-base div.record>label:first-child {
             display: table-cell;
+            cursor: pointer;
         }
 
         #container-setting-base input {
@@ -165,7 +210,6 @@ function create_container() {
             margin: 5px;
             left: 50%;
             transform: translate(-55%, 5%);
-            border-radius: 10px;
         }
 
         #container:not(:hover) {
@@ -226,13 +270,21 @@ function create_container() {
             position: relative;
             top: 5px;
             left: 0px;
+            transition-duration: 0.5s;
+        }
+
+        #container-setting-base svg.arrow-down.opened {
             transform: rotate(180deg);
         }
-        
+
         #container-setting-base div.title {
             font-size: 24px;
             text-align: center;
             cursor: pointer;
+        }
+
+        #container-setting-base div.main {
+            margin: 0 10px;
         }`;
 
     let settingBase = document.createElement('div');
@@ -240,7 +292,7 @@ function create_container() {
     settingBase.innerHTML = `
         <div class="main">
             <div class="title">答案显示
-                <svg class="arrow-down" width="24" height="24">
+                <svg class="arrow-down opened" width="24" height="24">
                     <path
                         d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
                         fill-rule="evenodd"></path>
@@ -267,7 +319,7 @@ function create_container() {
         </div>
         <hr>
         <div class="main">
-            <div class="title">答题功能<svg class="arrow-down" width="24" height="24">
+            <div class="title">答题功能<svg class="arrow-down opened" width="24" height="24">
                     <path
                         d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
                         fill-rule="evenodd"></path>
@@ -292,7 +344,7 @@ function create_container() {
         </div>
         <hr>
         <div class="main">
-            <div class="title">挂机功能<svg class="arrow-down" width="24" height="24">
+            <div class="title">挂机功能<svg class="arrow-down opened" width="24" height="24">
                     <path
                         d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
                         fill-rule="evenodd"></path>
@@ -324,7 +376,7 @@ function create_container() {
         </div>
         <hr>
         <div class="main">
-            <div class="title">辅助设定<svg class="arrow-down" width="24" height="24">
+            <div class="title">辅助设定<svg class="arrow-down opened" width="24" height="24">
                     <path
                         d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
                         fill-rule="evenodd"></path>
@@ -357,10 +409,16 @@ function create_container() {
     document.querySelectorAll('#container-setting-base .title').forEach(e => {
         e.addEventListener('click', () => {
             e.parentElement.querySelectorAll('.record').forEach(e => {
-                e.style.display = (e.style.display == "none") ? "" : "none";
-            })
-            let arrow = e.querySelector('.arrow-down')
-            arrow.style.display = (arrow.style.display == "none") ? "" : "none";
+                if (e.classList.contains('hidden')) {
+                    e.style.display = (e.style.display == "none") ? "" : "none";
+                } else {
+                    setTimeout(() => {
+                        e.style.display = (e.style.display == "none") ? "" : "none";
+                    }, 500)
+                }
+                e.classList.toggle('hidden');
+            });
+            e.querySelector('.arrow-down').classList.toggle('opened');
         }, false);
     })
     for (let [key, value] of Object.entries(USER_SETTINGS)) {
@@ -384,6 +442,47 @@ function create_container() {
         GM_setValue('USER_SETTINGS', JSON.stringify(USER_SETTINGS));
         location.reload(true);
     }, false);
+
+    let agreement = document.createElement('ul');
+    agreement.style.textAlign = 'left';
+    agreement.innerHTML = `
+        <li>本脚本仅供个人学习交流使用，勿用于任何违法与商业行为</li>
+        <li>本脚本完全开源免费，基于GPL3.0，欢迎一起<a href="https://github.com/SSmJaE/WELearnHelper">开发</a></li>
+        <li>本脚本不会收集任何用户信息</li>
+        <li>反馈问题请带截图+链接+具体描述，否则不回</li>
+    `
+    let hint = document.createElement('ul');
+    hint.style.textAlign = 'left';
+    hint.innerHTML = `
+        <li>此处仅包含部分使用方法，详情请自行阅读安装页面</li>
+        <li>点击悬浮窗左上角齿轮进行功能设定</li>
+        <li>左键按住“参考文本”方可拖动答案</li>
+        <li>双击“参考文本”折叠悬浮窗</li>
+    `
+    if (!GM_getValue('hasInformedFirst', false)) {
+        swal({
+            title: "使用须知",
+            content: agreement,
+            icon: "warning",
+            buttons: {
+                confirm: {
+                    text: "接受",
+                    value: true,
+                }
+            },
+            closeOnClickOutside: false,
+            closeOnEsc: false,
+        }).then(value => {
+            if (value) {
+                swal({
+                    title: "使用提示",
+                    content: hint,
+                    icon: "info"
+                });
+                GM_setValue('hasInformedFirst', true);
+            }
+        });
+    }
 }
 
 function get_css(ele, prop) {
@@ -935,7 +1034,7 @@ async function add_to_container(htmlDom, answers) {
                 if (content.textContent.length) {
                     content.addEventListener('click', () => {
                         if (USER_SETTINGS.autoCopy)
-                            GM_setClipboard(content.textContent.replace(/^\s.*、/, ''), 'text');
+                            GM_setClipboard(content.textContent.replace(/^.*、/, ''), 'text');
                     }, false)
                     let order = showOrder < 9 ? '  ' + String(showOrder + 1) : String(showOrder + 1); //控制序号的宽度一致
                     content.textContent = order + '、' + content.textContent.replace('<br/>', '').replace('<br>', '');
