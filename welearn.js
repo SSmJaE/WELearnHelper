@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WELearn网课助手
 // @namespace    http://tampermonkey.net/
-// @version      0.7.5
+// @version      0.7.6
 // @description  悬浮窗显示we learn随行课堂题目答案，不支持班级测试；自动答题；挂机时长；开放自定义参数
 // @author       SSmJaE
 // @match        https://centercourseware.sflep.com/*
@@ -219,20 +219,79 @@ function create_container() {
             filter: brightness(98%);
         }
 
+        /* 滑块-------------------------------------------------------------------- */
+        @keyframes slide_to_right {
+            0% {
+                width: 36px;
+            }
+
+            70% {
+                left: 29px;
+            }
+
+            80% {
+                border-radius: 10px;
+            }
+
+            100% {
+                left: 26px;
+            }
+        }
+
+        @keyframes slide_to_left {
+            0% {
+                width: 36px;
+            }
+
+            70% {
+                left: -2px;
+            }
+
+            80% {
+                border-radius: 10px;
+            }
+
+            100% {
+                left: 1px;
+            }
+        }
+
+        @keyframes widen_to_right {
+            100% {
+                width: 36px;
+            }
+        }
+
+        @keyframes widen_to_left {
+            0% {
+                left: 26px;
+            }
+
+            100% {
+                left: 13px;
+                width: 36px;
+            }
+        }
+
+        /* 限定label标签属性，也就是checkbox的包装器 */
         #container-setting-base .switch {
             position: relative;
             display: inline-block;
             width: 50px;
             height: 25px;
             margin: 2px 5px;
+            border: black 1px solid;
+            border-radius: 38px;
         }
 
+        /* 不显示checkbox本身，通过点击外部的label实现点击input的效果 */
         #container-setting-base .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
 
+        /* 未选中，滑条效果 */
         #container-setting-base .slider {
             position: absolute;
             cursor: pointer;
@@ -240,11 +299,22 @@ function create_container() {
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
             transition: .4s;
             border-radius: 38px;
+            background-color: rgb(251, 251, 251);
         }
 
+        /* 未选中，点击时滑条效果 */
+        #container-setting-base input:not(:checked):active+.slider {
+            background-color: rgb(187, 187, 187);
+        }
+
+        /* 选中时，滑条效果 */
+        #container-setting-base input:checked+.slider {
+            background-color: #2196F3;
+        }
+
+        /* 滑块是通过before插入的，并没有在DOM中加入代表滑块的元素 */
         #container-setting-base .slider:before {
             position: absolute;
             content: "";
@@ -253,20 +323,38 @@ function create_container() {
             left: 1px;
             bottom: 1px;
             background-color: white;
-            transition: .4s;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 0 rgba(0, 0, 0, 0.08);
             border-radius: 50%;
         }
 
-        #container-setting-base input:checked+.slider {
-            background-color: #2196F3;
+        /* 未选中，点击时滑块效果 */
+        #container-setting-base input:active+.slider:before {
+            border-radius: 38px;
+            animation-name: widen_to_right;
+            animation-duration: 0.2s;
+            animation-fill-mode: forwards;
         }
 
-        #container-setting-base input:focus+.slider {
-            box-shadow: 0 0 1px #2196F3;
-        }
-
+        /* 右移效果 */
         #container-setting-base input:checked+.slider:before {
-            transform: translateX(25px);
+            animation-name: slide_to_right;
+            animation-duration: .4s;
+            animation-fill-mode: forwards;
+        }
+
+        /* 已选中，点击时滑块效果 */
+        #container-setting-base input:checked:active+.slider:before {
+            animation-name: widen_to_left;
+            animation-duration: 0.2s;
+            animation-fill-mode: forwards;
+        }
+
+        /* 左移效果 */
+        #container-setting-base input:not(:checked):not(:active)+.slider:before {
+            left: 1px;
+            animation-name: slide_to_left;
+            animation-duration: .4s;
+            animation-fill-mode: forwards;
         }
 
         #container-setting-base svg.arrow-down {
