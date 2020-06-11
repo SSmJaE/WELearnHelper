@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WELearn网课助手
 // @namespace    http://tampermonkey.net/
-// @version      0.7.6
+// @version      0.7.7
 // @description  悬浮窗显示we learn随行课堂题目答案，不支持班级测试；自动答题；挂机时长；开放自定义参数
 // @author       SSmJaE
 // @match        https://centercourseware.sflep.com/*
@@ -28,6 +28,7 @@ var USER_SETTINGS = JSON.parse(GM_getValue('USER_SETTINGS', JSON.stringify({
     refreshInterval: 5,
     refreshIntervalMax: 10,
     collapsible: false,
+    settingButtonLocation: 'in',
     debugMode: false,
 })))
 
@@ -59,11 +60,32 @@ function create_container() {
     container.appendChild(title);
 
     setting = document.createElement('img');
-    setting.setAttribute('src', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgAgMAAABp7UYTAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACVBMVEUAAAD///8AAABzxoNxAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAAXEYAAFxGARSUQ0EAAANeSURBVHja7dpRtuMgCAZgX9gfL+x/K3PuOdPbqvyALWhmmjwS+SzaGtOkNXSISEs5kiD5OXiMkhLbBAmEFgtOgkgsaEHKgh7OnALC1dDTQVDwO5AGPZ0xAdd8ChJZkiqgvj3JmlQCMTqxFUIV0DWgl9rkGAQGta+Mz0FiR09AogVDleVBJFOWEjoJKcf1oJBzQ98N+c4NXQ4KzP7XQwHnnSv2/wRFxnp9w/YJFHJ2QrHKAqOdBsWcQG0fQXATLGgvCmrLgugZJsDYpyqgv5Ld2K0tDfpNIqepV1syNB3stORnNBkiAHVnGUuyCxrPsdL2EeFcyBjqmSbcuBhi7QzuNhUieEaN0iGIQRHWSNRCRgKVQyvtYQ/lkLnarYzFOxAttDa7LoWasbthlFIMwcpQL1wKsbkB1GurhZw98vUgvfJKiJ1duz7aeZB2GTQrAw0yobYKMbh25kHNb7YbojVIK55zofHZ3Dqk7eg/gshs5UMtHWpr0DgfrRSaF4n5+zBEuAIinKZs3XmcngKoYWj+yg4TwsWQsqrM9wfG+w5pECFI+13LMDvVUFcFTw3G3nZD6u+6g1oR1HSIXYirIYYQXQNqV4aaDrUbOgfRPwjRZkh0iM9DywtbFUQA8hf/7RDPLcRa2NIgQZC7iSiCqEvsclipbAPUJ8qQNFUm/ewUQGRBPDtdG66Ahkb9wP58eNkM0ZA2QtPB45UgGRrylm+OORsa06b59yBJhpyR1A5WF79SiFxoLLUUivx9qL2fWgo1D6JQThrkzT/rSYXQW3+MH4XAw4M0SA1e7UnN9Z5mmbWBVabVQlZt4CedCKEnymuVlUO4NtxzHkTgxGq8GII/hNWXK/IgRlcq2G8eZLx2E4ntg+Y7B7YHIhEi/VOPO9WGnQpIv5eYDuC8pKdAL++eiiPJJgi2dJzfEBdCZElwqioh5TYYTf1LvFVCY3N0e/jSRTHk3oair0YdRDGHLwe5Th4UG22/st1QwMmDIqMdqezboYiTB0Xm/3JQaKxv6IauBdENLY+1Yh+F2AhugkhPmco9BXnhHRAa1YtAqGQ+BXGkh61Qd4JOQeCZsNVFNUSoNZ2Curc+ARRy8qBHBo/xVScPQn/mrDt5UFMhCi8hBZD6Zw694eRBAF8a6PegP/dUtJIBpJqHAAAAAElFTkSuQmCC');
+    setting.setAttribute('src', 'data:image/png;base64,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');
     setting.id = 'container-setting';
     setting.addEventListener('click', () => {
         settingBase.style.display = (settingBase.style.display == 'table') ? 'none' : 'table';
     }, false)
+
+    let locationStyle = '';
+    switch (USER_SETTINGS.settingButtonLocation) {
+        case "in":
+        case "nw":
+            locationStyle = `   top: 0;
+                                left: 0;`
+            break;
+        case "sw":
+            locationStyle = `   top: 98%;
+                                left: 0;`
+            break;
+        case "ne":
+            locationStyle = `   top: 0;
+                                left: 99%;`
+            break;
+        case "se":
+            locationStyle = `   top: 98%;
+                                left: 99%;`
+            break;
+    }
 
     let style = document.createElement('style');
     style.setAttribute('type', 'text/css');
@@ -108,8 +130,7 @@ function create_container() {
             width: 23px;
             cursor: pointer;
             position: absolute;
-            top: 98%;
-            left: 0;
+            ${locationStyle}
         }
 
         #container-setting:hover {
@@ -197,6 +218,16 @@ function create_container() {
             display: table-cell;
             margin: 2px 5px;
             text-align: center;
+        }
+
+        #container-setting-base select {
+            display: table-cell;
+            text-align: center;
+            width: 50px;
+            height: 25px;
+            margin: 2px 5px;
+            padding: 0px;
+            border: black 1px solid;
         }
 
         #container-setting-base hr {
@@ -480,6 +511,17 @@ function create_container() {
                 <div class="setting right">默认折叠还是不折叠悬浮窗，开启==折叠，关闭==显示</div>
             </div>
             <div class="record">
+                <label for="collapsible">按钮位置</label>
+                <select id="settingButtonLocation">
+                    <option value="in">悬浮窗</option>
+                    <option value="nw">左上角</option>
+                    <option value="sw">左下角</option>
+                    <option value="ne">右上角</option>
+                    <option value="se">右下角</option>
+                </select>
+                <div class="setting right">设置按钮的位置</div>
+            </div>
+            <div class="record">
                 <label for="debugMode">调试模式</label>
                 <label class="switch"><input type="checkbox" id='debugMode'>
                     <span class="slider"></span>
@@ -492,7 +534,11 @@ function create_container() {
 
     if (!document.querySelector('#container')) {
         document.body.appendChild(container);
-        document.body.appendChild(setting);
+        if (USER_SETTINGS.settingButtonLocation == 'in') {
+            container.appendChild(setting);
+        } else {
+            document.body.appendChild(setting);
+        }
         document.body.appendChild(settingBase);
         document.body.appendChild(style);
     }
@@ -535,52 +581,55 @@ function create_container() {
                 USER_SETTINGS[input.id] = input.value;
             }
         }
+        USER_SETTINGS.settingButtonLocation = document.querySelector('#settingButtonLocation').value;
         GM_setValue('USER_SETTINGS', JSON.stringify(USER_SETTINGS));
         location.reload(true);
     }, false);
 
     //用户协议
-    let agreement = document.createElement('ul');
-    agreement.style.textAlign = 'left';
-    agreement.innerHTML = `
+    try {
+        let agreement = document.createElement('ul');
+        agreement.style.textAlign = 'left';
+        agreement.innerHTML = `
         <li>本脚本仅供个人学习交流使用，勿用于任何违法与商业行为</li>
         <li>本脚本完全开源免费，基于GPL3.0，欢迎一起<a href="https://github.com/SSmJaE/WELearnHelper">开发</a></li>
         <li>本脚本不会收集任何用户信息</li>
         <li>因使用本脚本造成的任何问题，均由使用者本人承担</li>
         <li>反馈问题请带截图+链接+具体描述，否则不回</li>
     `
-    let hint = document.createElement('ul');
-    hint.style.textAlign = 'left';
-    hint.innerHTML = `
+        let hint = document.createElement('ul');
+        hint.style.textAlign = 'left';
+        hint.innerHTML = `
         <li>此处仅包含部分使用方法，详情请自行阅读安装页面</li>
         <li>点击左下角齿轮进行功能设定</li>
         <li>左键按住“参考文本”方可拖动答案</li>
         <li>双击“参考文本”折叠悬浮窗</li>
     `
-    if (!GM_getValue('hasInformedFirst', false)) {
-        swal({
-            title: "使用须知",
-            content: agreement,
-            icon: "warning",
-            buttons: {
-                confirm: {
-                    text: "接受",
-                    value: true,
+        if (!GM_getValue('hasInformedFirst', false)) {
+            swal({
+                title: "使用须知",
+                content: agreement,
+                icon: "warning",
+                buttons: {
+                    confirm: {
+                        text: "接受",
+                        value: true,
+                    }
+                },
+                closeOnClickOutside: false,
+                closeOnEsc: false,
+            }).then(value => {
+                if (value) {
+                    swal({
+                        title: "使用提示",
+                        content: hint,
+                        icon: "info"
+                    });
+                    GM_setValue('hasInformedFirst', true);
                 }
-            },
-            closeOnClickOutside: false,
-            closeOnEsc: false,
-        }).then(value => {
-            if (value) {
-                swal({
-                    title: "使用提示",
-                    content: hint,
-                    icon: "info"
-                });
-                GM_setValue('hasInformedFirst', true);
-            }
-        });
-    }
+            });
+        }
+    } catch (error) { }
 }
 
 function get_css(ele, prop) {
@@ -701,11 +750,13 @@ function sleep(ms) {
 function empty_container() {
     container.innerHTML = '';
     container.appendChild(title);
+    if (USER_SETTINGS.settingButtonLocation == 'in') container.appendChild(setting);
     is_show();
 }
 
 function is_show() {
-    container.style.visibility = container.childNodes.length > 1 ? 'visible' : 'hidden';
+    let threshold = USER_SETTINGS.settingButtonLocation == "in" ? 2 : 1;
+    container.style.visibility = container.childNodes.length > threshold ? 'visible' : 'hidden';
 }
 
 function is_change() {
