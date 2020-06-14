@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WELearn网课助手
 // @namespace    http://tampermonkey.net/
-// @version      0.7.7
+// @version      0.7.8
 // @description  悬浮窗显示we learn随行课堂题目答案，不支持班级测试；自动答题；挂机时长；开放自定义参数
 // @author       SSmJaE
 // @match        https://centercourseware.sflep.com/*
@@ -13,7 +13,11 @@
 // @grant        GM_setClipboard
 // @require      https://unpkg.com/sweetalert/dist/sweetalert.min.js
 // ==/UserScript==
+
+/*global GM_getValue, GM_setValue, swal, $, angular, GM_setClipboard*/
 'use strict';
+
+window.confirm = () => true;
 
 //从存储映射到变量
 var USER_SETTINGS = JSON.parse(GM_getValue('USER_SETTINGS', JSON.stringify({
@@ -24,13 +28,14 @@ var USER_SETTINGS = JSON.parse(GM_getValue('USER_SETTINGS', JSON.stringify({
     solveInterval: 1000,
     defaultBlankAnswer: 'Default answer.',
     autoRefresh: false,
+    loopRefresh: false,
     randomRefresh: false,
     refreshInterval: 5,
     refreshIntervalMax: 10,
     collapsible: false,
     settingButtonLocation: 'in',
     debugMode: false,
-})))
+})));
 
 const ANSWER_TYPES = [
     'et-tof', //判断题
@@ -46,8 +51,7 @@ const ANSWER_TYPES = [
 const PARSER = new DOMParser();
 var container, title, setting,
     bufferUrl, bufferTag, bufferLength,
-    optionOrder, spanOrder, liOrder, blankOrder, textareaOrder, inputOrder, tofOrder, matchingOrder,
-    q = window.document.querySelector, qa = window.document.querySelectorAll;
+    optionOrder, spanOrder, liOrder, blankOrder, textareaOrder, inputOrder, tofOrder;
 
 function create_container() {
     container = document.createElement('div');
@@ -55,7 +59,7 @@ function create_container() {
     container.style.visibility = 'hidden';
 
     title = document.createElement('div');
-    title.id = 'containerTitle';
+    title.id = 'container-title';
     title.textContent = '参考答案';
     container.appendChild(title);
 
@@ -64,26 +68,26 @@ function create_container() {
     setting.id = 'container-setting';
     setting.addEventListener('click', () => {
         settingBase.style.display = (settingBase.style.display == 'table') ? 'none' : 'table';
-    }, false)
+    }, false);
 
     let locationStyle = '';
     switch (USER_SETTINGS.settingButtonLocation) {
         case "in":
         case "nw":
             locationStyle = `   top: 0;
-                                left: 0;`
+                                left: 0;`;
             break;
         case "sw":
             locationStyle = `   top: 98%;
-                                left: 0;`
+                                left: 0;`;
             break;
         case "ne":
             locationStyle = `   top: 0;
-                                left: 99%;`
+                                left: 99%;`;
             break;
         case "se":
             locationStyle = `   top: 98%;
-                                left: 99%;`
+                                left: 99%;`;
             break;
     }
 
@@ -106,7 +110,7 @@ function create_container() {
             overflow: auto;
         }
 
-        #containerTitle {
+        #container-title {
             background: rgba(0,0,0,0);
             height: 25px; 
             margin-top: 10px;
@@ -115,7 +119,7 @@ function create_container() {
             cursor: move;
         }
 
-        .showAnswer {
+        .container-content {
             margin: 10px 10px;
             padding: 0px;
             line-height: 120%;
@@ -123,6 +127,9 @@ function create_container() {
             font-size: medium;
             font-family: Georgia, 'Times New Roman', Times, serif;
             white-space: pre-wrap;
+            position: relative;
+            animation: content_slide_in 0.5s;
+            animation-timing-function: ease-out;
         }
 
         #container-setting {
@@ -200,6 +207,18 @@ function create_container() {
 
             to {
                 left: 50%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes content_slide_in {
+            from {
+                left: -50%;
+                opacity: 0;
+            }
+            
+            to {
+                left: 0%;
                 opacity: 1;
             }
         }
@@ -479,6 +498,13 @@ function create_container() {
                 <div class="setting right">是否定时切换下一页，仅用于刷时长</div>
             </div>
             <div class="record">
+                <label for="loopRefresh">循环挂机</label>
+                <label class="switch"><input type="checkbox" id='loopRefresh'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">一遍刷完，是否跳转到开头；自动跳过封锁章节</div>
+            </div>
+            <div class="record">
                 <label for="randomRefresh">随机延时</label>
                 <label class="switch"><input type="checkbox" id='randomRefresh'>
                     <span class="slider"></span>
@@ -552,21 +578,21 @@ function create_container() {
                 } else {
                     setTimeout(() => {
                         e.style.display = (e.style.display == "none") ? "" : "none";
-                    }, 500)
+                    }, 500);
                 }
                 e.classList.toggle('hidden');
             });
             e.querySelector('.arrow-down').classList.toggle('opened');
         }, false);
-    })
+    });
 
     //从变量映射到DOM
     for (let [key, value] of Object.entries(USER_SETTINGS)) {
-        let element = document.querySelector('#' + String(key))
+        let element = document.querySelector('#' + String(key));
         if (String(value) == "true") {
             element.setAttribute('checked', '');
         } else if (String(value) == "false") {
-            continue
+            continue;
         } else {
             element.value = value;
         }
@@ -596,7 +622,7 @@ function create_container() {
         <li>本脚本不会收集任何用户信息</li>
         <li>因使用本脚本造成的任何问题，均由使用者本人承担</li>
         <li>反馈问题请带截图+链接+具体描述，否则不回</li>
-    `
+    `;
         let hint = document.createElement('ul');
         hint.style.textAlign = 'left';
         hint.innerHTML = `
@@ -604,7 +630,7 @@ function create_container() {
         <li>点击左下角齿轮进行功能设定</li>
         <li>左键按住“参考文本”方可拖动答案</li>
         <li>双击“参考文本”折叠悬浮窗</li>
-    `
+    `;
         if (!GM_getValue('hasInformedFirst', false)) {
             swal({
                 title: "使用须知",
@@ -660,17 +686,17 @@ function make_draggable(handle, container) {
         }
     });
 
-    handle.addEventListener("mouseup", e => {
+    handle.addEventListener("mouseup", () => {
         draggable = false;
         containerLeft = get_css(container, "left");
         containerRight = get_css(container, "top");
     }, false);
-};
+}
 
 var collapseFlag = USER_SETTINGS.collapsible;
-function make_collapsible(handle, container) {
+function make_collapsible(handle) {
     if (collapseFlag || USER_SETTINGS.autoRefresh) hide();
-    handle.addEventListener("dblclick", e => {
+    handle.addEventListener("dblclick", () => {
         collapseFlag ? show() : hide();
     }, false);
 }
@@ -678,7 +704,7 @@ function make_collapsible(handle, container) {
 function show() {
     collapseFlag = false;
     for (let element of container.childNodes) {
-        if (element.id == 'containerTitle') {
+        if (element.id == 'container-title') {
             title.textContent = "参考答案";
             container.style.minWidth = "150px";
             container.style.minHeight = "100px";
@@ -692,7 +718,7 @@ function show() {
 function hide() {
     collapseFlag = true;
     for (let element of container.childNodes) {
-        if (element.id == 'containerTitle') {
+        if (element.id == 'container-title') {
             title.textContent = "答";
             container.style.minWidth = "20px";
             container.style.minHeight = "50px";
@@ -714,9 +740,9 @@ function autoRefresh() {
             if (rate < currentRate) rate = currentRate;
         }
         if (USER_SETTINGS.debugMode) {
-            console.log(USER_SETTINGS.refreshIntervalMax * rate * 60 * 1000)
-            console.log(Date.now() - buffer)
-            console.log(Date.now() - time)
+            console.log(USER_SETTINGS.refreshIntervalMax * rate * 60 * 1000);
+            console.log(Date.now() - buffer);
+            console.log(Date.now() - time);
             buffer = Date.now();
         }
         return rate;
@@ -724,7 +750,17 @@ function autoRefresh() {
 
     function recur() {
         setTimeout(() => {
-            top.document.querySelector('[href="javascript:NextSCO();"]').click();
+            let jumpButtons = top.document.querySelectorAll('a[onclick^="SelectSCO"]');
+            let currentButton = top.document.querySelector('li.courseware_current a');
+            let currentNext = top.document.querySelector('[href="javascript:NextSCO();"]');
+
+            console.log(currentNext, currentButton);
+            if (currentButton == jumpButtons[jumpButtons.length - 1]) {
+                if (USER_SETTINGS.loopRefresh)
+                    jumpButtons[1].click();//跳到开头，并跳过可能的课程说明页
+            } else {
+                currentNext.click();
+            }
             recur();
         }, USER_SETTINGS.refreshIntervalMax * generate_random_float() * 60 * 1000);
     }
@@ -738,8 +774,9 @@ function autoRefresh() {
                 icon: "info",
                 button: "了解",
             });
-            GM_setValue('isInformed', true)
+            GM_setValue('isInformed', true);
         }
+        //document.querySelectorAll('a[onclick^="SelectSCO"]')[1].click()
     }
 }
 
@@ -776,7 +813,6 @@ function determine_course_type(answerUrl) {
     spanOrder = 0;
     liOrder = 0;
     textareaOrder = 0;
-    matchingOrder = 0;
     bufferTag = undefined;
     let courseInfo = /com\/(.*?)\//.exec(answerUrl)[1];
     let identifier;
@@ -870,7 +906,7 @@ function event_trigger(element) {
         angular.element(element).triggerHandler('hover');
         angular.element(element).triggerHandler('keyup');
         angular.element(element).triggerHandler('blur');
-    } catch (error) { };
+    } catch (error) { }
 }
 
 /**提取答案，并加入到容器*/
@@ -895,8 +931,6 @@ async function add_to_container(htmlDom, answers) {
     //泛读课程
     let optionIdentifierOnPaper = document.querySelectorAll('input[responseidentifier]');
 
-    let textareaFlag = true;
-    let bufferAnswer = undefined;
     let showOrder = 0;
     let uniqueUrl = location.href;
     if (answers.length > 0) {
@@ -908,7 +942,7 @@ async function add_to_container(htmlDom, answers) {
                 if (!isRepeat(answers[i])) console.log(answers[i]);
 
             let content = document.createElement('div');
-            content.classList.add('showAnswer');
+            content.classList.add('container-content');
             let hr = document.createElement('hr');
 
             let tag = answers[i].tagName;
@@ -927,9 +961,9 @@ async function add_to_container(htmlDom, answers) {
                                     textareaOnPaper[textareaOrder].textContent = content.textContent;
                                     textareaOnPaper[textareaOrder].value = content.textContent;
                                     event_trigger(textareaOnPaper[textareaOrder]);
-                                } else { //有et-blank，但是无答案，不做处理
-                                    textareaFlag = false;
-                                }
+                                } //有et-blank，但是无答案，不做处理
+
+
                                 textareaOrder++;
                             } else { //普通填空题
                                 ready_in(blankOnPaper[blankOrder]);
@@ -976,7 +1010,7 @@ async function add_to_container(htmlDom, answers) {
                             // ready_in(selectOnPaper[i].querySelector('.key'));
                             selectOnPaper[i].querySelector('select').click();
                             selectOnPaper[i].querySelector('.key').click();
-                            angular.element(element).triggerHandler('change');
+                            angular.element(selectOnPaper[i].querySelector('.key')).triggerHandler('change');
                             // angular.element(element).triggerHandler('');
                             event_trigger(selectOnPaper[i].querySelector('.key'));
                         }
@@ -998,7 +1032,7 @@ async function add_to_container(htmlDom, answers) {
                             try {
                                 options = answers[i].getAttribute('key').split(',');
                             } catch (error) {
-                                options = ['1'] //不检查答案的选择题
+                                options = ['1']; //不检查答案的选择题
                             }
                             if (USER_SETTINGS.debugMode) console.log(options);
 
@@ -1046,7 +1080,7 @@ async function add_to_container(htmlDom, answers) {
                         if (USER_SETTINGS.autoSolve) {
                             for (let matchingOrder = 0; matchingOrder < answers[i].getAttribute('key').split(',').length; matchingOrder++) {
                                 await sleep(USER_SETTINGS.solveInterval);
-                                let targetCircle = answers[i].getAttribute('key').split(',')[matchingOrder].split('-')[1] - 1
+                                let targetCircle = answers[i].getAttribute('key').split(',')[matchingOrder].split('-')[1] - 1;
                                 let x1 = leftCircles[matchingOrder].getAttribute('cx');
                                 let y1 = leftCircles[matchingOrder].getAttribute('cy');
                                 let x2 = rightCircles[targetCircle].getAttribute('cx');
@@ -1068,12 +1102,13 @@ async function add_to_container(htmlDom, answers) {
 
                     case 'ET-REFERENCE':
                         if (!USER_SETTINGS.showReference) continue;
+                    //fall through
                     case 'WORDDECLARATION':
                         content.innerHTML = answers[i].innerHTML;
                         content.style.whiteSpace = "normal";
                         break;
 
-                    case 'VALUE':
+                    case 'VALUE': {
                         let identifier = answers[i].textContent;
                         if (identifier.length == 36) { //选择题
                             if (answers[i].textContent.length == 36) {
@@ -1092,7 +1127,13 @@ async function add_to_container(htmlDom, answers) {
                                 if (USER_SETTINGS.autoSolve) {
                                     await sleep(USER_SETTINGS.solveInterval);
                                     for (let label of optionLabelOnPaper) {
-                                        if (label.getAttribute('for').split('_')[1] == identifier) label.click();
+                                        if (label.getAttribute('for').split('_')[1] == identifier) {
+                                            label.click();
+                                            try {//自动跳转至选项处
+                                                let labelHeight = label.getBoundingClientRect().top;
+                                                document.querySelector("#divTest").scrollTo(0, labelHeight - 50);
+                                            } catch (error) { }
+                                        }
                                     }
                                     for (let input of optionIdentifierOnPaper) {
                                         if (input.getAttribute('value') == identifier) {
@@ -1129,8 +1170,8 @@ async function add_to_container(htmlDom, answers) {
                                             document.querySelector('.pattern textarea')
                                                 .textContent = USER_SETTINGS.defaultBlankAnswer;
                                         } else {
-                                            document.querySelector('.pattern textarea').textContent = inputAnswer
-                                        };
+                                            document.querySelector('.pattern textarea').textContent = inputAnswer;
+                                        }
                                     } finally {
                                         inputOrder++;
                                     }
@@ -1138,11 +1179,13 @@ async function add_to_container(htmlDom, answers) {
                             }
                         }
                         break;
+                    }
 
-                    case "TEXTENTRYINTERACTION":
+                    case "TEXTENTRYINTERACTION": {
                         let textareaIdentifier = answers[i].getAttribute('responseIdentifier');
                         content.textContent = document.querySelector(`[responseIdentifier="${textareaIdentifier}"]`).parentElement.textContent.split('.').slice(1);
                         break;
+                    }
 
                     default:
                         if (answers[i].hasAttribute('data-solution')) {
@@ -1183,27 +1226,25 @@ async function add_to_container(htmlDom, answers) {
                     content.addEventListener('click', () => {
                         if (USER_SETTINGS.autoCopy)
                             GM_setClipboard(content.textContent.replace(/^.*、/, ''), 'text');
-                    }, false)
+                    }, false);
                     let order = showOrder < 9 ? '  ' + String(showOrder + 1) : String(showOrder + 1); //控制序号的宽度一致
                     content.textContent = order + '、' + content.textContent.replace('<br/>', '').replace('<br>', '');
                     showOrder += 1;
-
-                    // let scrollTop = optionOnPaper[targetOption].parentElement.clientTop;
-                    // console.log(scrollTop, optionOnPaper[targetOption].parentElement);
-                    // top.frames[0].window.scrollTo(0, parseInt(scrollTop));
                 } else continue;
 
                 if ((bufferTag !== tag) && (bufferTag !== undefined) && (bufferLength !== 0)) {
                     container.appendChild(hr);
                 }
                 container.appendChild(content);
-
                 content.offsetWidth; //强制浏览器刷新悬浮窗宽度
+                container.scrollBy(0, 1000);
+
                 bufferTag = tag;
                 bufferLength = content.textContent.length;
 
                 is_show();
                 if (collapseFlag) content.style.display = "none";
+                
             }
         }
     } else {
@@ -1211,11 +1252,10 @@ async function add_to_container(htmlDom, answers) {
             for (let textarea of textareaOnPaper)
                 textarea.textContent = USER_SETTINGS.defaultBlankAnswer;
     }
-
 }
 
 create_container();
 make_draggable(title, container);
-make_collapsible(title, container);
+make_collapsible(title);
 setInterval(is_change, USER_SETTINGS.checkInterval);
 autoRefresh();
