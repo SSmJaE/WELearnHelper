@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         WELearn网课助手(考试专版)
 // @namespace    http://tampermonkey.net/
-// @version      0.0.3
-// @description  针对班级测试；目前仅有收录题目功能，欢迎各位上传题目
+// @version      0.0.4
+// @description  针对we learn随行课堂的班级测试/任务；欢迎大家上传题目，共建题库
 // @author       SSmJaE
 // @match        https://course.sflep.com/2019/test/*
-// @connect      47.97.90.127
 // @connect      localhost
+// @connect      47.97.90.127
 // @license      GPL-3.0
 // @compatible   chrome
 // @grant        GM_setValue
@@ -16,11 +16,13 @@
 // @require      https://unpkg.com/sweetalert/dist/sweetalert.min.js
 // ==/UserScript==
 
-/*global GM_getValue, GM_setValue, swal, GM_xmlhttpRequest, GM_setClipboard*/
+/*global GM_getValue, GM_setValue, GM_setClipboard, GM_xmlhttpRequest, swal, PlaySound*/
 'use strict';
 
 //从存储映射到变量
 var USER_SETTINGS = JSON.parse(GM_getValue('USER_SETTINGS', JSON.stringify({
+    version: '0.0.4',
+    autoCopy: true,
     userAccount: 'default',
     debugMode: false,
 })));
@@ -60,16 +62,18 @@ function make_draggable(handle, container) {
     }, false);
 }
 
-var container, title, setting, answers, checkButton;
+var container, title, answers, setting, checkButton, updateButton, commentButton, points;
 function create_container() {
+
     container = document.createElement('div');
     container.id = 'container';
     container.innerHTML = `
         <div id="container-title">当前状态</div>
+        <img id="container-setting"
+            src="data:image/png;base64,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"></img>
         <div id="container-control">
-            <img id="container-setting"
-                src="data:image/png;base64,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"></img>
-            <button id="container-check" class="container-answer-right">点击查询(上传)当前题目</button>
+            <button id="container-check" class="">点击查询(上传)当前题目</button>
+            <button id="container-comment" class="">留言</button>
         </div>
         <div id="container-answers"></div>`;
 
@@ -108,9 +112,7 @@ function create_container() {
         margin: 5px 0px;
     }
 
-    .container-answer-question,
-    .container-answer-return-answer,
-    .container-answer-return-status {
+    .container-message {
         font-size: 16px;
         font-family: Georgia, 'Times New Roman', Times, serif;
         /* white-space: pre-wrap; */
@@ -143,7 +145,7 @@ function create_container() {
         width: auto;
         margin: 20px;
         z-index: 101;
-        position: absolute;
+        position: fixed;
         top: 20%;
         left: 50%;
         transform: translate(-50%, 0%);
@@ -214,16 +216,16 @@ function create_container() {
         }
     }
 
-    #container-setting-base div.record>label:first-child {
+    #container-setting-base label[for] {
         display: table-cell;
         cursor: pointer;
+        width: 80px;
     }
 
     #container-setting-base input {
-        width: 50px;
+        width: 100px;
         height: 25px;
         padding: 0px;
-        margin: 0px;
         border: black 1px solid;
         display: table-cell;
         margin: 2px 5px;
@@ -422,48 +424,98 @@ function create_container() {
     let settingBase = document.createElement('div');
     settingBase.id = 'container-setting-base';
     settingBase.innerHTML = `
-    <div class="main">
-        <div class="title">辅助设定<svg class="arrow-down opened" width="24" height="24">
-                <path
-                    d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
-                    fill-rule="evenodd"></path>
-            </svg></div>
-        <div class="record">
-            <label for="userAccount">用户账户</label>
-            <input id='userAccount'>
-            <div class="setting right">暂时为qq号，累计每个人贡献的题目数量</div>
+        <div class="main">
+            <div class="title">用户设定<svg class="arrow-down opened" width="24" height="24">
+                    <path
+                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
+                        fill-rule="evenodd"></path>
+                </svg></div>
+            <div class="record">
+                <label for="userAccount">用户账户</label>
+                <input id='userAccount'>
+                <div class="setting right">暂时为qq号，累计每个人贡献的题目数量</div>
+            </div>
+            <div class="record">
+                <label for="userPoints">账户积分</label>
+                <input id="userPoints" readonly value="0"></input>
+                <div class="setting right">上传答案获取，暂无用处</div>
+            </div>
         </div>
-        <div class="record">
-            <label for="debugMode">调试模式</label>
-            <label class="switch"><input type="checkbox" id='debugMode'>
-                <span class="slider"></span>
-            </label>
-            <div class="setting right">调试用，正常使用不用开</div>
+        <hr>
+        <div class="main">
+            <div class="title">辅助设定<svg class="arrow-down opened" width="24" height="24">
+                    <path
+                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
+                        fill-rule="evenodd"></path>
+                </svg></div>
+            <div class="record">
+                <label for="version">脚本版本</label>
+                <input id='version' type="button" value="${USER_SETTINGS.version}">
+                <div class="setting right">点击查询是否有新版本</div>
+            </div>
+            <div class="record">
+                <label for="autoCopy">自动复制</label>
+                <label class="switch"><input type="checkbox" id='autoCopy'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">开启时，点击悬浮窗的对应消息自动复制到粘贴板</div>
+            </div>
+            <div class="record">
+                <label for="debugMode">调试模式</label>
+                <label class="switch"><input type="checkbox" id='debugMode'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">调试用，正常使用不用开</div>
+            </div>
         </div>
-    </div>
-    <button id="setting-save">保存&刷新</button>
+        <button id="setting-save">保存&刷新</button>
         `;
+
+    let commentBase = document.createElement('div');
+    commentBase.id = 'container-comment-base';
+    commentBase.innerHTML = `
+        <textarea placeholder="期待大家的反馈，因为手头没有账号，无法进行各种情况下的测试，如果有任何问题，都可以给我留言，我会定期查看。最好留下联系方式，方便后续交流。"></textarea>
+    `;
 
     if (!document.querySelector('#container')) {
         document.body.appendChild(container);
         document.body.appendChild(settingBase);
+        document.body.appendChild(commentBase);
         document.body.appendChild(style);
 
         title = document.querySelector('#container-title');
-        setting = document.querySelector('#container-setting');
         answers = document.querySelector('#container-answers');
+        setting = document.querySelector('#container-setting');
         checkButton = document.querySelector('#container-check');
+        updateButton = document.querySelector('#version');
+        commentButton = document.querySelector('#container-comment');
+        points = document.querySelector('#userPoints');
         make_draggable(title, container);
+
+        setting.addEventListener('click', () => {
+            let settingBase = document.querySelector('#container-setting-base');
+            settingBase.style.display = (settingBase.style.display == 'table') ? 'none' : 'table';
+        }, false);
 
         checkButton.addEventListener('click', () => {
             answers.innerHTML = '';
             retrieve_all_questions();
         }, false);
 
-        setting.addEventListener('click', () => {
-            let settingBase = document.querySelector('#container-setting-base');
-            settingBase.style.display = (settingBase.style.display == 'table') ? 'none' : 'table';
+        updateButton.addEventListener('click', () => {
+            update_version();
         }, false);
+
+        commentButton.addEventListener('click', () => {
+            swal({
+                title: "留言",
+                content: commentBase,
+                icon: "info",
+                button: "发送",
+            }).then(() => { send_comment(commentBase.firstElementChild.value); });
+        }, false);
+
+        initial_request();
     }
 
     //淡入淡出效果
@@ -509,23 +561,47 @@ function create_container() {
     }, false);
 }
 
-
-
+/*------------------------------------------------------------------------------------------------------------------------*/
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function get_answer(answerElement, questionElement) {
+    let options = [], answer = '', answerId = '', realOptionIndex;
+    if (answerElement && answerElement.matches('[class*="answer"]')) {
+        let answerOption = answerElement.querySelector('p span').textContent;
+        realOptionIndex = answerOption.toUpperCase().charCodeAt() - 65;
+    }
+
+    for (let [index, option] of questionElement.querySelectorAll('label').entries()) {
+        let optionContent = option.textContent.replace(/\w*\)\s*/, '');
+        options.push(optionContent);
+        if (answerElement) {
+            if (index == realOptionIndex) {
+                answer = optionContent;
+                answerId = option.querySelector('input').getAttribute('id');
+            }
+        }
+    }
+    return [options, answerId, answer];
+}
+
+function get_order(questionElement) {
+    let number = /\s*(\d*)/.exec(questionElement.querySelector('.test_number').textContent)[1];
+    add_to_container(number, 'normal');
 }
 
 async function retrieve_all_questions() {
     let t = 3000;
     for (let questionMain of document.querySelectorAll('.itemDiv')) {//都作为整体处理吧，这样事后还能自己做，有题干
-        let sendQuestion = ''
-            , sendQuestionType = null
+        let sendQuestionType = null
             , sendQuestionId = ''
+            , sendQuestion = ''
             , sendOptions = []
-            , sendAnswer = ''
             , sendAnswerId = ''
-            , sendFile = ''
-            , sendContext = '';
+            , sendAnswer = ''
+            , sendContext = ''
+            , sendFile = '';
 
         if (questionMain.querySelector('a[href^="javascript:PlaySound"]')) {
             sendQuestionType = 0;//听力选择题
@@ -543,44 +619,46 @@ async function retrieve_all_questions() {
             if (questionMain.querySelector('input[name^="rd"]')) {
                 sendQuestionType = 4;//普通选择题
             }
+            // else if (questionMain.querySelector('.test_sty_5')) {
+            //     sendQuestionType = 5;//普通填空题——没遇到过
+            // }
         }
-        // else if (questionMain.querySelector('.test_sty_5')) {
-        //     sendQuestionType = 5;//普通填空题——没遇到过
-        // }
 
         switch (sendQuestionType) {
             case 0://听力大题
-                sendContext = 'https://courseres.sflep.com/Test/ItemRes/sound/' + /'(.*)'/.exec(
-                    questionMain.querySelector('a[href^="javascript:PlaySound"]').getAttribute('href'))[1];
+                {
+                    let mainAudio = questionMain.querySelector('a[href^="javascript:PlaySound"]');
+                    let mainAudioFile = /'(.*?)'/.exec(mainAudio.getAttribute('href'))[1];
+                    sendContext = 'https://courseres.sflep.com/Test/ItemRes/sound/' + mainAudioFile;
+                    mainAudio.querySelector('span').textContent = "无限次播放机会";
+                    mainAudio.addEventListener('click', async () => {
+                        PlaySound(mainAudioFile);
+                        await sleep(100);
+                        mainAudio.querySelector('span').textContent = "无限次播放机会";
+                    }, false);
+
+                }
 
                 for (let questionElement of questionMain.querySelectorAll('.test_hov')) {
                     await sleep(t);
 
-                    let options = [], answer = '', answerId = '', realOptionIndex;
-                    let answerElement = questionElement.querySelector('[class*="answer"]');
-                    if (answerElement) {
-                        let answerOption = answerElement.querySelector('p span').textContent;
-                        realOptionIndex = answerOption.toUpperCase().charCodeAt() - 65;
-                    }
-
-                    for (let [index, option] of questionElement.querySelectorAll('label').entries()) {
-                        let optionContent = option.textContent.replace(/\w*\)\s*/, '');
-                        options.push(optionContent);
-                        if (answerElement) {
-                            if (index == realOptionIndex) {
-                                answer = optionContent;
-                                answerId = option.querySelector('input').getAttribute('id');
-                            }
-                        }
-                    }
-
-                    let question = 'https://courseres.sflep.com/Test/ItemRes/sound/' + /'(.*)'/.exec(
-                        questionElement.querySelector('a[href^="javascript:PlaySound"]').getAttribute('href'))[1];
+                    let questionAudio = questionElement.querySelector('a[href^="javascript:PlaySound"]');
+                    let questionAudioFile = /'(.*?)'/.exec(questionAudio.getAttribute('href'))[1];
+                    questionAudio.querySelector('span').textContent = "无限次播放机会";
+                    questionAudio.addEventListener('click', async () => {
+                        PlaySound(questionAudioFile);
+                        await sleep(100);
+                        questionAudio.querySelector('span').textContent = "无限次播放机会";
+                    }, false);
 
                     let questionId = questionElement.querySelector('input[name^="rd"][id$="_1"]').getAttribute('name');
+                    let question = 'https://courseres.sflep.com/Test/ItemRes/sound/' + questionAudioFile;
 
+                    let answerElement = questionElement.querySelector('[class*="answer"]');
+                    let [options, answerId, answer] = get_answer(answerElement, questionElement);
+
+                    get_order(questionElement);
                     simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext);
-                    add_to_container(sendQuestion, 'normal');
                 }
                 break;
 
@@ -590,30 +668,16 @@ async function retrieve_all_questions() {
                 for (let questionElement of questionMain.querySelectorAll('.col-md-4 .test_hov')) {
                     await sleep(t);
 
-                    let options = [], answer = '', answerId = '', realOptionIndex;
-                    let answerElement = questionElement.nextElementSibling;
-                    if (answerElement != null && answerElement.matches('[class*="answer"]')) {
-                        let answerOption = answerElement.querySelector('p span').textContent;
-                        realOptionIndex = answerOption.toUpperCase().charCodeAt() - 65;
-                    }
-
-                    for (let [index, option] of questionElement.querySelectorAll('label').entries()) {
-                        let optionContent = option.textContent.replace(/\w*\)\s*/, '');
-                        options.push(optionContent);
-                        if (answerElement) {
-                            if (index == realOptionIndex) {
-                                answer = optionContent;
-                                answerId = option.querySelector('input').getAttribute('id');
-                            }
-                        }
-                    }
-
-                    let question = questionElement.querySelector('div').textContent.replace(/\d*\.\s*/, '');
                     let questionId = questionElement.querySelector('input[id^="rd"][id$="_1"]').getAttribute('name');
+                    let question = questionElement.querySelector('div').textContent.replace(/\d*\.\s*/, '');
+
+                    let answerElement = questionElement.nextElementSibling;
+                    let [options, answerId, answer] = get_answer(answerElement, questionElement);
+
                     let sendFile = questionId.replace(/_.*$/, '');//用sendFile作为对同一段原文的标识
 
+                    get_order(questionElement);
                     simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext, sendFile);
-                    add_to_container(sendQuestion, 'normal');
                 }
                 break;
 
@@ -635,7 +699,6 @@ async function retrieve_all_questions() {
                 sendQuestionId = questionMain.querySelector('input[id^="txt_"][id$="_1"]').getAttribute('id').replace(/_1$/, '');
 
                 simple_request(sendQuestionType, sendQuestionId, '', sendOptions, '', sendAnswer, sendContext);
-                add_to_container(sendQuestion, 'normal');
                 break;
 
             case 3://下拉排序
@@ -654,8 +717,8 @@ async function retrieve_all_questions() {
                     let questionId = questionElement.querySelector('select[id^="sl"]').getAttribute('id');
                     let sendFile = questionId.replace(/_.{1,3}$/, '');//用sendFile作为对同一段原文的标识
 
+                    get_order(questionElement);
                     simple_request(sendQuestionType, questionId, question, [], '', answer, sendContext, sendFile);
-                    add_to_container(sendQuestion, 'normal');
                 }
                 break;
 
@@ -663,29 +726,14 @@ async function retrieve_all_questions() {
                 for (let questionElement of questionMain.querySelectorAll('.test_hov')) {
                     await sleep(t);
 
-                    let options = [], answer = '', answerId = '', realOptionIndex;
-                    let answerElement = questionElement.querySelector('[class*="answer"]');
-                    if (answerElement) {
-                        let answerOption = answerElement.querySelector('p span').textContent;
-                        realOptionIndex = answerOption.toUpperCase().charCodeAt() - 65;
-                    }
-
-                    for (let [index, option] of questionElement.querySelectorAll('label').entries()) {
-                        let optionContent = option.textContent.replace(/\w*\)\s*/, '');
-                        options.push(optionContent);
-                        if (answerElement) {
-                            if (index == realOptionIndex) {
-                                answer = optionContent;
-                                answerId = option.querySelector('input').getAttribute('id');
-                            }
-                        }
-                    }
-
-                    let question = questionElement.querySelector('div').textContent.replace(/\d*\.\s*/, '');
                     let questionId = questionElement.querySelector('input[name^="rd"][id$="_1"]').getAttribute('name');
+                    let question = questionElement.querySelector('div').textContent.replace(/\d*\.\s*/, '');
 
+                    let answerElement = questionElement.querySelector('[class*="answer"]');
+                    let [options, answerId, answer] = get_answer(answerElement, questionElement);
+
+                    get_order(questionElement);
                     simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext);
-                    add_to_container(sendQuestion, 'normal');
                 }
                 break;
         }
@@ -694,10 +742,22 @@ async function retrieve_all_questions() {
 
 function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuestion = '', sendOptions = [],
     sendAnswerId = '', sendAnswer = '', sendContext = '', sendFile = '', queryType = 0) {
+    if (USER_SETTINGS.debugMode) {
+        console.log(`0 ${sendQuestionId}`);
+        console.log(`1 ${sendQuestionType}`);
+        console.log(`2 ${sendQuestion}`);
+        console.log(`3 ${sendOptions}`);
+        console.log(`4 ${sendAnswerId}`);
+        console.log(`5 ${sendAnswer}`);
+        console.log(`6 ${sendContext}`);
+        console.log(`7 ${sendFile}`);
+    }
+
     add_to_container(sendQuestion, 'normal');
     GM_xmlhttpRequest({
-        method: 'POST',//
-        url: 'http://47.97.90.127:8000/query/',
+        // url: 'http://47.97.90.127:8000/query/',
+        url: 'http://47.97.90.127:8000/welearn/query/',
+        method: 'POST',
         headers: {},
         data: JSON.stringify({
             "questionId": sendQuestionId,
@@ -709,31 +769,22 @@ function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuesti
             if (xhr.status == 200) {
                 let returnJson = JSON.parse(xhr.responseText);
                 parse_ajax_response(returnJson);
-                if (!returnJson.answer)
+                if (returnJson.status != 3)
                     full_post(sendQuestionType, sendQuestionId, sendQuestion, sendOptions,
                         sendAnswerId, sendAnswer, sendContext, sendFile, queryType);
             }
         },
-        ontimeout: () => { add_to_container('请求超时，过段时间再试', 'error'); }
+        onerror: () => { add_to_container('查询失败，过段时间再试', 'error'); },
+        ontimeout: () => { add_to_container('查询超时，过段时间再试', 'error'); },
     });
 }
 
 function full_post(sendQuestionType = null, sendQuestionId = '', sendQuestion = '', sendOptions = [],
     sendAnswerId = '', sendAnswer = '', sendContext = '', sendFile = '', queryType = 0) {
-    if (USER_SETTINGS.debugMode) {
-        console.log(sendQuestionType);
-        console.log(sendQuestionId);
-        console.log(sendQuestion);
-        console.log(sendOptions);
-        console.log(sendAnswerId);
-        console.log(sendAnswer);
-        console.log(sendContext);
-        console.log(sendFile);
-    }
-
     GM_xmlhttpRequest({
-        method: 'POST',//47.97.90.127
-        url: 'http://47.97.90.127:8000/query/',
+        // url: 'http://47.97.90.127:8000/query/',
+        url: 'http://47.97.90.127:8000/welearn/query/',
+        method: 'POST',
         headers: {},
         data: JSON.stringify({//一次传一道题，或者一次传一个列表
             "questionType": sendQuestionType,
@@ -745,7 +796,7 @@ function full_post(sendQuestionType = null, sendQuestionId = '', sendQuestion = 
             "context": sendContext,
             "file": sendFile,
             'account': USER_SETTINGS.userAccount,
-            'queryType': queryType,
+            'queryType': 0,
         }),
         timeout: 5000,
         onload: xhr => {
@@ -753,7 +804,29 @@ function full_post(sendQuestionType = null, sendQuestionId = '', sendQuestion = 
                 parse_ajax_response(JSON.parse(xhr.responseText));
             }
         },
-        ontimeout: () => { add_to_container('请求超时，过段时间再试', 'error'); }
+        onerror: () => { add_to_container('查询失败，过段时间再试', 'error'); },
+        ontimeout: () => { add_to_container('查询超时，过段时间再试', 'error'); },
+    });
+}
+
+function send_comment(string) {
+    GM_xmlhttpRequest({
+        url: 'http://47.97.90.127:8000/welearn/comment/',
+        method: 'POST',//47.97.90.127
+        headers: {},
+        data: JSON.stringify({
+            "message": string,
+            'account': USER_SETTINGS.userAccount,
+            "time": Date()
+        }),
+        timeout: 5000,
+        onload: xhr => {
+            if (xhr.status == 200) {
+                add_to_container('留言成功', 'info');
+            }
+        },
+        onerror: () => { add_to_container('留言失败，过段时间再试', 'error'); },
+        ontimeout: () => { add_to_container('留言超时，过段时间再试', 'error'); },
     });
 }
 
@@ -782,6 +855,9 @@ function parse_ajax_response(json) {
         case 5:
             status = '服务器没有题目，没有答案';
             break;
+        case 6:
+            status = '没有标答，返回最可能答案';
+            break;
     }
     add_to_container(status, 'info');
 
@@ -796,12 +872,17 @@ function parse_ajax_response(json) {
     //if 小猫钓鱼
     //auto_handle(json.answerId)
 
-    let hr = document.createElement('hr');
-    answers.appendChild(hr);
+    if (answers.lastElementChild.textContent) {//前一条消息为空不添加
+        let hr = document.createElement('hr');
+        answers.appendChild(hr);
+    }
 }
 
-function add_to_container(string, type) {
+function add_to_container(string, type = 'normal') {
     let div = document.createElement('div');
+    div.classList.add('container-message');
+    div.textContent = string;
+
     let color = '';
     switch (type) {
         case 'normal':
@@ -819,17 +900,57 @@ function add_to_container(string, type) {
     div.style.color = color;
 
     //if(string=='播放xx')
-    div.textContent = string;
-    div.classList.add('container-answer-question');
     div.addEventListener('click', () => {
         GM_setClipboard(div.textContent, 'text');
     }, false);
+
     answers.appendChild(div);
     answers.scrollBy(0, 1000);
 }
 
 function change_status(string) {
     title.textContent = string;
+}
+
+function initial_request() {
+    update_version();
+    update_points();
+}
+
+function update_version() {
+    GM_xmlhttpRequest({
+        url: 'http://47.97.90.127:8000/welearn/version/',
+        method: 'POST',//47.97.90.127
+        headers: {},
+        data: '',
+        timeout: 5000,
+        onload: xhr => {
+            if (xhr.status == 200) {
+                xhr.responseText > USER_SETTINGS.version ? change_status('有新发布版本') : change_status('已是最新版本');
+            }
+        },
+        onerror: () => { add_to_container('查询版本失败', 'error'); },
+        ontimeout: () => { add_to_container('查询版本超时', 'error'); },
+    });
+}
+
+function update_points() {
+    GM_xmlhttpRequest({
+        url: 'http://47.97.90.127:8000/welearn/user/',
+        method: 'POST',//47.97.90.127
+        headers: {},
+        data: JSON.stringify({
+            'account': USER_SETTINGS.userAccount,
+        }),
+        timeout: 5000,
+        onload: xhr => {
+            if (xhr.status == 200) {
+                points.textContent = xhr.responseText;
+            }
+        },
+        onerror: () => { add_to_container('更新积分失败', 'error'); },
+        ontimeout: () => { add_to_container('更新积分超时', 'error'); },
+    });
 }
 
 create_container();
