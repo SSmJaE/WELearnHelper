@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WELearn网课助手(考试专版)
 // @namespace    http://tampermonkey.net/
-// @version      0.0.4
+// @version      0.0.5
 // @description  针对we learn随行课堂的班级测试/任务；欢迎大家上传题目，共建题库
 // @author       SSmJaE
 // @match        https://course.sflep.com/2019/test/*
