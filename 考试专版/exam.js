@@ -21,8 +21,9 @@
 
 //从存储映射到变量
 var USER_SETTINGS = JSON.parse(GM_getValue('USER_SETTINGS', JSON.stringify({
-    version: '0.0.4',
+    version: '0.0.5',
     autoCopy: true,
+    autoSlide: true,
     userAccount: 'default',
     debugMode: false,
 })));
@@ -433,7 +434,7 @@ function create_container() {
             <div class="record">
                 <label for="userAccount">用户账户</label>
                 <input id='userAccount'>
-                <div class="setting right">暂时为qq号，累计每个人贡献的题目数量</div>
+                <div class="setting right">随意设定，累计每个人贡献的题目数量</div>
             </div>
             <div class="record">
                 <label for="userPoints">账户积分</label>
@@ -451,7 +452,7 @@ function create_container() {
             <div class="record">
                 <label for="version">脚本版本</label>
                 <input id='version' type="button" value="${USER_SETTINGS.version}">
-                <div class="setting right">点击查询是否有新版本</div>
+                <div class="setting right">点击查询是否有新版本，悬浮窗标题为结果</div>
             </div>
             <div class="record">
                 <label for="autoCopy">自动复制</label>
@@ -459,6 +460,13 @@ function create_container() {
                     <span class="slider"></span>
                 </label>
                 <div class="setting right">开启时，点击悬浮窗的对应消息自动复制到粘贴板</div>
+            </div>
+            <div class="record">
+                <label for="autoSlide">自动下滑</label>
+                <label class="switch"><input type="checkbox" id='autoSlide'>
+                    <span class="slider"></span>
+                </label>
+                <div class="setting right">有新消息时，窗口是否自动下滑到新消息处</div>
             </div>
             <div class="record">
                 <label for="debugMode">调试模式</label>
@@ -755,7 +763,7 @@ function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuesti
 
     add_to_container(sendQuestion, 'normal');
     GM_xmlhttpRequest({
-        // url: 'http://47.97.90.127:8000/query/',
+        // url: 'http://localhost:8000/welearn/query/',
         url: 'http://47.97.90.127:8000/welearn/query/',
         method: 'POST',
         headers: {},
@@ -782,7 +790,7 @@ function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuesti
 function full_post(sendQuestionType = null, sendQuestionId = '', sendQuestion = '', sendOptions = [],
     sendAnswerId = '', sendAnswer = '', sendContext = '', sendFile = '', queryType = 0) {
     GM_xmlhttpRequest({
-        // url: 'http://47.97.90.127:8000/query/',
+        // url: 'http://localhost:8000/welearn/query/',
         url: 'http://47.97.90.127:8000/welearn/query/',
         method: 'POST',
         headers: {},
@@ -862,12 +870,19 @@ function parse_ajax_response(json) {
     add_to_container(status, 'info');
 
     let answer = json.answer;
-    // console.log(answer);
-    if (answer) {
-        add_to_container(answer, 'answer');
-    } else {
-        if (json.status >= 3)
+    switch (json.status) {
+        case 3:
+            add_to_container(answer, 'answer');
+            break;
+        case 4:
+        //fallthrough
+        case 5:
             add_to_container('尚未收录答案', 'error');
+            break;
+        case 6:
+            for (let [option, possibility] of Object.entries(answer)) {
+                add_to_container(`${possibility} ${option}`, 'answer');
+            }
     }
     //if 小猫钓鱼
     //auto_handle(json.answerId)
@@ -901,11 +916,13 @@ function add_to_container(string, type = 'normal') {
 
     //if(string=='播放xx')
     div.addEventListener('click', () => {
-        GM_setClipboard(div.textContent, 'text');
+        if (USER_SETTINGS.autoCopy)
+            GM_setClipboard(div.textContent, 'text');
     }, false);
 
     answers.appendChild(div);
-    answers.scrollBy(0, 1000);
+    if (USER_SETTINGS.autoSlide)
+        answers.scrollBy(0, 1000);
 }
 
 function change_status(string) {
