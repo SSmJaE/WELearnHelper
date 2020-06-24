@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WELearn网课助手(考试专版)
 // @namespace    http://tampermonkey.net/
-// @version      0.0.5
+// @version      0.0.6
 // @description  针对we learn随行课堂的班级测试/任务；欢迎大家上传题目，共建题库
 // @author       SSmJaE
 // @match        https://course.sflep.com/2019/test/*
@@ -14,14 +14,14 @@
 // @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
 // @require      https://unpkg.com/sweetalert/dist/sweetalert.min.js
+// @require      https://cdn.jsdelivr.net/npm/vue/dist/vue.js
 // ==/UserScript==
 
-/*global GM_getValue, GM_setValue, GM_setClipboard, GM_xmlhttpRequest, swal, PlaySound*/
+/*global Vue, GM_getValue, GM_setValue, GM_setClipboard, GM_xmlhttpRequest, swal, PlaySound*/
 'use strict';
 
 //从存储映射到变量
 var USER_SETTINGS = JSON.parse(GM_getValue('USER_SETTINGS', JSON.stringify({
-    version: '0.0.5',
     autoCopy: true,
     autoSlide: true,
     userAccount: 'default',
@@ -63,24 +63,37 @@ function make_draggable(handle, container) {
     }, false);
 }
 
-var container, title, answers, setting, checkButton, updateButton, commentButton, points;
+var container, title;
 function create_container() {
-
     container = document.createElement('div');
     container.id = 'container';
     container.innerHTML = `
-        <div id="container-title">当前状态</div>
-        <img id="container-setting"
+    <div id="container-title">当前状态</div>
+    <div id="app">
+        <img id="container-setting" @click="show_setting"
             src="data:image/png;base64,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"></img>
         <div id="container-control">
-            <button id="container-check" class="">点击查询(上传)当前题目</button>
-            <button id="container-comment" class="">留言</button>
+            <button id="container-check" class="" @click="retrieve_all_questions">点击查询(上传)当前题目</button>
+            <button id="container-comment" @click="show_comment">留言</button>
+            <button id="container-comment" onclick="window.open('http://47.97.90.127:8000/welearn/solve/','_blank')"
+                title="对于没有答案的题目，会收录每一次的做题结果，查询这些题目时，会返回每一个选项的选择次数供参考">在线做题</button>
+            <button id="container-comment"
+                onclick="window.open('https://greasyfork.org/zh-CN/scripts/405420','_blank')">GreasyFork</button>
         </div>
-        <div id="container-answers"></div>`;
+        <div id="container-answers">
+            <div v-for="message in messages" class="container-message" :class="message.type"
+                @click="auto_copy(message.text)">
+                {{message.text}}
+                <hr v-if="message.type=='hr'">
+            </div>
+        </div>
+    </div>
+        `;
 
     let style = document.createElement('style');
     style.setAttribute('type', 'text/css');
     style.innerHTML = `
+    /* -------------------------------------container start------------------------------------------- */
     #container {
         top: 100px;
         left: 100px;
@@ -91,6 +104,10 @@ function create_container() {
         position: fixed;
         background: rgba(255, 255, 255, 0.95);
         width: 500px;
+    }
+
+    #container:not(:hover) {
+        filter: brightness(98%);
     }
 
     #container-title {
@@ -109,6 +126,18 @@ function create_container() {
         overflow-y: auto;
     }
 
+    #container-answers .error {
+        color: red;
+    }
+
+    #container-answers .success {
+        color: green;
+    }
+
+    #container-answers .info {
+        color: blue;
+    }
+
     #container-answers hr {
         margin: 5px 0px;
     }
@@ -120,10 +149,6 @@ function create_container() {
         position: relative;
         animation: content_slide_in 0.5s;
         animation-timing-function: ease-out;
-    }
-
-    #container-check {
-        /* margin-left: 10px; */
     }
 
     #container-setting {
@@ -139,11 +164,25 @@ function create_container() {
         color: rgb(0, 230, 227);
     }
 
+    @keyframes content_slide_in {
+        from {
+            left: -50%;
+            opacity: 0;
+        }
+
+        to {
+            left: 0%;
+            opacity: 1;
+        }
+    }
+
+    /* -------------------------------------container end------------------------------------------- */
+    /* -------------------------------------setting-base start------------------------------------------- */
     #container-setting-base {
         display: none;
         font-size: 16px;
         line-height: 100%;
-        width: auto;
+        width: 600px;
         margin: 20px;
         z-index: 101;
         position: fixed;
@@ -167,54 +206,6 @@ function create_container() {
 
     #container-setting-base div.record.hidden {
         animation: fade_out 0.5s;
-    }
-
-    @keyframes fade_in {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
-    @keyframes fade_out {
-        from {
-            opacity: 1;
-        }
-
-        to {
-            opacity: 0;
-        }
-    }
-
-    @keyframes slide_in {
-        from {
-            left: 0%;
-            opacity: 0;
-        }
-
-        80% {
-            left: 53%;
-        }
-
-        to {
-            left: 50%;
-            opacity: 1;
-        }
-    }
-
-    @keyframes content_slide_in {
-        from {
-            left: -50%;
-            opacity: 0;
-        }
-
-        to {
-            left: 0%;
-            opacity: 1;
-        }
     }
 
     #container-setting-base label[for] {
@@ -259,11 +250,151 @@ function create_container() {
         transform: translate(-55%, 5%);
     }
 
-    #container:not(:hover) {
-        filter: brightness(98%);
+    #container-setting-base div.title {
+        font-size: 24px;
+        text-align: center;
+        cursor: pointer;
     }
 
-    /* 滑块-------------------------------------------------------------------- */
+    #container-setting-base div.main {
+        margin: 0 10px;
+    }
+
+    @keyframes fade_in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fade_out {
+        from {
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
+
+    @keyframes slide_in {
+        from {
+            left: 0%;
+            opacity: 0;
+        }
+
+        80% {
+            left: 53%;
+        }
+
+        to {
+            left: 50%;
+            opacity: 1;
+        }
+    }
+
+    /* -------------------------------------setting-base end------------------------------------------- */
+    /* -------------------------------------arrow start------------------------------------------- */
+    #container-setting-base svg.arrow-down {
+        position: relative;
+        top: 5px;
+        left: 0px;
+        transition-duration: 0.5s;
+    }
+
+    #container-setting-base svg.arrow-down.opened {
+        transform: rotate(180deg);
+    }
+
+    /* -------------------------------------arrow end------------------------------------------- */
+    /* -------------------------------------switch start------------------------------------------- */
+    /* 限定label标签属性，也就是checkbox的包装器 */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 25px;
+        margin: 2px 5px;
+        border: black 1px solid;
+        border-radius: 38px;
+    }
+
+    /* 不显示checkbox本身，通过点击外部的label实现点击input的效果 */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* 未选中，滑条效果 */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transition: 0.4s;
+        border-radius: 38px;
+        background-color: rgb(251, 251, 251);
+    }
+
+    /* 未选中，点击时滑条效果 */
+    input:not(:checked):active+.slider {
+        background-color: rgb(187, 187, 187);
+    }
+
+    /* 选中时，滑条效果 */
+    input:checked+.slider {
+        background-color: #2196f3;
+    }
+
+    /* 滑块是通过before插入的，并没有在DOM中加入代表滑块的元素 */
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 23px;
+        width: 23px;
+        left: 1px;
+        bottom: 1px;
+        background-color: white;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 0 rgba(0, 0, 0, 0.08);
+        border-radius: 50%;
+    }
+
+    /* 未选中，点击时滑块效果 */
+    input:active+.slider:before {
+        border-radius: 38px;
+        animation-name: widen_to_right;
+        animation-duration: 0.2s;
+        animation-fill-mode: forwards;
+    }
+
+    /* 右移效果 */
+    input:checked+.slider:before {
+        animation-name: slide_to_right;
+        animation-duration: 0.4s;
+        animation-fill-mode: forwards;
+    }
+
+    /* 已选中，点击时滑块效果 */
+    input:checked:active+.slider:before {
+        animation-name: widen_to_left;
+        animation-duration: 0.2s;
+        animation-fill-mode: forwards;
+    }
+
+    /* 左移效果 */
+    input:not(:checked):not(:active)+.slider:before {
+        left: 1px;
+        animation-name: slide_to_left;
+        animation-duration: 0.4s;
+        animation-fill-mode: forwards;
+    }
+
     @keyframes slide_to_right {
         0% {
             width: 36px;
@@ -317,261 +448,89 @@ function create_container() {
         }
     }
 
-    /* 限定label标签属性，也就是checkbox的包装器 */
-    #container-setting-base .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 25px;
-        margin: 2px 5px;
-        border: black 1px solid;
-        border-radius: 38px;
-    }
+    /* -------------------------------------switch end--------------------------------------------- */
 
-    /* 不显示checkbox本身，通过点击外部的label实现点击input的效果 */
-    #container-setting-base .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    /* 未选中，滑条效果 */
-    #container-setting-base .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        transition: .4s;
-        border-radius: 38px;
-        background-color: rgb(251, 251, 251);
-    }
-
-    /* 未选中，点击时滑条效果 */
-    #container-setting-base input:not(:checked):active+.slider {
-        background-color: rgb(187, 187, 187);
-    }
-
-    /* 选中时，滑条效果 */
-    #container-setting-base input:checked+.slider {
-        background-color: #2196F3;
-    }
-
-    /* 滑块是通过before插入的，并没有在DOM中加入代表滑块的元素 */
-    #container-setting-base .slider:before {
-        position: absolute;
-        content: "";
-        height: 23px;
-        width: 23px;
-        left: 1px;
-        bottom: 1px;
-        background-color: white;
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 0 rgba(0, 0, 0, 0.08);
-        border-radius: 50%;
-    }
-
-    /* 未选中，点击时滑块效果 */
-    #container-setting-base input:active+.slider:before {
-        border-radius: 38px;
-        animation-name: widen_to_right;
-        animation-duration: 0.2s;
-        animation-fill-mode: forwards;
-    }
-
-    /* 右移效果 */
-    #container-setting-base input:checked+.slider:before {
-        animation-name: slide_to_right;
-        animation-duration: .4s;
-        animation-fill-mode: forwards;
-    }
-
-    /* 已选中，点击时滑块效果 */
-    #container-setting-base input:checked:active+.slider:before {
-        animation-name: widen_to_left;
-        animation-duration: 0.2s;
-        animation-fill-mode: forwards;
-    }
-
-    /* 左移效果 */
-    #container-setting-base input:not(:checked):not(:active)+.slider:before {
-        left: 1px;
-        animation-name: slide_to_left;
-        animation-duration: .4s;
-        animation-fill-mode: forwards;
-    }
-
-    #container-setting-base svg.arrow-down {
-        position: relative;
-        top: 5px;
-        left: 0px;
-        transition-duration: 0.5s;
-    }
-
-    #container-setting-base svg.arrow-down.opened {
-        transform: rotate(180deg);
-    }
-
-    #container-setting-base div.title {
-        font-size: 24px;
-        text-align: center;
-        cursor: pointer;
-    }
-
-    #container-setting-base div.main {
-        margin: 0 10px;
-    }`;
-
-    let settingBase = document.createElement('div');
-    settingBase.id = 'container-setting-base';
-    settingBase.innerHTML = `
-        <div class="main">
-            <div class="title">用户设定<svg class="arrow-down opened" width="24" height="24">
-                    <path
-                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
-                        fill-rule="evenodd"></path>
-                </svg></div>
-            <div class="record">
-                <label for="userAccount">用户账户</label>
-                <input id='userAccount'>
-                <div class="setting right">随意设定，累计每个人贡献的题目数量</div>
-            </div>
-            <div class="record">
-                <label for="userPoints">账户积分</label>
-                <input id="userPoints" readonly value="0"></input>
-                <div class="setting right">上传答案获取，暂无用处</div>
-            </div>
-        </div>
-        <hr>
-        <div class="main">
-            <div class="title">辅助设定<svg class="arrow-down opened" width="24" height="24">
-                    <path
-                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
-                        fill-rule="evenodd"></path>
-                </svg></div>
-            <div class="record">
-                <label for="version">脚本版本</label>
-                <input id='version' type="button" value="${USER_SETTINGS.version}">
-                <div class="setting right">点击查询是否有新版本，悬浮窗标题为结果</div>
-            </div>
-            <div class="record">
-                <label for="autoCopy">自动复制</label>
-                <label class="switch"><input type="checkbox" id='autoCopy'>
-                    <span class="slider"></span>
-                </label>
-                <div class="setting right">开启时，点击悬浮窗的对应消息自动复制到粘贴板</div>
-            </div>
-            <div class="record">
-                <label for="autoSlide">自动下滑</label>
-                <label class="switch"><input type="checkbox" id='autoSlide'>
-                    <span class="slider"></span>
-                </label>
-                <div class="setting right">有新消息时，窗口是否自动下滑到新消息处</div>
-            </div>
-            <div class="record">
-                <label for="debugMode">调试模式</label>
-                <label class="switch"><input type="checkbox" id='debugMode'>
-                    <span class="slider"></span>
-                </label>
-                <div class="setting right">调试用，正常使用不用开</div>
-            </div>
-        </div>
-        <button id="setting-save">保存&刷新</button>
         `;
 
-    let commentBase = document.createElement('div');
-    commentBase.id = 'container-comment-base';
-    commentBase.innerHTML = `
-        <textarea placeholder="期待大家的反馈，因为手头没有账号，无法进行各种情况下的测试，如果有任何问题，都可以给我留言，我会定期查看。最好留下联系方式，方便后续交流。"></textarea>
+    let settingBase = document.createElement('div');
+    settingBase.innerHTML = `
+    <div id="container-setting-base">
+        <div class="main" v-for="section in sections">
+            <div class="title" @click="slide_children">{{section.title}}<svg class="arrow-down opened" width="24"
+                    height="24">
+                    <path
+                        d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
+                        fill-rule="evenodd"></path>
+                </svg></div>
+            <div class="record" v-for="setting in section.setting">
+                <label :for="setting.id">{{setting.name}}</label>
+                <template v-if="setting.type=='switch'">
+                    <label class="switch">
+                        <input type="checkbox" :id='setting.id' :checked="setting.value">
+                        <span class="slider"></span>
+                    </label>
+                </template>
+                <template v-else>
+                    <input :id='setting.id' :value="setting.value" :readonly="setting.readonly" :type="setting.type">
+                </template>
+                <div class="setting right">{{setting.description}}</div>
+            </div>
+            <hr>
+        </div>
+        <button id="setting-save" @click="save_change">保存&刷新</button>
+    </div>
     `;
 
     if (!document.querySelector('#container')) {
         document.body.appendChild(container);
         document.body.appendChild(settingBase);
-        document.body.appendChild(commentBase);
         document.body.appendChild(style);
 
         title = document.querySelector('#container-title');
-        answers = document.querySelector('#container-answers');
-        setting = document.querySelector('#container-setting');
-        checkButton = document.querySelector('#container-check');
-        updateButton = document.querySelector('#version');
-        commentButton = document.querySelector('#container-comment');
-        points = document.querySelector('#userPoints');
         make_draggable(title, container);
-
-        setting.addEventListener('click', () => {
-            let settingBase = document.querySelector('#container-setting-base');
-            settingBase.style.display = (settingBase.style.display == 'table') ? 'none' : 'table';
-        }, false);
-
-        checkButton.addEventListener('click', () => {
-            answers.innerHTML = '';
-            retrieve_all_questions();
-        }, false);
-
-        updateButton.addEventListener('click', () => {
-            update_version();
-        }, false);
-
-        commentButton.addEventListener('click', () => {
-            swal({
-                title: "留言",
-                content: commentBase,
-                icon: "info",
-                button: "发送",
-            }).then(() => { send_comment(commentBase.firstElementChild.value); });
-        }, false);
-
-        initial_request();
     }
-
-    //淡入淡出效果
-    document.querySelectorAll('#container-setting-base .title').forEach(e => {
-        e.addEventListener('click', () => {
-            e.parentElement.querySelectorAll('.record').forEach(e => {
-                if (e.classList.contains('hidden')) {
-                    e.style.display = (e.style.display == "none") ? "" : "none";
-                } else {
-                    setTimeout(() => {
-                        e.style.display = (e.style.display == "none") ? "" : "none";
-                    }, 500);
-                }
-                e.classList.toggle('hidden');
-            });
-            e.querySelector('.arrow-down').classList.toggle('opened');
-        }, false);
-    });
-
-    //从变量映射到DOM
-    for (let [key, value] of Object.entries(USER_SETTINGS)) {
-        let element = document.querySelector('#' + String(key));
-        if (String(value) == "true") {
-            element.setAttribute('checked', '');
-        } else if (String(value) == "false") {
-            continue;
-        } else {
-            element.value = value;
-        }
-    }
-
-    //从DOM映射到存储
-    document.querySelector('#setting-save').addEventListener('click', () => {
-        for (let input of document.querySelectorAll('#container-setting-base input')) {
-            if (input.value == "on") {
-                USER_SETTINGS[input.id] = input.checked;
-            } else {
-                USER_SETTINGS[input.id] = input.value;
-            }
-        }
-        GM_setValue('USER_SETTINGS', JSON.stringify(USER_SETTINGS));
-        location.reload(true);
-    }, false);
 }
 
+create_container();
 /*------------------------------------------------------------------------------------------------------------------------*/
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function request(url, init = { method: 'GET', headers: {}, body: '' }) {
+    return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+            url: url,
+            method: init.method,
+            headers: init.headers,
+            data: init.body,
+            timeout: 5000,
+            onload: xhr => {
+                switch (xhr.status) {
+                    case 200:
+                        resolve(xhr);
+                        break;
+                    default:
+                        reject(xhr);
+                        break;
+                }
+            },
+            onabort: params => reject(params),
+            onerror: params => reject(params),
+            ontimeout: params => reject(params),
+        });
+    });
+}
+
+function add_to_container(string, type = 'normal') {
+    panel.messages.push({ text: string, type: type });
+
+    if (USER_SETTINGS.autoSlide)
+        document.querySelector('#container-answers').scrollBy(0, 1000);
+}
+
+function change_status(string) {
+    title.textContent = string;
 }
 
 function get_answer(answerElement, questionElement) {
@@ -596,156 +555,7 @@ function get_answer(answerElement, questionElement) {
 
 function get_order(questionElement) {
     let number = /\s*(\d*)/.exec(questionElement.querySelector('.test_number').textContent)[1];
-    add_to_container(number, 'normal');
-}
-
-async function retrieve_all_questions() {
-    let t = 3000;
-    for (let questionMain of document.querySelectorAll('.itemDiv')) {//都作为整体处理吧，这样事后还能自己做，有题干
-        let sendQuestionType = null
-            , sendQuestionId = ''
-            , sendQuestion = ''
-            , sendOptions = []
-            , sendAnswerId = ''
-            , sendAnswer = ''
-            , sendContext = ''
-            , sendFile = '';
-
-        if (questionMain.querySelector('a[href^="javascript:PlaySound"]')) {
-            sendQuestionType = 0;//听力选择题
-        }
-        else if (questionMain.querySelector('.col-md-8')) {
-            sendQuestionType = 1;//阅读理解选择题
-        }
-        else if (questionMain.querySelector('.test_sty_5')) {
-            sendQuestionType = 2;//小猫钓鱼(阅读理解填空题)
-        }
-        else if (questionMain.querySelector('.test_sty_6')) {
-            sendQuestionType = 3;//下拉排序选择题
-        }
-        else {
-            if (questionMain.querySelector('input[name^="rd"]')) {
-                sendQuestionType = 4;//普通选择题
-            }
-            // else if (questionMain.querySelector('.test_sty_5')) {
-            //     sendQuestionType = 5;//普通填空题——没遇到过
-            // }
-        }
-
-        switch (sendQuestionType) {
-            case 0://听力大题
-                {
-                    let mainAudio = questionMain.querySelector('a[href^="javascript:PlaySound"]');
-                    let mainAudioFile = /'(.*?)'/.exec(mainAudio.getAttribute('href'))[1];
-                    sendContext = 'https://courseres.sflep.com/Test/ItemRes/sound/' + mainAudioFile;
-                    mainAudio.querySelector('span').textContent = "无限次播放机会";
-                    mainAudio.addEventListener('click', async () => {
-                        PlaySound(mainAudioFile);
-                        await sleep(100);
-                        mainAudio.querySelector('span').textContent = "无限次播放机会";
-                    }, false);
-
-                }
-
-                for (let questionElement of questionMain.querySelectorAll('.test_hov')) {
-                    await sleep(t);
-
-                    let questionAudio = questionElement.querySelector('a[href^="javascript:PlaySound"]');
-                    let questionAudioFile = /'(.*?)'/.exec(questionAudio.getAttribute('href'))[1];
-                    questionAudio.querySelector('span').textContent = "无限次播放机会";
-                    questionAudio.addEventListener('click', async () => {
-                        PlaySound(questionAudioFile);
-                        await sleep(100);
-                        questionAudio.querySelector('span').textContent = "无限次播放机会";
-                    }, false);
-
-                    let questionId = questionElement.querySelector('input[name^="rd"][id$="_1"]').getAttribute('name');
-                    let question = 'https://courseres.sflep.com/Test/ItemRes/sound/' + questionAudioFile;
-
-                    let answerElement = questionElement.querySelector('[class*="answer"]');
-                    let [options, answerId, answer] = get_answer(answerElement, questionElement);
-
-                    get_order(questionElement);
-                    simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext);
-                }
-                break;
-
-            case 1://阅读理解
-                sendContext = questionMain.querySelector('.col-md-8').textContent.replace(/(.*?)following passage./, '').trim();
-
-                for (let questionElement of questionMain.querySelectorAll('.col-md-4 .test_hov')) {
-                    await sleep(t);
-
-                    let questionId = questionElement.querySelector('input[id^="rd"][id$="_1"]').getAttribute('name');
-                    let question = questionElement.querySelector('div').textContent.replace(/\d*\.\s*/, '');
-
-                    let answerElement = questionElement.nextElementSibling;
-                    let [options, answerId, answer] = get_answer(answerElement, questionElement);
-
-                    let sendFile = questionId.replace(/_.*$/, '');//用sendFile作为对同一段原文的标识
-
-                    get_order(questionElement);
-                    simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext, sendFile);
-                }
-                break;
-
-            case 2://小猫钓鱼
-                await sleep(t);
-                sendContext = questionMain.querySelector(".test_sty_3").textContent.trim();
-
-                for (let option of questionMain.querySelectorAll('.test_sty_5 span')) {
-                    sendOptions.push(option.textContent);
-                }
-
-                {
-                    let answerElement = questionMain.querySelector('[class*="answer"]');
-                    if (answerElement) {
-                        sendAnswer = answerElement.textContent.replace(/.*：\s*/, '');
-                    }
-                }
-
-                sendQuestionId = questionMain.querySelector('input[id^="txt_"][id$="_1"]').getAttribute('id').replace(/_1$/, '');
-
-                simple_request(sendQuestionType, sendQuestionId, '', sendOptions, '', sendAnswer, sendContext);
-                break;
-
-            case 3://下拉排序
-                sendContext = questionMain.querySelector('.test_sty_6').textContent.trim();
-
-                for (let questionElement of questionMain.querySelectorAll('.form-inline')) {
-                    await sleep(t);
-
-                    let answer = '';
-                    let answerElement = questionMain.querySelector('[class*="answer"]');
-                    if (answerElement) {
-                        answer = questionElement.nextElementSibling.textContent.replace(/(.*?)：\s*/, '');
-                    }
-
-                    let question = questionElement.textContent.replace(/\d*\.\s*(\w*?)J/, '');
-                    let questionId = questionElement.querySelector('select[id^="sl"]').getAttribute('id');
-                    let sendFile = questionId.replace(/_.{1,3}$/, '');//用sendFile作为对同一段原文的标识
-
-                    get_order(questionElement);
-                    simple_request(sendQuestionType, questionId, question, [], '', answer, sendContext, sendFile);
-                }
-                break;
-
-            case 4://普通选择
-                for (let questionElement of questionMain.querySelectorAll('.test_hov')) {
-                    await sleep(t);
-
-                    let questionId = questionElement.querySelector('input[name^="rd"][id$="_1"]').getAttribute('name');
-                    let question = questionElement.querySelector('div').textContent.replace(/\d*\.\s*/, '');
-
-                    let answerElement = questionElement.querySelector('[class*="answer"]');
-                    let [options, answerId, answer] = get_answer(answerElement, questionElement);
-
-                    get_order(questionElement);
-                    simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext);
-                }
-                break;
-        }
-    }
+    add_to_container(number);
 }
 
 function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuestion = '', sendOptions = [],
@@ -762,39 +572,28 @@ function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuesti
     }
 
     add_to_container(sendQuestion, 'normal');
-    GM_xmlhttpRequest({
-        // url: 'http://localhost:8000/welearn/query/',
-        url: 'http://47.97.90.127:8000/welearn/query/',
+    // request('http://localhost:8000/12345', {
+    request('http://47.97.90.127:8000/welearn/query/', {
         method: 'POST',
-        headers: {},
-        data: JSON.stringify({
+        body: JSON.stringify({
             "questionId": sendQuestionId,
             "question": sendQuestion,
             'queryType': 1,
-        }),
-        timeout: 5000,
-        onload: xhr => {
-            if (xhr.status == 200) {
-                let returnJson = JSON.parse(xhr.responseText);
-                parse_ajax_response(returnJson);
-                if (returnJson.status != 3)
-                    full_post(sendQuestionType, sendQuestionId, sendQuestion, sendOptions,
-                        sendAnswerId, sendAnswer, sendContext, sendFile, queryType);
-            }
-        },
-        onerror: () => { add_to_container('查询失败，过段时间再试', 'error'); },
-        ontimeout: () => { add_to_container('查询超时，过段时间再试', 'error'); },
-    });
+        })
+    }).then(xhr => {
+        let returnJson = JSON.parse(xhr.responseText);
+        parse_ajax_response(returnJson);
+        if (returnJson.status != 3)
+            full_post(sendQuestionType, sendQuestionId, sendQuestion, sendOptions,
+                sendAnswerId, sendAnswer, sendContext, sendFile, queryType);
+    }).catch(() => add_to_container('请求/网络异常，稍后再试', 'error'));
 }
 
 function full_post(sendQuestionType = null, sendQuestionId = '', sendQuestion = '', sendOptions = [],
     sendAnswerId = '', sendAnswer = '', sendContext = '', sendFile = '', queryType = 0) {
-    GM_xmlhttpRequest({
-        // url: 'http://localhost:8000/welearn/query/',
-        url: 'http://47.97.90.127:8000/welearn/query/',
+    request('http://47.97.90.127:8000/welearn/query/', {
         method: 'POST',
-        headers: {},
-        data: JSON.stringify({//一次传一道题，或者一次传一个列表
+        body: JSON.stringify({//一次传一道题，或者一次传一个列表
             "questionType": sendQuestionType,
             "questionId": sendQuestionId,
             "question": sendQuestion,
@@ -806,36 +605,20 @@ function full_post(sendQuestionType = null, sendQuestionId = '', sendQuestion = 
             'account': USER_SETTINGS.userAccount,
             'queryType': 0,
         }),
-        timeout: 5000,
-        onload: xhr => {
-            if (xhr.status == 200) {
-                parse_ajax_response(JSON.parse(xhr.responseText));
-            }
-        },
-        onerror: () => { add_to_container('查询失败，过段时间再试', 'error'); },
-        ontimeout: () => { add_to_container('查询超时，过段时间再试', 'error'); },
-    });
+    }).then(xhr => parse_ajax_response(JSON.parse(xhr.responseText))
+    ).catch(() => add_to_container('请求/网络异常，稍后再试', 'error'));
 }
 
 function send_comment(string) {
-    GM_xmlhttpRequest({
-        url: 'http://47.97.90.127:8000/welearn/comment/',
-        method: 'POST',//47.97.90.127
-        headers: {},
-        data: JSON.stringify({
+    request('http://47.97.90.127:8000/welearn/comment/', {
+        method: 'POST',
+        body: JSON.stringify({
             "message": string,
             'account': USER_SETTINGS.userAccount,
             "time": Date()
-        }),
-        timeout: 5000,
-        onload: xhr => {
-            if (xhr.status == 200) {
-                add_to_container('留言成功', 'info');
-            }
-        },
-        onerror: () => { add_to_container('留言失败，过段时间再试', 'error'); },
-        ontimeout: () => { add_to_container('留言超时，过段时间再试', 'error'); },
-    });
+        })
+    }).then(add_to_container('留言成功', 'info')
+    ).catch(() => add_to_container('请求/网络异常，稍后再试', 'error'));
 }
 
 function parse_ajax_response(json) {
@@ -872,7 +655,7 @@ function parse_ajax_response(json) {
     let answer = json.answer;
     switch (json.status) {
         case 3:
-            add_to_container(answer, 'answer');
+            add_to_container(answer, 'success');
             break;
         case 4:
         //fallthrough
@@ -881,93 +664,302 @@ function parse_ajax_response(json) {
             break;
         case 6:
             for (let [option, possibility] of Object.entries(answer)) {
-                add_to_container(`${possibility} ${option}`, 'answer');
+                add_to_container(`${possibility} ${option}`, 'success');
             }
     }
-    //if 小猫钓鱼
-    //auto_handle(json.answerId)
 
-    if (answers.lastElementChild.textContent) {//前一条消息为空不添加
-        let hr = document.createElement('hr');
-        answers.appendChild(hr);
-    }
+    if (panel.messages)
+        if (panel.messages[panel.messages.length - 1].text) //前一条消息为空不添加
+            add_to_container('', 'hr');
 }
 
-function add_to_container(string, type = 'normal') {
-    let div = document.createElement('div');
-    div.classList.add('container-message');
-    div.textContent = string;
+let panel = new Vue({
+    el: '#app',
+    data: {
+        messages: [],
+    },
+    methods: {
+        retrieve_all_questions: async function () {
+            this.messages = [];
+            let t = 3000;
+            for (let questionMain of document.querySelectorAll('.itemDiv')) {//都作为整体处理吧，这样事后还能自己做，有题干
+                let sendQuestionType = null
+                    , sendQuestionId = ''
+                    , sendQuestion = ''
+                    , sendOptions = []
+                    , sendAnswerId = ''
+                    , sendAnswer = ''
+                    , sendContext = ''
+                    , sendFile = '';
 
-    let color = '';
-    switch (type) {
-        case 'normal':
-            break;
-        case 'answer':
-            color = 'green';
-            break;
-        case 'error':
-            color = 'red';
-            break;
-        case 'info':
-            color = 'blue';
-            break;
-    }
-    div.style.color = color;
+                if (questionMain.querySelector('a[href^="javascript:PlaySound"]')) {
+                    sendQuestionType = 0;//听力选择题
+                }
+                else if (questionMain.querySelector('.col-md-8')) {
+                    sendQuestionType = 1;//阅读理解选择题
+                }
+                else if (questionMain.querySelector('.test_sty_5')) {
+                    sendQuestionType = 2;//小猫钓鱼(阅读理解填空题)
+                }
+                else if (questionMain.querySelector('.test_sty_6')) {
+                    sendQuestionType = 3;//下拉排序选择题
+                }
+                else {
+                    if (questionMain.querySelector('input[name^="rd"]')) {
+                        sendQuestionType = 4;//普通选择题
+                    }
+                    // else if (questionMain.querySelector('.test_sty_5')) {
+                    //     sendQuestionType = 5;//普通填空题——没遇到过
+                    // }
+                }
 
-    //if(string=='播放xx')
-    div.addEventListener('click', () => {
-        if (USER_SETTINGS.autoCopy)
-            GM_setClipboard(div.textContent, 'text');
-    }, false);
+                switch (sendQuestionType) {
+                    case 0://听力大题
+                        {
+                            let mainAudio = questionMain.querySelector('a[href^="javascript:PlaySound"]');
+                            let mainAudioFile = /'(.*?)'/.exec(mainAudio.getAttribute('href'))[1];
+                            sendContext = 'https://courseres.sflep.com/Test/ItemRes/sound/' + mainAudioFile;
+                            mainAudio.querySelector('span').textContent = "无限次播放机会";
+                            mainAudio.addEventListener('click', async () => {
+                                PlaySound(mainAudioFile);
+                                await sleep(100);
+                                mainAudio.querySelector('span').textContent = "无限次播放机会";
+                            }, false);
 
-    answers.appendChild(div);
-    if (USER_SETTINGS.autoSlide)
-        answers.scrollBy(0, 1000);
-}
+                        }
 
-function change_status(string) {
-    title.textContent = string;
-}
+                        for (let questionElement of questionMain.querySelectorAll('.test_hov')) {
+                            await sleep(t);
 
-function initial_request() {
-    update_version();
-    update_points();
-}
+                            let questionAudio = questionElement.querySelector('a[href^="javascript:PlaySound"]');
+                            let questionAudioFile = /'(.*?)'/.exec(questionAudio.getAttribute('href'))[1];
+                            questionAudio.querySelector('span').textContent = "无限次播放机会";
+                            questionAudio.addEventListener('click', async () => {
+                                PlaySound(questionAudioFile);
+                                await sleep(100);
+                                questionAudio.querySelector('span').textContent = "无限次播放机会";
+                            }, false);
 
-function update_version() {
-    GM_xmlhttpRequest({
-        url: 'http://47.97.90.127:8000/welearn/version/',
-        method: 'POST',//47.97.90.127
-        headers: {},
-        data: '',
-        timeout: 5000,
-        onload: xhr => {
-            if (xhr.status == 200) {
-                xhr.responseText > USER_SETTINGS.version ? change_status('有新发布版本') : change_status('已是最新版本');
+                            let questionId = questionElement.querySelector('input[name^="rd"][id$="_1"]').getAttribute('name');
+                            let question = 'https://courseres.sflep.com/Test/ItemRes/sound/' + questionAudioFile;
+
+                            let answerElement = questionElement.querySelector('[class*="answer"]');
+                            let [options, answerId, answer] = get_answer(answerElement, questionElement);
+
+                            get_order(questionElement);
+                            simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext);
+                        }
+                        break;
+
+                    case 1://阅读理解
+                        sendContext = questionMain.querySelector('.col-md-8').textContent.replace(/(.*?)following passage./, '').trim();
+
+                        for (let questionElement of questionMain.querySelectorAll('.col-md-4 .test_hov')) {
+                            await sleep(t);
+
+                            let questionId = questionElement.querySelector('input[id^="rd"][id$="_1"]').getAttribute('name');
+                            let question = questionElement.querySelector('div').textContent.replace(/\d*\.\s*/, '');
+
+                            let answerElement = questionElement.nextElementSibling;
+                            let [options, answerId, answer] = get_answer(answerElement, questionElement);
+
+                            let sendFile = questionId.replace(/_.*$/, '');//用sendFile作为对同一段原文的标识
+
+                            get_order(questionElement);
+                            simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext, sendFile);
+                        }
+                        break;
+
+                    case 2://小猫钓鱼
+                        await sleep(t);
+                        sendContext = questionMain.querySelector(".test_sty_3").textContent.trim();
+
+                        for (let option of questionMain.querySelectorAll('.test_sty_5 span')) {
+                            sendOptions.push(option.textContent);
+                        }
+
+                        {
+                            let answerElement = questionMain.querySelector('[class*="answer"]');
+                            if (answerElement) {
+                                sendAnswer = answerElement.textContent.replace(/.*：\s*/, '');
+                            }
+                        }
+
+                        sendQuestionId = questionMain.querySelector('input[id^="txt_"][id$="_1"]').getAttribute('id').replace(/_1$/, '');
+
+                        simple_request(sendQuestionType, sendQuestionId, '', sendOptions, '', sendAnswer, sendContext);
+                        break;
+
+                    case 3://下拉排序
+                        sendContext = questionMain.querySelector('.test_sty_6').textContent.trim();
+
+                        for (let questionElement of questionMain.querySelectorAll('.form-inline')) {
+                            await sleep(t);
+
+                            let answer = '';
+                            let answerElement = questionMain.querySelector('[class*="answer"]');
+                            if (answerElement) {
+                                answer = questionElement.nextElementSibling.textContent.replace(/(.*?)：\s*/, '');
+                            }
+
+                            let question = questionElement.textContent.replace(/\d*\.\s*(\w*?)J/, '');
+                            let questionId = questionElement.querySelector('select[id^="sl"]').getAttribute('id');
+                            let sendFile = questionId.replace(/_.{1,3}$/, '');//用sendFile作为对同一段原文的标识
+
+                            get_order(questionElement);
+                            simple_request(sendQuestionType, questionId, question, [], '', answer, sendContext, sendFile);
+                        }
+                        break;
+
+                    case 4://普通选择
+                        for (let questionElement of questionMain.querySelectorAll('.test_hov')) {
+                            await sleep(t);
+
+                            let questionId = questionElement.querySelector('input[name^="rd"][id$="_1"]').getAttribute('name');
+                            let question = questionElement.querySelector('div').textContent.replace(/\d*\.\s*/, '');
+
+                            let answerElement = questionElement.querySelector('[class*="answer"]');
+                            let [options, answerId, answer] = get_answer(answerElement, questionElement);
+
+                            get_order(questionElement);
+                            simple_request(sendQuestionType, questionId, question, options, answerId, answer, sendContext);
+                        }
+                        break;
+                }
             }
         },
-        onerror: () => { add_to_container('查询版本失败', 'error'); },
-        ontimeout: () => { add_to_container('查询版本超时', 'error'); },
-    });
-}
-
-function update_points() {
-    GM_xmlhttpRequest({
-        url: 'http://47.97.90.127:8000/welearn/user/',
-        method: 'POST',//47.97.90.127
-        headers: {},
-        data: JSON.stringify({
-            'account': USER_SETTINGS.userAccount,
-        }),
-        timeout: 5000,
-        onload: xhr => {
-            if (xhr.status == 200) {
-                points.textContent = xhr.responseText;
-            }
+        auto_copy: function (text) {
+            if (USER_SETTINGS.autoCopy)
+                GM_setClipboard(text, 'text');
         },
-        onerror: () => { add_to_container('更新积分失败', 'error'); },
-        ontimeout: () => { add_to_container('更新积分超时', 'error'); },
-    });
-}
+        show_comment: function () {
+            let commentBase = document.createElement('div');
+            commentBase.id = 'container-comment-base';
+            commentBase.innerHTML = `
+                <textarea placeholder="期待大家的反馈，如果有任何问题，都可以给我留言，我会定期查看。最好留下联系方式，方便后续交流。"></textarea>
+            `;
+            swal({
+                title: "留言",
+                content: commentBase,
+                icon: "info",
+                button: "发送",
+            }).then(() => {
+                let message = commentBase.firstElementChild.value;
+                if (message) send_comment(message);
+            });
+        },
+        show_setting: function () {
+            let settingBase = document.querySelector('#container-setting-base');
+            settingBase.style.display = (settingBase.style.display == 'table') ? 'none' : 'table';
+        },
+    },
+});
 
-create_container();
+let settingApp = new Vue({
+    el: "#container-setting-base",
+    data: {
+        points: 0,
+        version:'0.0.6',
+    },
+    computed: {
+        sections: function () {
+            return [
+                {
+                    title: '用户设定',
+                    setting: [
+                        {
+                            id: 'userAccount',
+                            name: '用户账户',
+                            type: '',
+                            value: USER_SETTINGS.userAccount,
+                            description: '随意设定，累计每个人贡献的题目数量'
+                        },
+                        {
+                            id: 'userPoints',
+                            name: '账户积分',
+                            type: '',
+                            value: this.points,
+                            readonly: true,
+                            description: '上传答案获取，暂无用处'
+                        },]
+                }, {
+                    title: '辅助设定',
+                    setting: [
+                        {
+                            id: 'version',
+                            name: '脚本版本',
+                            type: '',
+                            value: this.version,
+                            readonly: true,
+                            description: '当前版本，如果有新版本，悬浮窗标题会显示'
+                        },
+                        {
+                            id: 'autoCopy',
+                            name: '自动复制',
+                            type: 'switch',
+                            value: USER_SETTINGS.autoCopy,
+                            description: '开启时，点击悬浮窗的对应消息自动复制到粘贴板'
+                        },
+                        {
+                            id: 'autoSlide',
+                            name: '自动下滑',
+                            type: 'switch',
+                            value: USER_SETTINGS.autoSlide,
+                            description: '有新消息时，窗口是否自动下滑到新消息处'
+                        },
+                        {
+                            id: 'debugMode',
+                            name: '调试模式',
+                            type: 'switch',
+                            value: USER_SETTINGS.debugMode,
+                            description: '调试用，正常使用不用开'
+                        },]
+                }
+            ];
+        }
+    },
+    methods: {
+        save_change: function () {//从DOM映射到存储
+            for (let input of document.querySelectorAll('#container-setting-base input')) {
+                if (input.value == "on") {
+                    USER_SETTINGS[input.id] = input.checked;
+                } else {
+                    USER_SETTINGS[input.id] = input.value;
+                }
+            }
+            GM_setValue('USER_SETTINGS', JSON.stringify(USER_SETTINGS));
+            location.reload(true);
+        },
+        update_version: function () {
+            request('http://47.97.90.127:8000/welearn/version/', {
+                method: 'POST',
+            }).then(xhr => xhr.responseText > this.version ? change_status('有新发布版本') : change_status('已是最新版本')
+            ).catch(() => add_to_container('请求/网络异常，稍后再试', 'error'));
+        },
+        update_points: function () {
+            request('http://47.97.90.127:8000/welearn/user/', {
+                method: 'POST',
+                body: JSON.stringify({ 'account': USER_SETTINGS.userAccount })
+            }).then(xhr => this.points = xhr.responseText
+            ).catch(() => add_to_container('请求/网络异常，稍后再试', 'error'));
+        },
+        slide_children: function (event) {
+            let e=event.target;
+            e.parentElement.querySelectorAll('.record').forEach(e => {
+                if (e.classList.contains('hidden')) {
+                    e.style.display = (e.style.display == "none") ? "" : "none";
+                } else {
+                    setTimeout(() => {
+                        e.style.display = (e.style.display == "none") ? "" : "none";
+                    }, 500);
+                }
+                e.classList.toggle('hidden');
+            });
+            e.querySelector('.arrow-down').classList.toggle('opened');
+        },
+    },
+    created: function () {
+        this.update_version();
+        this.update_points();
+    },
+});
