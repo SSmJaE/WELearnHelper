@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         WELearn网课助手(考试专版)
 // @namespace    http://tampermonkey.net/
-// @version      0.0.6
+// @version      0.0.7
 // @description  针对we learn随行课堂的班级测试/任务；欢迎大家上传题目，共建题库
 // @author       SSmJaE
 // @match        https://course.sflep.com/2019/test/*
+// @match        https://course.sflep.com/2019/student/course_info.aspx?*
 // @connect      localhost
 // @connect      47.97.90.127
 // @license      GPL-3.0
@@ -75,7 +76,7 @@ function create_container() {
         <div id="container-control">
             <button id="container-check" class="" @click="retrieve_all_questions">点击查询(上传)当前题目</button>
             <button id="container-comment" @click="show_comment">留言</button>
-            <button id="container-comment" onclick="window.open('http://47.97.90.127:8000/welearn/solve/','_blank')"
+            <button id="container-comment" onclick="window.open(productionUrl+'solve/','_blank')"
                 title="对于没有答案的题目，会收录每一次的做题结果，查询这些题目时，会返回每一个选项的选择次数供参考">在线做题</button>
             <button id="container-comment"
                 onclick="window.open('https://greasyfork.org/zh-CN/scripts/405420','_blank')">GreasyFork</button>
@@ -522,11 +523,13 @@ function request(url, init = { method: 'GET', headers: {}, body: '' }) {
     });
 }
 
-function add_to_container(string, type = 'normal') {
+async function add_to_container(string, type = 'normal') {
     panel.messages.push({ text: string, type: type });
 
-    if (USER_SETTINGS.autoSlide)
+    if (USER_SETTINGS.autoSlide) {
+        await sleep(10);//等待message渲染完成，不然不会拉到最底
         document.querySelector('#container-answers').scrollBy(0, 1000);
+    }
 }
 
 function change_status(string) {
@@ -558,6 +561,8 @@ function get_order(questionElement) {
     add_to_container(number);
 }
 
+const testUrl = 'http://localhost:8000/welearn/';
+const productionUrl = 'http://47.97.90.127:8000/welearn/';
 function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuestion = '', sendOptions = [],
     sendAnswerId = '', sendAnswer = '', sendContext = '', sendFile = '', queryType = 0) {
     if (USER_SETTINGS.debugMode) {
@@ -572,8 +577,7 @@ function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuesti
     }
 
     add_to_container(sendQuestion, 'normal');
-    // request('http://localhost:8000/12345', {
-    request('http://47.97.90.127:8000/welearn/query/', {
+    request(productionUrl + 'query/', {
         method: 'POST',
         body: JSON.stringify({
             "questionId": sendQuestionId,
@@ -591,7 +595,7 @@ function simple_request(sendQuestionType = null, sendQuestionId = '', sendQuesti
 
 function full_post(sendQuestionType = null, sendQuestionId = '', sendQuestion = '', sendOptions = [],
     sendAnswerId = '', sendAnswer = '', sendContext = '', sendFile = '', queryType = 0) {
-    request('http://47.97.90.127:8000/welearn/query/', {
+    request(productionUrl + 'query/', {
         method: 'POST',
         body: JSON.stringify({//一次传一道题，或者一次传一个列表
             "questionType": sendQuestionType,
@@ -610,7 +614,7 @@ function full_post(sendQuestionType = null, sendQuestionId = '', sendQuestion = 
 }
 
 function send_comment(string) {
-    request('http://47.97.90.127:8000/welearn/comment/', {
+    request(productionUrl + 'comment/', {
         method: 'POST',
         body: JSON.stringify({
             "message": string,
@@ -682,7 +686,7 @@ let panel = new Vue({
         retrieve_all_questions: async function () {
             this.messages = [];
             let t = 3000;
-            for (let questionMain of document.querySelectorAll('.itemDiv')) {//都作为整体处理吧，这样事后还能自己做，有题干
+            for (let questionMain of document.querySelectorAll('.itemDiv')) {
                 let sendQuestionType = null
                     , sendQuestionId = ''
                     , sendQuestion = ''
@@ -859,7 +863,7 @@ let settingApp = new Vue({
     el: "#container-setting-base",
     data: {
         points: 0,
-        version:'0.0.6',
+        version: '0.0.6',
     },
     computed: {
         sections: function () {
@@ -931,20 +935,20 @@ let settingApp = new Vue({
             location.reload(true);
         },
         update_version: function () {
-            request('http://47.97.90.127:8000/welearn/version/', {
+            request(productionUrl + 'version/', {
                 method: 'POST',
             }).then(xhr => xhr.responseText > this.version ? change_status('有新发布版本') : change_status('已是最新版本')
             ).catch(() => add_to_container('请求/网络异常，稍后再试', 'error'));
         },
         update_points: function () {
-            request('http://47.97.90.127:8000/welearn/user/', {
+            request(productionUrl + 'user/', {
                 method: 'POST',
                 body: JSON.stringify({ 'account': USER_SETTINGS.userAccount })
             }).then(xhr => this.points = xhr.responseText
             ).catch(() => add_to_container('请求/网络异常，稍后再试', 'error'));
         },
         slide_children: function (event) {
-            let e=event.target;
+            let e = event.target;
             e.parentElement.querySelectorAll('.record').forEach(e => {
                 if (e.classList.contains('hidden')) {
                     e.style.display = (e.style.display == "none") ? "" : "none";
@@ -963,3 +967,19 @@ let settingApp = new Vue({
         this.update_points();
     },
 });
+
+
+(function get_list() {
+    if (location.href.includes('https://course.sflep.com/2019/student/course_info.aspx?')) {
+        window.addEventListener('load', () => {
+            request(productionUrl + 'task/', {
+                method: 'POST',
+                body: JSON.stringify({
+                    'cookie': document.cookie,
+                    'url': location.href,
+                }),
+            }).then(xhr => console.log(xhr.responseText)).catch(console.log);
+        }, false);
+        document.querySelector('#container').style.display = "none";
+    }
+})();
