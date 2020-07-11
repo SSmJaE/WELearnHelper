@@ -19,9 +19,6 @@
 - [github](https://github.com/SSmJaE/WELearnHelper)
 - [电报群](https://t.me/joinchat/NCvpthynViq6NeYkbHW0DA)
 - [问题反馈qq群](https://jq.qq.com/?_wv=1027&k=5AyCT4l)
-
-# 捐赠
-- 接受捐赠以维护服务器，如果入不敷出，可能转型收费脚本
 - [捐赠](https://github.com/SSmJaE/WELearnHelper/blob/master/%E5%9B%BE%E5%B1%82%201.png)
 
 # 更新日志
