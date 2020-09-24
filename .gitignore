@@ -1,3 +1,6 @@
-/docs/*
-/dist/*
 /node_modules/
+/dist/*
+/自用/
+
+# /docs/*
+# !/docs/CHANGELOG.md
