@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "strict": true,
+        "experimentalDecorators": true,
+        "allowJs": true,
+        "sourceMap": true,
+        "outDir": "./dist/",
+        "baseUrl": ".",
+        "paths": {
+            "@assets/*": [
+                "assets/*"
+            ],
+            "@src/*": [
+                "src/*"
+            ],
+            "@plugins/*": [
+                "src/plugins/*"
+            ],
+            "@utils/*": [
+                "src/utils/*"
+            ],
+        }
+    },
+}
