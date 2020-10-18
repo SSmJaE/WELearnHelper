@@ -109,66 +109,24 @@ export function returnDefaultValues() {
 
 //*-----------------------------------------------------------------------------------
 
-// 判断设置按钮显示在窗口上，还是在侧边栏上
+import { appendToSideBar } from "@utils/common";
+
+//判断设置按钮显示在窗口上，还是在侧边栏上
 //仅在练习页面注册，考试页面不执行
 if (
     location.href.includes("course.sflep.com/") &&
     !location.href.includes("course.sflep.com/2019/test/")
 ) {
-    try {
-        let settingButton = document.createElement("span");
-        settingButton.id = "sidebar-setting-button";
-        settingButton.className = "iconfont icon-setting";
-        settingButton.innerHTML = `<a>助手</a>`;
+    const settingButton = appendToSideBar(
+        "sidebar-setting-button",
+        "iconfont icon-setting",
+        "助手",
+    ) as HTMLSpanElement;
 
-        settingButton.onclick = () => {
-            let settingBase = top.frames[0].document.querySelector(
-                "#container-setting-base",
-            ) as HTMLElement;
-            settingBase.style.display = settingBase.style.display == "table" ? "none" : "table";
-        };
-
-        let settingStyle = document.createElement("style");
-        settingStyle.setAttribute("type", "text/css");
-        settingStyle.innerHTML = `
-        #sidebar-setting-button {
-            color: white;
-            z-index: 100;
-            font-size: 23px;
-            cursor: pointer;
-            position: relative;
-            left: 15px;
-            top: 5px;
-            text-align: center; 
-        }
-
-        #sidebar-setting-button:hover {
-            color: rgb(0,230,227);
-            background: #3b3b3b 100px 100px;
-        }
-        
-        #sidebar-setting-button a { 
-            color: #494949; 
-            font-size: 14px; 
-            line-height: 20px;
-            position: relative;
-            left: -15px;
-        }
-
-        #sidebar-setting-button:hover a {
-            color: #ccc;
-        }
-        `;
-
-        document.querySelector(".courseware_sidebar_2 ul.c_s_2 li")!.appendChild(settingButton);
-        document.body.append(settingStyle);
-
-        //可以跨域添加元素，但是无法跨域操作元素
-        // (top.frames[0].document.querySelector(
-        //     "container-setting-button",
-        // ) as HTMLElement).style.display = "none";
-        //todo 还是说，必须要分成两步？不然解释不了为什么上方可以修改style
-    } catch (error) {
-        console.log(error);
-    }
+    settingButton.onclick = () => {
+        let settingBase = top.frames[0].document.querySelector(
+            "#container-setting-base",
+        ) as HTMLElement;
+        settingBase.style.display = settingBase.style.display == "table" ? "none" : "table";
+    };
 }

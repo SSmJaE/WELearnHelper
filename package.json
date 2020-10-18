@@ -1,7 +1,7 @@
 {
-  "name": "welearn_helper_exam",
-  "version": "0.1.0",
-  "description": "welearn网课助手(考试专版)",
+  "name": "welearn_helper",
+  "version": "0.8.1",
+  "description": "welearn网课助手",
   "private": true,
   "scripts": {
     "watch": "webpack --watch --config webpack.dev.babel.js",

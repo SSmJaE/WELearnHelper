@@ -13,7 +13,7 @@ if (/centercourseware\.sflep\.com/.test(location.href)) {
                 html: `
                 <div style="text-align: left;">
                     <li>本脚本仅供个人学习交流使用，勿用于任何违法与商业行为</li>
-                    <li>本脚本完全开源免费，基于GPL3.0，欢迎一起<a href="https://github.com/SSmJaE/WELearnHelper">开发</a></li>
+                    <li>本脚本完全开源免费，基于GPL3.0，欢迎一起<a href="https://github.com/SSmJaE/WELearnHelper" target="_blank">开发</a></li>
                     <li>因使用本脚本造成的任何问题，均由使用者本人承担</li>
                     <li>反馈问题请带截图 + 题目链接 + 具体描述</li>
                 </div>
@@ -30,9 +30,9 @@ if (/centercourseware\.sflep\.com/.test(location.href)) {
                         html: `
                         <div style="text-align: left;">
                             <li>此处仅包含部分使用方法，详情请自行阅读安装页面</li>
-                            <li>点击左下角齿轮进行功能设定</li>
-                            <li>左键按住“参考文本”方可拖动答案</li>
-                            <li>双击“参考文本”折叠悬浮窗</li>
+                            <li>点击齿轮进行功能设定</li>
+                            <li>左键按住“WELearn Helper”方可拖动悬浮窗</li>
+                            <li>双击“WELearn Helper”展开悬浮窗</li>
                         </div>
                         `,
                         icon: "info",

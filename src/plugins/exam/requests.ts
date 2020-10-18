@@ -93,7 +93,7 @@ export class Requests {
         addMessage("留言成功", "info");
     }
 
-    @requestErrorHandler()
+    // @requestErrorHandler()
     static async initial() {
         const response = await request("/initial/", {
             method: "POST",
@@ -104,7 +104,7 @@ export class Requests {
         addMessage((response.response as any).message, "info");
     }
 
-    @requestErrorHandler()
+    // @requestErrorHandler()
     static async updatePoints() {
         const response = await request("/user/", {
             method: "POST",

@@ -42,8 +42,8 @@ if (process.env.NODE_ENV === "development") {
     BASE_URL = "http://localhost:8000/api/welearn";
     DEBUG_MODE = true;
 } else {
-    BASE_URL = "http://localhost:8000/api/welearn";
-    // BASE_URL = "http://47.97.90.127/api/welearn";
+    // BASE_URL = "http://localhost:8000/api/welearn";
+    BASE_URL = "http://47.97.90.127/api/welearn";
     DEBUG_MODE = false;
 }
 

@@ -13,7 +13,7 @@ import "./initial";
 
 import { makeDraggable } from "./utils/common";
 
-import Vue from "vue";
+// import Vue from "vue";
 
 import Ripple from "vue-ripple-directive";
 Vue.directive("ripple", Ripple);

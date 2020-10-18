@@ -1,6 +1,7 @@
 /node_modules/
 /dist/*
 /自用/
+/src/plugins/onetap/*
 
 # /docs/*
 # !/docs/CHANGELOG.md

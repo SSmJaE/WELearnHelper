@@ -11,6 +11,20 @@
       "font_class": "setting",
       "unicode": "e605",
       "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "7617413",
+      "name": "重置",
+      "font_class": "zhongzhi",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "16840400",
+      "name": "火箭",
+      "font_class": "huojian",
+      "unicode": "e719",
+      "unicode_decimal": 59161
     }
   ]
 }

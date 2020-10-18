@@ -111,3 +111,64 @@ export function requestErrorHandler(message: string = "请求异常，稍后再�
         return descriptor;
     };
 }
+
+/**
+ * 注册按钮至侧边栏，class应为iconfont class
+ */
+export function appendToSideBar(id: string, className: string, name: string) {
+    try {
+        if (!document.querySelector("sidebar-button-style")) {
+            let buttonStyle = document.createElement("style");
+            buttonStyle.id = "sidebar-button-style";
+            buttonStyle.setAttribute("type", "text/css");
+            buttonStyle.innerHTML = `
+            .courseware_sidebar_2 .sidebar-button {
+                color: white;
+                z-index: 100;
+                font-size: 23px;
+                cursor: pointer;
+                position: relative;
+                left: 15px;
+                top: 5px;
+                text-align: center; 
+            }
+
+            .courseware_sidebar_2 .sidebar-button:hover {
+                color: rgb(0,230,227);
+                background: #3b3b3b 100px 100px;
+            }
+            
+            .courseware_sidebar_2 .sidebar-button a { 
+                color: #494949; 
+                font-size: 14px; 
+                line-height: 20px;
+                position: relative;
+                left: -15px;
+            }
+
+            .courseware_sidebar_2 .sidebar-button:hover a {
+                color: #ccc;
+            }
+            `;
+
+            document.body.append(buttonStyle);
+        }
+
+        let button = document.createElement("span");
+        button.id = `${id}`;
+        button.className = `sidebar-button ${className}`;
+        button.innerHTML = `<a>${name}</a>`;
+
+        document.querySelector(".courseware_sidebar_2 ul.c_s_2 li")!.appendChild(button);
+
+        return button;
+
+        //可以跨域添加元素，但是无法跨域操作元素
+        // (top.frames[0].document.querySelector(
+        //     "container-setting-button",
+        // ) as HTMLElement).style.display = "none";
+        //todo 还是说，必须要分成两步？不然解释不了为什么上方可以修改style
+    } catch (error) {
+        console.log(error);
+    }
+}

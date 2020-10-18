@@ -1,7 +1,8 @@
 import { Global } from "@src/global";
+import { sleep } from "@utils/common";
 import Swal from "sweetalert2";
 
-export function autoRefresh() {
+export async function autoRefresh() {
     let time = Date.now();
     let buffer = time;
     function generate_random_float() {
@@ -9,7 +10,7 @@ export function autoRefresh() {
         if (Global.USER_SETTINGS.randomRefresh) {
             rate = Math.random();
             let currentRate =
-                Global.USER_SETTINGS.refreshInterval / Global.USER_SETTINGS.refreshIntervalMax;
+                Global.USER_SETTINGS.refreshIntervalMin / Global.USER_SETTINGS.refreshIntervalMax;
             if (rate < currentRate) rate = currentRate;
         }
         if (Global.USER_SETTINGS.debugMode) {
@@ -31,7 +32,7 @@ export function autoRefresh() {
                 '[href="javascript:NextSCO();"]',
             ) as HTMLLinkElement;
 
-            console.log(currentNext, currentButton);
+            console.error(currentNext, currentButton);
             if (currentButton == jumpButtons[jumpButtons.length - 1]) {
                 if (Global.USER_SETTINGS.loopRefresh) jumpButtons[1].click(); //跳到开头，并跳过可能的课程说明页
             } else {
@@ -41,7 +42,9 @@ export function autoRefresh() {
         }, Global.USER_SETTINGS.refreshIntervalMax * generate_random_float() * 60 * 1000);
     }
 
-    if (Global.USER_SETTINGS.autoRefresh) {
+    await sleep(2000);//等待应用完全加载，不然可能获取不到USER_SETTINGS
+
+    if (Global.USER_SETTINGS.autoRefresh === true) {
         recur();
         let status = eval(GM_getValue("hasInformed", "false"));
         if (!status) {
