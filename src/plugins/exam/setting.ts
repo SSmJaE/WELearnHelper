@@ -1,4 +1,4 @@
-export default [
+const SETTINGS: SectionSetting[] = [
     {
         title: "考试",
         display: true,
@@ -13,3 +13,5 @@ export default [
         ],
     },
 ];
+
+export default SETTINGS;

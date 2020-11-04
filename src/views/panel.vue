@@ -20,6 +20,10 @@
       ></my-button>
       <!-- <my-button label="test" @click="test"></my-button> -->
       <my-button label="折叠" @click="collapsePanel()"></my-button>
+      <my-button
+        label="交流群"
+        onclick="window.open('https://jq.qq.com/?_wv=1027&k=5AyCT4l','_blank')"
+      ></my-button>
     </div>
     <div id="container-messages">
       <div
@@ -40,7 +44,7 @@
 /* global GM_setClipboard */
 import Swal from "sweetalert2";
 
-import { Global } from "./global";
+import { Global } from "../global";
 import { retrieveAllQuestions, Requests } from "@plugins/index";
 
 import Button from "./components/button";

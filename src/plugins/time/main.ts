@@ -1,5 +1,4 @@
 import { Global } from "@src/global";
-import { sleep } from "@utils/common";
 import Swal from "sweetalert2";
 
 export async function autoRefresh() {
@@ -41,8 +40,6 @@ export async function autoRefresh() {
             recur();
         }, Global.USER_SETTINGS.refreshIntervalMax * generate_random_float() * 60 * 1000);
     }
-
-    await sleep(2000);//等待应用完全加载，不然可能获取不到USER_SETTINGS
 
     if (Global.USER_SETTINGS.autoRefresh === true) {
         recur();

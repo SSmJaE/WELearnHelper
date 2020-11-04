@@ -2,24 +2,39 @@ import "@assets/iconfont/iconfont.css";
 
 //设置应该是最先导入的，有很多功能都是基于设置动态变化的
 import { Global, DEBUG_MODE } from "./global";
-import { controlCenter, setDefaultValues } from "./settings";
+import { controlCenter, setDefaultValues, mergeSettings } from "./settings";
 
-if (!DEBUG_MODE) {
-    Global.USER_SETTINGS = JSON.parse(GM_getValue("USER_SETTINGS", "{}"));
-    setDefaultValues(controlCenter);
-}
+(async () => {
+    //每次启动都会初始化USER_SETTINGS，所以需要先集成所有设置，因为是根据设置设定前者的默认值
+    const { pluginSettings } = await import("./plugins/index");
+    mergeSettings(controlCenter, pluginSettings);
 
+    await new Promise((resolve) => {
+        if (!DEBUG_MODE) {
+            Global.USER_SETTINGS = JSON.parse(GM_getValue("USER_SETTINGS", "{}"));
+            setDefaultValues(controlCenter);
+        }
+        resolve();
+    });
+
+    //应用所有插件的初始化执行
+    import("@plugins/initial");
+})();
+
+//应用全局初始化
 import "./initial";
 
-import { makeDraggable } from "./utils/common";
-
 // import Vue from "vue";
+// 通过cdn载入，不打包
 
+//注册vue水波纹效果
 import Ripple from "vue-ripple-directive";
 Vue.directive("ripple", Ripple);
 
-import Panel from "./panel.vue";
-import Setting from "./setting.vue";
+import { makeDraggable } from "./utils/common";
+
+import Panel from "./views/panel.vue";
+import Setting from "./views/setting.vue";
 
 if (
     location.href.includes("centercourseware.sflep.com") || //练习答题页面

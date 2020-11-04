@@ -68,8 +68,8 @@
 
 import Switch from "./components/switch";
 
-import { Global, VERSION } from "./global";
-import { controlCenter, returnDefaultValues } from "./settings";
+import { Global, VERSION } from "../global";
+import { controlCenter, returnDefaultValues } from "../settings";
 import { Requests } from "@plugins/index";
 
 export default {

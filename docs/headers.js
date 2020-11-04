@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         WELearn网课助手
-// @description  显示WE Learn随行课堂题目答案，口语&听力参考；支持班级测试；自动答题；开放自定义参数
-// @version      0.8.1
+// @namespace    http://tampermonkey.net/
+// @description  显示WE Learn随行课堂题目答案；支持班级测试；自动答题；刷时长；开放自定义参数
+// @version      0.8.2
 // @author       SSmJaE
 // @license      GPL-3.0
-// @compatible   chrome
-// @namespace    http://tampermonkey.net/
+// @compatible   Chrome
 // @match        https://course.sflep.com/*
 // @match        https://centercourseware.sflep.com/*
 // @run-at       document-end
@@ -15,6 +15,6 @@
 // @grant        GM_getValue
 // @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
-// @grant        unsafeWindow 
+// @grant        unsafeWindow
 // @require      https://cdn.jsdelivr.net/npm/vue/dist/vue.js
 // ==/UserScript==

@@ -1,17 +1,3 @@
-interface GenericSetting {
-    id: string;
-    name: string;
-    type?: "readonly" | "switch" | string;
-    default: any;
-    description: string;
-}
-
-interface SectionSetting {
-    title: string;
-    display?: boolean; //todo delete
-    settings: GenericSetting[];
-}
-
 // 放置通用(全局)设置
 export let controlCenter: SectionSetting[] = [
     {
@@ -58,7 +44,7 @@ export let controlCenter: SectionSetting[] = [
 /**
  * 合并所有插件的设置
  */
-function mergeSettings(controlCenter: SectionSetting[], pluginSettings: SectionSetting[]) {
+export function mergeSettings(controlCenter: SectionSetting[], pluginSettings: SectionSetting[]) {
     for (const target of pluginSettings) {
         if (!controlCenter.some((section) => section.title == target.title))
             controlCenter.push({ title: target.title, display: target.display, settings: [] });
@@ -69,7 +55,7 @@ function mergeSettings(controlCenter: SectionSetting[], pluginSettings: SectionS
                 index = i;
             }
         }
-        if (typeof index === "undefined") throw Error("error during get index ");
+        if (typeof index == "undefined") throw Error("error during get index ");
 
         for (const generic of target.settings) {
             const settings = controlCenter[index].settings;
@@ -78,9 +64,6 @@ function mergeSettings(controlCenter: SectionSetting[], pluginSettings: SectionS
         }
     } //todo 根据当前页面，动态设置display
 }
-
-import { pluginSettings } from "./plugins/index";
-mergeSettings(controlCenter, pluginSettings);
 
 //*-----------------------------------------------------------------------------------
 
@@ -105,28 +88,4 @@ export function returnDefaultValues() {
             Global.USER_SETTINGS[generic.id] = generic.default;
         }
     }
-}
-
-//*-----------------------------------------------------------------------------------
-
-import { appendToSideBar } from "@utils/common";
-
-//判断设置按钮显示在窗口上，还是在侧边栏上
-//仅在练习页面注册，考试页面不执行
-if (
-    location.href.includes("course.sflep.com/") &&
-    !location.href.includes("course.sflep.com/2019/test/")
-) {
-    const settingButton = appendToSideBar(
-        "sidebar-setting-button",
-        "iconfont icon-setting",
-        "助手",
-    ) as HTMLSpanElement;
-
-    settingButton.onclick = () => {
-        let settingBase = top.frames[0].document.querySelector(
-            "#container-setting-base",
-        ) as HTMLElement;
-        settingBase.style.display = settingBase.style.display == "table" ? "none" : "table";
-    };
 }

@@ -7,8 +7,3 @@ export let pluginSettings = [...examSettings, ...exerciseSettings, ...timeSettin
 //在此处暴露需要让上级访问的接口
 export * from "./exam/parser";
 export * from "./exam/requests";
-
-// 在此处注册(直接调用)各个插件中，app初始化时要执行的函数
-import "./exam/initial";
-import "./exercise/initial";
-import "./time/initial";

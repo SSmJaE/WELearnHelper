@@ -22,6 +22,11 @@ interface QuestionResponse {
     answer: string | null;
 }
 
+interface checkVersionReturn {
+    status: boolean;
+    message: string;
+}
+
 export class Requests {
     @requestErrorHandler()
     static async simpleRequest(question: Question, queryType = 1) {
@@ -95,13 +100,22 @@ export class Requests {
 
     // @requestErrorHandler()
     static async initial() {
-        const response = await request("/initial/", {
-            method: "POST",
-            body: {
-                version: VERSION,
-            },
-        });
-        addMessage((response.response as any).message, "info");
+        const CURRENT_DATE = new Date().toISOString().slice(0, 10);
+        const LAST_CHECK_DATE = GM_getValue("LAST_CHECK_DATE", "2020-01-01");
+        if (CURRENT_DATE > LAST_CHECK_DATE) {
+            const response = await request("/initial/", {
+                method: "POST",
+                body: {
+                    version: VERSION,
+                },
+            });
+            const checkVersionReturnJson = response.response as checkVersionReturn;
+
+            if (checkVersionReturnJson.status) {
+                addMessage(checkVersionReturnJson.message, "info");
+                GM_setValue("LAST_CHECK_DATE", CURRENT_DATE);
+            }
+        }
     }
 
     // @requestErrorHandler()

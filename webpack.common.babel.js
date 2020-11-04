@@ -1,13 +1,9 @@
-//webpack使用的是node的commonJs导包语法
 import path from "path";
+
+import webpack from "webpack";
 import VueLoaderPlugin from "vue-loader/lib/plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
-
-// const path = require("path");
-// const VueLoaderPlugin = require("vue-loader/lib/plugin");
-// const HtmlWebpackPlugin = require("html-webpack-plugin");
-// const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 export default {
     entry: "./src/main.ts",
@@ -78,6 +74,9 @@ export default {
         new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
         new HtmlWebpackPlugin({
             title: "Output Management",
+        }),
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1,
         }),
     ],
     resolve: {

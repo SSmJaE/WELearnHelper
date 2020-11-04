@@ -1,4 +1,4 @@
-export default [
+const SETTINGS: SectionSetting[] = [
     {
         title: "时长相关",
         display: true,
@@ -39,3 +39,5 @@ export default [
         ],
     },
 ];
+
+export default SETTINGS;
