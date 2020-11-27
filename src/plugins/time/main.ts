@@ -31,7 +31,7 @@ export async function autoRefresh() {
                 '[href="javascript:NextSCO();"]',
             ) as HTMLLinkElement;
 
-            console.error(currentNext, currentButton);
+            // console.error(currentNext, currentButton);
             if (currentButton == jumpButtons[jumpButtons.length - 1]) {
                 if (Global.USER_SETTINGS.loopRefresh) jumpButtons[1].click(); //跳到开头，并跳过可能的课程说明页
             } else {

@@ -1,16 +1,19 @@
 import path from "path";
+import * as fs from "fs";
 
 import webpack from "webpack";
 import VueLoaderPlugin from "vue-loader/lib/plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 
+import PACKAGE_JSON from "./package.json";
+
 export default {
     entry: "./src/main.ts",
     output: {
         //__dirname即当前文件所在目录的路径，此处是根目录
         path: path.resolve(__dirname, "./dist"),
-        filename: "WElearnHelper.js",
+        filename: `WElearnHelper${PACKAGE_JSON.version}.js`,
     },
     module: {
         rules: [
@@ -77,6 +80,11 @@ export default {
         }),
         new webpack.optimize.LimitChunkCountPlugin({
             maxChunks: 1,
+        }),
+        new webpack.BannerPlugin({
+            banner: fs.readFileSync("./headers.js", "utf8"),
+            raw: true,
+            entryOnly: true,
         }),
     ],
     resolve: {
