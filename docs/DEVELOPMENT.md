@@ -26,5 +26,4 @@ npm run build
   - 所以可以单独为一种题型写parser和solver
 
 ## 发布
-1. 油猴不允许minified的脚本，所以格式化一下
-2. 如果最终打包体积过大，可以考虑不打包Vue等依赖，通过油猴require
+1. 如果最终打包体积过大，可以考虑不打包Vue等依赖，通过油猴require

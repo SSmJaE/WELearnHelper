@@ -24,7 +24,5 @@ export default merge(common, {
     },
     externals: {
         vue: "Vue",
-        $: "jQuery",
-        "crypto-js": "CryptoJS",
     },
 });

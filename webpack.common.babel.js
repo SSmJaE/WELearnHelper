@@ -13,7 +13,7 @@ export default {
     output: {
         //__dirname即当前文件所在目录的路径，此处是根目录
         path: path.resolve(__dirname, "./dist"),
-        filename: `WElearnHelper${PACKAGE_JSON.version}.js`,
+        filename: `WElearnHelper${PACKAGE_JSON.version}.user.js`,
     },
     module: {
         rules: [

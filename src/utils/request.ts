@@ -48,7 +48,6 @@ function generateFinalUrl(url: string) {
 
 declare let GM_xmlhttpRequest: any;
 
-//todo promise内部类型应该怎么定义
 export default function request(
     url: string,
     init: Init = { method: "GET", headers: {}, body: "" },
@@ -74,12 +73,3 @@ export default function request(
         });
     });
 }
-
-// ['delete', 'get', 'head', 'options', 'post', 'put', 'patch'].forEach(method => {
-//     GM_fetch2.prototype[method] = (url: string, init: Init) => {
-//         init = { ...init, method: <METHOD>method.toUpperCase() }
-//         return GM_fetch.request(url, init)
-//     };
-// })
-
-//todo onFail，可以自定义提示信息，并提供默认提示信息默认值
