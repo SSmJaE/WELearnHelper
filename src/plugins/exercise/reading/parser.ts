@@ -5,7 +5,7 @@ export function parseReading(dom: Document) {
     console.log(answers);
     let index = 1;
     for (const element of answers) {
-        const answer = parseAnswer(element as HTMLElement, dom) as any; //todo as Answer
+        const answer = parseAnswer(element as HTMLElement, dom) as Answer;
         if (answer) {
             answer.index = index;
             console.log(answer);

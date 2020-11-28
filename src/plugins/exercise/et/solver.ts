@@ -22,27 +22,25 @@ import { Global } from "@src/global";
 import { sleep } from "@src/utils/common";
 
 export async function solveEt(answers: any[]) {
-    console.error(1123);
-
-    let tofOnPaper = document.querySelectorAll("et-tof span.controls span") as NodeListOf<
+    const tofOnPaper = document.querySelectorAll("et-tof span.controls span") as NodeListOf<
         HTMLSpanElement
     >;
     let tofOrder = 0;
 
-    let blankOnPaper = document.querySelectorAll("et-blank span.blank") as NodeListOf<
+    const blankOnPaper = document.querySelectorAll("et-blank span.blank") as NodeListOf<
         HTMLSpanElement
     >;
-    let textareaOnPaper = document.querySelectorAll("et-blank textarea.blank") as NodeListOf<
+    const textareaOnPaper = document.querySelectorAll("et-blank textarea.blank") as NodeListOf<
         HTMLTextAreaElement
     >;
     let blankOrder = 0;
     let textareaOrder = 0;
 
-    let selectOnPaper = document.querySelectorAll("et-select div") as NodeListOf<HTMLDivElement>;
+    const selectOnPaper = document.querySelectorAll("et-select div") as NodeListOf<HTMLDivElement>;
     let selectOrder = 0;
 
-    let optionOnPaper = document.querySelectorAll("et-choice li") as NodeListOf<HTMLLIElement>;
-    let optionSpanOnPaper = document.querySelectorAll("et-choice span") as NodeListOf<
+    const optionOnPaper = document.querySelectorAll("et-choice li") as NodeListOf<HTMLLIElement>;
+    const optionSpanOnPaper = document.querySelectorAll("et-choice span") as NodeListOf<
         HTMLSpanElement
     >;
     let liOrder = 0;
@@ -50,8 +48,6 @@ export async function solveEt(answers: any[]) {
     let optionOrder = 0;
 
     for (const answer of answers) {
-        console.error(1124);
-
         await sleep(Global.USER_SETTINGS.solveInterval);
 
         switch (answer.type) {
@@ -69,7 +65,7 @@ export async function solveEt(answers: any[]) {
                     default:
                         throw new Error("tof解答出错");
                 }
-                (tofOnPaper[tofOption] as HTMLElement).click();
+                tofOnPaper[tofOption].click();
 
                 tofOrder++;
                 break;

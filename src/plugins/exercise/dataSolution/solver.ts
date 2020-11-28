@@ -2,7 +2,7 @@ import { Global } from "@src/global";
 import { sleep } from "@src/utils/common";
 
 export async function solveDataSolution(answers: any[]) {
-    let inputOnPaper = document.querySelectorAll("input[data-itemtype]") as NodeListOf<
+    const inputOnPaper = document.querySelectorAll("input[data-itemtype]") as NodeListOf<
         HTMLInputElement
     >;
     let inputOrder = 0;

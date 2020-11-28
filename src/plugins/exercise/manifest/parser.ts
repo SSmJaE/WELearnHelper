@@ -1,11 +1,11 @@
 export function parseManifest(dom: Document) {
-    let realAnswers = [];
+    let realAnswers: Answer[] = [];
 
     let answers = dom.querySelectorAll("correctResponse value");
     console.log(answers);
     let index = 1;
     for (const element of answers) {
-        const answerArray = parseAnswer(element as HTMLElement, dom) as any; //todo as Answer
+        const answerArray = parseAnswer(element as HTMLElement, dom) as any;
         for (const answer of answerArray) {
             if (answer) {
                 answer.index = index;

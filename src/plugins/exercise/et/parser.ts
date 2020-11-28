@@ -16,13 +16,6 @@ const ANSWER_TYPES: AnswerType[] = [
     "et-reference", //口语参考
 ];
 
-interface Answer {
-    text: string;
-    type: string;
-    element: HTMLElement;
-    index: number;
-}
-
 export function parseEt(dom: Document) {
     let realAnswers = [];
     for (const answerType of ANSWER_TYPES) {

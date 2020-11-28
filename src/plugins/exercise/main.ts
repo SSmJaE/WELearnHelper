@@ -1,4 +1,4 @@
-//这种页面上直接就有答案了，id=hd里面，也就是identifier类型
+/**这种页面上直接就有答案了，id=hd里面，也就是identifier类型*/
 const MANIFEST = [
     "https://centercourseware.sflep.com/new century college english secedition integration 2/unit_01/course/texta.html#c09175d4-f281-488f-83fe-87c6bcf2a2b6?nocache=0.6378400703106109",
     "new century college english secedition integration 1", //新世纪大学英语系列教材（第二版）综合教程第一册
@@ -15,7 +15,7 @@ const MANIFEST = [
     "an integrated skills course 2", //新标准高职公共英语系列教材：实用综合教程（精编版）下
 ];
 
-//直接在原始页面上query就可以
+/**直接在原始页面上query就可以*/
 const DATA_SOLUTION = [
     "https://centercourseware.sflep.com/new progressive college english integrated course 3/unit_01/main10.html?3-1-6&nocache=0.8570993802491391",
     "new progressive college english integrated course 1", //全新版大学进阶英语：综合1
@@ -29,7 +29,7 @@ const DATA_SOLUTION = [
     "new target college english integrated course 4", //新目标大学英语《综合教程》 第四册
 ];
 
-//et类型(url中包含data)理论上可以直接在原始页面上找，不过也可以统一通过ajax请求获取
+/**et类型(url中包含data)理论上可以直接在原始页面上找(Demcorazy就是这么做的)，不过也可以统一通过ajax请求获取*/
 const ET = [
     "https://centercourseware.sflep.com/inspire%202/data/1/2-1-2.html",
     "inspire 1", //全新版大学进阶英语：视听说教程1
@@ -53,7 +53,7 @@ const ET = [
     "new century college english video thirdedition 4", //新世纪大学英语系列教材（第二版）视听说教程（3rd Edition）4
 ];
 
-//泛读课程需要courseInfo和identifier(和et一样)，但是答案是dataSolution那种返回value的
+/**泛读课程需要courseInfo和identifier(和et一样)，但是答案是dataSolution那种返回value的*/
 const READING = [
     "https://centercourseware.sflep.com/new century extensive reading course for english majors 2/web.html?courseurl=210_01_05_01&nocache=0.2702018071769088",
     "new century extensive reading course for english majors 1", //新世纪英语专业（修订版）泛读教程（第2版）第一册
@@ -62,8 +62,8 @@ const READING = [
     "new century extensive reading course for english majors 4", //新世纪英语专业（修订版）泛读教程（第2版）第四册
 ];
 
-//必须在手机上做的
-const ON_APP = [
+/**必须在手机上做的*/
+const APP = [
     "https://centercourseware.sflep.com/Progressive English for Vocational Colleges Integrated Course 2/unit_01/main2.html?2-1-w1&nocache=0.2290241426227977",
     "Progressive English for Vocational Colleges Integrated Course 2", //高职国际进阶英语综合教程2
     "https://centercourseware.sflep.com/Progressive English for Vocational Colleges A Viewing Listening and Speaking Course 2/unit_01/main2.html?2-1-la_1&nocache=0.450784809471354",
@@ -192,12 +192,4 @@ export async function determineCourseType(iframeUrl: string) {
 
     console.log(answers);
     outputAnswers(answers);
-}
-
-interface Answer {
-    text: string;
-    type: string;
-    element: HTMLElement;
-    index: number;
-    [prop: string]: any;
 }

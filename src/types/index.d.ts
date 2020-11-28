@@ -20,18 +20,24 @@ interface UserSettings {
     autoCopy: boolean;
     autoSlide: boolean;
 
-    autoSolveNormal: boolean;
-    solveIntervalMin: number;
-    solveIntervalMax: number;
+    showReference: boolean;
+    autoSolve: boolean;
+    solveInterval: number;
+    defaultBlankAnswer: string;
 
     autoRefresh: boolean;
-    loop: boolean;
-    randomInterval: boolean;
-    switchInterval: number;
-    switchLevel: number;
-    range: boolean;
-    rangeStart: number;
-    rangeEnd: number;
+    loopRefresh: boolean;
+    randomRefresh: boolean;
+    refreshIntervalMin: number;
+    refreshIntervalMax: number;
 
     [propName: string]: any;
+}
+
+interface Answer {
+    text: string;
+    type: string;
+    element: HTMLElement;
+    index: number;
+    [prop: string]: any;
 }

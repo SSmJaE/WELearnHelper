@@ -3,14 +3,6 @@ interface Message {
     type: string;
 }
 
-export interface Setting {
-    userAccount?: string;
-    userPoints?: number;
-    autoCopy?: boolean;
-    autoSlide?: boolean;
-    [propName: string]: any;
-}
-
 // export class Global {
 //     static messages: Message[] = [];
 //     static USER_SETTINGS: Setting = {};
@@ -21,7 +13,7 @@ export interface Setting {
 // 直接new一个Vue实例作为event bus也是可以的，但是不想被框架绑架
 interface buffer {
     messages: Message[];
-    USER_SETTINGS: Setting;
+    USER_SETTINGS: UserSettings;
     collapse: boolean;
     showExamQueryButton: boolean;
     [propName: string]: any;
@@ -29,7 +21,7 @@ interface buffer {
 
 export let Global: buffer = {
     messages: [],
-    USER_SETTINGS: {},
+    USER_SETTINGS: {} as UserSettings,
     collapse: true,
     showExamQueryButton: false,
 };
