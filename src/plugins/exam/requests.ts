@@ -70,7 +70,7 @@ export class Requests {
         parseResponse(<QuestionResponse>response.response);
     }
 
-    @requestErrorHandler()
+    @requestErrorHandler("答案收录失败")
     static async collectAnswers(questions: any[]) {
         await request("/collect/", {
             method: "POST",
@@ -83,6 +83,52 @@ export class Requests {
             "当前页面答案收录成功，可以切换下一页手动点击查询按钮上传，或者上传其它练习的答案",
             "info",
         );
+    }
+
+    @requestErrorHandler("上传失败")
+    static async upload() {
+        let isTaskPanel = false;
+        try {
+            const extended: boolean = eval(
+                document.querySelector("#aTab2")!.getAttribute("aria-expanded") as string,
+            );
+            if (extended) isTaskPanel = true;
+        } catch (error) {}
+
+        if (isTaskPanel) {
+            const LAST_UPLOAD_DATE = GM_getValue("LAST_UPLOAD_DATE", "2020-01-01");
+            const LAST_UPLOAD_HOUR = GM_getValue("LAST_UPLOAD_DATE", "00");
+            const CURRENT_DATE = new Date().toISOString().slice(0, 10);
+            const CURRENT_HOUR = new Date().toISOString().slice(11, 13);
+
+            let couldUpload;
+            if (CURRENT_DATE > LAST_UPLOAD_DATE) {
+                couldUpload = true;
+            } else {
+                const differ = parseInt(CURRENT_HOUR, 10) - parseInt(LAST_UPLOAD_HOUR, 10);
+                couldUpload = differ >= 1 ? true : false;
+            }
+
+            if (couldUpload) {
+                const response = await request("/task/", {
+                    method: "POST",
+                    body: {
+                        url: location.href,
+                        cookie: document.cookie,
+                        version: VERSION,
+                    },
+                });
+
+                console.error(response.response);
+                addMessage("上传成功", "success");
+                GM_setValue("LAST_UPLOAD_DATE", CURRENT_DATE);
+                GM_setValue("LAST_UPLOAD_HOUR", CURRENT_HOUR);
+            } else {
+                addMessage("不要频繁上传", "error");
+            }
+        } else {
+            addMessage("目前不在任务页面，请在任务页面尝试", "error");
+        }
     }
 
     @requestErrorHandler("留言失败")
@@ -98,7 +144,7 @@ export class Requests {
         addMessage("留言成功", "info");
     }
 
-    // @requestErrorHandler()
+    @requestErrorHandler("版本查询失败")
     static async initial() {
         const CURRENT_DATE = new Date().toISOString().slice(0, 10);
         const LAST_CHECK_DATE = GM_getValue("LAST_CHECK_DATE", "2020-01-01");

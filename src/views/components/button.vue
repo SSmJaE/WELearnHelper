@@ -1,5 +1,10 @@
 <template>
-  <div v-ripple class="my-button" @click="$emit('click', $event)">
+  <div
+    v-ripple
+    class="my-button"
+    @click="$emit('click', $event)"
+    :title="title"
+  >
     {{ label }}
   </div>
 </template>
@@ -9,6 +14,10 @@ export default {
   name: "MyButton",
   props: {
     label: {
+      type: String,
+      default: "",
+    },
+    title: {
       type: String,
       default: "",
     },

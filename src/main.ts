@@ -24,8 +24,7 @@ import { controlCenter, setDefaultValues, mergeSettings } from "./settings";
 //应用全局初始化
 import "./initial";
 
-// import Vue from "vue";
-// 通过cdn载入，不打包
+import Vue from "vue";
 
 //注册vue水波纹效果
 import Ripple from "vue-ripple-directive";
@@ -37,8 +36,10 @@ import Panel from "./views/panel.vue";
 import Setting from "./views/setting.vue";
 
 if (
+    DEBUG_MODE ||
     location.href.includes("centercourseware.sflep.com") || //练习答题页面
-    location.href.includes("course.sflep.com/2019/test/") //考试答题页面
+    location.href.includes("course.sflep.com/2019/test/") || //考试答题页面
+    location.href.includes("course.sflep.com/2019/student/course_info.aspx?") //基准页面
 ) {
     if (!document.querySelector("#welearn-helper")) {
         //这部分相当于创建了一个原生页面

@@ -1,7 +1,6 @@
 import { addMessage, sleep } from "@utils/common";
 import { Global, QUERY_INTERVAL } from "@src/global";
 import { Requests } from "./requests";
-import { types } from "util";
 
 interface Question {
     questionType: number;
@@ -248,8 +247,6 @@ function isFinished() {
         : false;
 }
 
-import { hackPlaySound } from "./utils";
-
 export async function retrieveAllQuestions() {
     console.log(333);
 
@@ -259,8 +256,8 @@ export async function retrieveAllQuestions() {
 
     if (!FINISHED) {
         addOrderFlag = true;
-        hackPlaySound();
     }
+
     for (let questionMain of document.querySelectorAll(".itemDiv")) {
         let parser: Function | null = null;
 

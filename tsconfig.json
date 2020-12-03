@@ -5,6 +5,7 @@
         "moduleResolution": "node",
         "strict": true,
         "experimentalDecorators": true,
+        "resolveJsonModule": true,
         "allowJs": true,
         "sourceMap": true,
         "outDir": "./dist/",

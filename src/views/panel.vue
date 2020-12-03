@@ -3,20 +3,33 @@
     <div
       id="container-setting-button"
       class="iconfont icon-setting"
-      @click="showSetting"
+      @click="showSetting()"
     ></div>
     <div id="container-control">
       <my-button
         v-if="Global.showExamQueryButton"
         id="container-check"
         label="查询"
-        @click="retrieveAllQuestions"
+        @click="retrieveAllQuestions()"
+        title="查询班级测试的答案，不一定有答案，如果没有答案，会返回每个选项的被其它同学选择的次数"
       >
       </my-button>
       <my-button
+        v-if="Global.showExamUploadButton"
+        label="上传"
+        @click="upload()"
+        title="尝试收录任务页面的所有任务的答案，1小时仅能上传一次，建议做完一个测试之后上传一次"
+      >
+      </my-button>
+      <my-button
+        label="Github"
+        onclick="window.open('https://github.com/SSmJaE/WELearnHelper','_blank')"
+        title="本项目的仓库"
+      ></my-button>
+      <my-button
         id="container-comment"
         label="留言"
-        @click="showComment"
+        @click="showComment()"
       ></my-button>
       <!-- <my-button label="test" @click="test"></my-button> -->
       <my-button label="折叠" @click="collapsePanel()"></my-button>
@@ -84,7 +97,7 @@ export default {
       if (text) Requests.sendComment(text);
     },
     showSetting() {
-      let settingBase = document.querySelector("#container-setting-base");
+      const settingBase = document.querySelector("#container-setting-base");
       settingBase.style.display =
         settingBase.style.display == "table" ? "none" : "table";
     },
@@ -101,6 +114,9 @@ export default {
     },
     collapsePanel() {
       this.Global.collapse = false;
+    },
+    upload() {
+      Requests.upload();
     },
   },
 };

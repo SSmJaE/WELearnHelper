@@ -24,6 +24,7 @@ export let Global: buffer = {
     USER_SETTINGS: {} as UserSettings,
     collapse: true,
     showExamQueryButton: false,
+    showExamUploadButton: false,
 };
 
 // *--------------------以下为常量
@@ -39,5 +40,6 @@ if (process.env.NODE_ENV === "development") {
     DEBUG_MODE = false;
 }
 
-export const VERSION = "0.8.2";
+import * as PACKAGE from "../package.json";
+export const VERSION = PACKAGE.version;
 export const QUERY_INTERVAL = 3000; //单位ms

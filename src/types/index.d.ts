@@ -20,6 +20,8 @@ interface UserSettings {
     autoCopy: boolean;
     autoSlide: boolean;
 
+    infiniteListening: boolean;
+
     showReference: boolean;
     autoSolve: boolean;
     solveInterval: number;
