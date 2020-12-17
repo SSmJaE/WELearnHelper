@@ -57,8 +57,8 @@
       </transition>
     </div>
     <div class="container-setting-footer">
-      <button @click="saveChange">保存 & 刷新</button>
-      <button @click="setDefault">还原默认值</button>
+      <my-button @click="saveChange" label="保存 & 刷新"></my-button>
+      <my-button @click="setDefault" label="还原默认值"></my-button>
     </div>
   </div>
 </template>
@@ -67,6 +67,7 @@
 /* global GM_setValue */
 
 import Switch from "./components/switch";
+import Button from "./components/button";
 
 import { Global, VERSION } from "../global";
 import { controlCenter, returnDefaultValues } from "../settings";
@@ -75,6 +76,7 @@ import { Requests } from "@plugins/index";
 export default {
   components: {
     "my-switch": Switch,
+    "my-button": Button,
   },
   data() {
     return {
