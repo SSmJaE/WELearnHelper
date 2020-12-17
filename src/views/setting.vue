@@ -243,7 +243,7 @@ hr {
   /* justify-content: flex-end; */
   margin: 5px 0;
 }
-.container-setting-footer button {
+.container-setting-footer .my-button {
   margin: 0 5px;
 }
 

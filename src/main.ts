@@ -37,9 +37,9 @@ import Setting from "./views/setting.vue";
 
 if (
     DEBUG_MODE ||
-    location.href.includes("centercourseware.sflep.com") || //练习答题页面
-    location.href.includes("courseappserver.sflep.com/2019/test/") || //考试答题页面
-    location.href.includes("courseappserver.sflep.com/2019/student/course_info.aspx?") //基准页面
+    location.href.includes("centercourseware.sflep.com") || //练习答题页面，子页面
+    location.href.includes(".sflep.com/2019/test/") || //考试答题页面
+    location.href.includes(".sflep.com/2019/student/course_info.aspx?") //基准页面
 ) {
     if (!document.querySelector("#welearn-helper")) {
         //这部分相当于创建了一个原生页面

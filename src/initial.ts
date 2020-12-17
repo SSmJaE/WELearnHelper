@@ -2,7 +2,7 @@ import { DEBUG_MODE } from "./global";
 import Swal from "sweetalert2";
 
 //用户协议
-if (/centercourseware\.sflep\.com/.test(location.href)) {
+if (/\.sflep\.com/.test(location.href)) {
     if (!DEBUG_MODE) {
         let status = eval(GM_getValue("acceptAgreement", "false"));
 
