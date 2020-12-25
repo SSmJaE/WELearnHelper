@@ -248,8 +248,6 @@ function isFinished() {
 }
 
 export async function retrieveAllQuestions() {
-    console.log(333);
-
     Global.messages = [];
     let answers: Question[] = [];
     const FINISHED = isFinished();
@@ -298,5 +296,4 @@ export async function retrieveAllQuestions() {
         }
     }
     if (FINISHED) Requests.collectAnswers(answers);
-    console.log(444);
 }

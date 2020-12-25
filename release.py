@@ -7,4 +7,4 @@ for file_ in os.listdir('dist'):
         absolutePath = os.path.join("dist", file_)
         latestName = re.sub(r"\d+\.\d+\.\d+", ".latest", file_)
         targetPath = os.path.join("build", latestName)
-        shutil.move(absolutePath, targetPath)
+        shutil.copy(absolutePath, targetPath)
