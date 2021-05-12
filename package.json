@@ -23,7 +23,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^4.3.0",
     "html-webpack-plugin": "^4.4.1",
-    "postcss": "^7.0.32",
+    "postcss": "^8.2.10",
     "postcss-loader": "^4.0.1",
     "precss": "^4.0.0",
     "style-loader": "^1.2.1",
