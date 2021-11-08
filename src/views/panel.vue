@@ -1,46 +1,58 @@
 <template>
-  <div v-show="Global.collapse" id="container-panel">
+  <div v-show="!store.collapse" id="container-panel">
     <div
       id="container-setting-button"
       class="iconfont icon-setting"
       @click="showSetting()"
     ></div>
     <div id="container-control">
-      <my-button
-        v-if="Global.showExamQueryButton"
-        id="container-check"
-        label="查询"
-        @click="retrieveAllQuestions()"
-        title="查询班级测试的答案，不一定有答案，如果没有答案，会返回每个选项的被其它同学选择的次数"
-      >
-      </my-button>
-      <my-button
-        v-if="Global.showExamUploadButton"
-        label="上传"
-        @click="upload()"
-        title="尝试收录任务页面的所有任务的答案，1小时仅能上传一次，建议做完一个测试之后上传一次"
-      >
-      </my-button>
-      <my-button
+      <Button label="折叠" @click="collapsePanel()"></Button>
+
+      <Button
         label="Github"
         onclick="window.open('https://github.com/SSmJaE/WELearnHelper','_blank')"
         title="本项目的仓库"
-      ></my-button>
-      <my-button
+      ></Button>
+
+      <Button
+        label="交流群"
+        onclick="window.open('https://jq.qq.com/?_wv=1027&k=5AyCT4l','_blank')"
+      ></Button>
+
+      <Button
+        v-if="store.showExamQueryButton"
+        id="container-check"
+        label="查询"
+        @click="getAnswers()"
+        title="查询班级测试的答案，不一定有答案，如果没有答案，会返回每个选项的被其它同学选择的次数"
+      >
+      </Button>
+
+      <Button
+        v-if="store.showExamUploadButton"
+        label="上传"
+        @click="upload()"
+        title="尝试收录任务页面的所有任务的答案，建议做完一个测试之后上传一次"
+      >
+      </Button>
+
+      <!-- <Button
+        label="Test"
+        @click="test()"
+        title="尝试收录任务页面的所有任务的答案，建议做完一个测试之后上传一次"
+      >
+      </Button> -->
+
+      <!-- <Button
         id="container-comment"
         label="留言"
         @click="showComment()"
-      ></my-button>
-      <!-- <my-button label="test" @click="test"></my-button> -->
-      <my-button label="折叠" @click="collapsePanel()"></my-button>
-      <my-button
-        label="交流群"
-        onclick="window.open('https://jq.qq.com/?_wv=1027&k=5AyCT4l','_blank')"
-      ></my-button>
+      ></Button> -->
+      <!-- <Button label="test" @click="test"></Button> -->
     </div>
     <div id="container-messages">
       <div
-        v-for="(message, index) in Global.messages"
+        v-for="(message, index) in store.messages"
         :key="index"
         class="container-message"
         :class="message.type"
@@ -53,76 +65,75 @@
   </div>
 </template>
 
-<script >
-/* global GM_setClipboard */
-import Swal from "sweetalert2";
 
-import { Global } from "../global";
-import { retrieveAllQuestions, Requests } from "@plugins/index";
+<script lang="ts">
+import "reflect-metadata";
+import { Component, Vue } from "vue-property-decorator";
 
-import Button from "./components/button";
+import { store } from "@src/store";
+import { copyToClipboard } from "@utils/common";
 
-export default {
-  components: { "my-button": Button },
-  data: function () {
-    return {
-      Global: Global,
-    };
+import Button from "./components/Button.vue";
+
+import { Requests } from "@src/utils/requests";
+import { getAnswers } from "@src/plugins";
+import { addMessage } from "@src/store/actions";
+
+@Component({
+  components: {
+    Button,
   },
-  computed: {
-    points() {
-      return this.Global.points;
-    },
-  },
-  methods: {
-    retrieveAllQuestions() {
-      console.log(111);
-      retrieveAllQuestions();
-      console.log(222);
-    },
-    autoCopy: function (text) {
-      if (Global.USER_SETTINGS.autoCopy)
-        GM_setClipboard(text.replace(/^.*、/, ""), "text");
-    },
-    async showComment() {
-      const { value: text } = await Swal.fire({
-        title: "留言",
-        input: "textarea",
-        inputPlaceholder:
-          "期待大家的反馈，如果有任何问题，都可以给我留言，我会定期查看。最好留下联系方式，方便后续交流。",
-        confirmButtonText: "发送",
-        width: 600,
-      });
+})
+export default class Panel extends Vue {
+  store = store;
 
-      if (text) Requests.sendComment(text);
-    },
-    showSetting() {
-      const settingBase = document.querySelector("#container-setting-base");
-      settingBase.style.display =
-        settingBase.style.display == "table" ? "none" : "table";
-    },
-    test() {
+  collapse = false;
+
+  autoCopy(text: string) {
+    if (store.USER_SETTINGS.autoCopy) copyToClipboard(text);
+  }
+
+  showSetting() {
+    const setting = document.querySelector("#helper-setting") as HTMLElement;
+    setting.style.display = setting.style.display == "" ? "none" : "";
+  }
+
+  collapsePanel() {
+    this.store.collapse = false;
+  }
+
+  getAnswers() {
+    getAnswers();
+  }
+
+  upload() {
+    Requests.upload(true);
+  }
+
+  test() {
+    addMessage([
+      {
+        info: "We will do everything to ___________ peace.",
+        type: "normal",
+      },
+      { info: "preserve", type: "normal" },
+      { info: "新增收录", type: "normal" },
+      { info: "新增收录", type: "hr" },
+    ]);
+
+    addMessage(
       [
-        {
-          info: "We will do everything to ___________ peace.",
-          type: "normal",
-        },
-        { info: "preserve", type: "normal" },
-        { info: "新增收录", type: "normal" },
-        { info: "新增收录", type: "hr" },
-      ].forEach((e) => this.Global.messages.push(e));
-    },
-    collapsePanel() {
-      this.Global.collapse = false;
-    },
-    upload() {
-      Requests.upload();
-    },
-  },
-};
+        "扩展已是最新版本",
+        '如果本项目帮助到了你，可以为本项目点一个<a href="https://github.com/SSmJaE/WELearnHelper" target="_blank"><u>star</u></a>',
+        "可以前往交流群获取使用支持",
+      ],
+      "info"
+    );
+  }
+}
 </script>
 
-<style>
+<style lang="postcss">
 #welearn-helper {
   top: 100px;
   left: 100px;
@@ -139,10 +150,10 @@ export default {
 
   font-family: Georgia, "Times New Roman", Times, serif;
   line-height: normal;
-}
 
-#welearn-helper:not(:hover) {
-  filter: brightness(98%);
+  &:not(:hover) {
+    filter: brightness(98%);
+  }
 }
 
 #container-title {
@@ -154,7 +165,9 @@ export default {
 
   background: rgba(0, 0, 0, 0);
 }
+</style>
 
+<style scoped lang="postcss">
 #container-setting-button {
   position: absolute;
   top: 3px;
@@ -163,10 +176,10 @@ export default {
   font-size: 23px;
 
   cursor: pointer;
-}
 
-#container-setting-button:hover {
-  color: rgb(0, 230, 227);
+  &:hover {
+    color: rgb(0, 230, 227);
+  }
 }
 
 #container-control button {
@@ -178,6 +191,22 @@ export default {
   border: black 1px solid;
   max-height: 400px;
   overflow-y: auto;
+
+  & .error {
+    color: red;
+  }
+
+  & .success {
+    color: green;
+  }
+
+  & .info {
+    color: #2196f3;
+  }
+
+  & hr {
+    margin: 5px 0px;
+  }
 }
 
 .container-message {
@@ -191,27 +220,12 @@ export default {
   padding: 0px;
   padding-bottom: 3px;
   line-height: 120%;
-}
-.container-message:hover:not(hr) {
-  padding-bottom: 1px;
-  border-bottom: 2px solid black;
-  cursor: copy;
-}
 
-#container-messages .error {
-  color: red;
-}
-
-#container-messages .success {
-  color: green;
-}
-
-#container-messages .info {
-  color: #2196f3;
-}
-
-#container-messages hr {
-  margin: 5px 0px;
+  &:hover:not(hr) {
+    padding-bottom: 1px;
+    border-bottom: 2px solid black;
+    cursor: copy;
+  }
 }
 
 @keyframes content_slide_in {
@@ -226,3 +240,15 @@ export default {
   }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+

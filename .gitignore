@@ -1,6 +1,7 @@
 /node_modules/
 /dist/*
-/自用/
+/build/*
+/private/
 /src/plugins/onetap/*
 
 # /docs/*

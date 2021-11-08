@@ -40,7 +40,7 @@ interface GM_xmlhttpResponse {
      */
     responseText: string;
 }
-import { BASE_URL } from "@src/global";
+import { BASE_URL } from "@src/store";
 
 function generateFinalUrl(url: string) {
     return url.startsWith("/") ? BASE_URL + url : url;

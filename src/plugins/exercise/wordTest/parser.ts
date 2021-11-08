@@ -1,5 +1,5 @@
-import { Global, DEBUG_MODE } from "@src/global";
-import { addMessage, sleep } from "@src/utils/common";
+import { store } from "@src/store";
+import { addMessage } from "@src/store/actions";
 
 let wordTestTimer: any;
 export function parseWordTest() {
@@ -7,10 +7,11 @@ export function parseWordTest() {
 
     wordTestTimer = setInterval(() => {
         try {
-            Global.messages = [];
+            store.messages = [];
             let answer = document.querySelector('ul[id^="wordTest"][style=""] > li:last-child')!
                 .textContent;
-            addMessage(answer);
+
+            addMessage(answer as string);
         } catch (error) {}
     }, 2000);
 }

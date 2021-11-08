@@ -4,28 +4,18 @@
       <hr v-if="index !== 0" />
       <div class="title" @click="section.display = !section.display">
         {{ section.title }}
-        <svg
-          class="arrow-down"
-          :class="section.display ? 'opened' : ''"
-          width="24"
-          height="24"
-        >
-          <path
-            d="M12 13L8.285 9.218a.758.758 0 0 0-1.064 0 .738.738 0 0 0 0 1.052l4.249 4.512a.758.758 0 0 0 1.064 0l4.246-4.512a.738.738 0 0 0 0-1.052.757.757 0 0 0-1.063 0L12.002 13z"
-            fill-rule="evenodd"
-          />
-        </svg>
+        <Arrow :opened="section.display"></Arrow>
       </div>
-      <transition name="toggle-slide">
+      <ToggleSlide>
         <div v-show="section.display" class="body">
           <div
             v-for="setting in section.settings"
             :key="setting.id"
             class="record"
           >
-            <label class="record-left" :for="setting.id">{{
-              setting.name
-            }}</label>
+            <label class="record-left" :for="setting.id">
+              {{ setting.name }}
+            </label>
             <div class="record-middle">
               <template v-if="setting.type === 'readonly'">
                 <div class="readonly">
@@ -33,10 +23,10 @@
                 </div>
               </template>
               <template v-else-if="setting.type === 'switch'">
-                <my-switch
+                <MySwitch
                   :id="setting.id"
                   v-model="Global.USER_SETTINGS[setting.id]"
-                ></my-switch>
+                ></MySwitch>
               </template>
               <template v-else>
                 <input
@@ -44,7 +34,10 @@
                   class="input"
                   :value="Global.USER_SETTINGS[setting.id]"
                   @input="
-                    Global.USER_SETTINGS[setting.id] = $event.target.value
+                    Global.USER_SETTINGS[setting.id] = convertValueType(
+                      setting.id,
+                      $event.target.value
+                    )
                   "
                 />
               </template>
@@ -54,74 +47,128 @@
             </div>
           </div>
         </div>
-      </transition>
+      </ToggleSlide>
     </div>
-    <div class="container-setting-footer">
-      <my-button @click="saveChange" label="保存 & 刷新"></my-button>
-      <my-button @click="setDefault" label="还原默认值"></my-button>
+    <div id="container-setting-footer">
+      <Button label="保存 & 刷新" @click="saveChange"></Button>
+      <Button label="还原默认值" @click="setDefault"></Button>
     </div>
   </div>
 </template>
 
-<script>
-/* global GM_setValue */
+<script lang="ts">
+import "reflect-metadata";
+import { Component, Vue, Prop } from "vue-property-decorator";
+import debounce from "lodash/debounce";
 
-import Switch from "./components/switch";
-import Button from "./components/button";
+import { store } from "@src/store";
+import {
+  controlCenter,
+  returnDefaultValues,
+  SETTING_TYPES,
+} from "@utils/settings";
+import { Requests } from "@utils/requests";
+import { setValue } from "@utils/common";
+import { pluginSettings } from "@plugins/index";
 
-import { Global, VERSION } from "../global";
-import { controlCenter, returnDefaultValues } from "../settings";
-import { Requests } from "@plugins/index";
+import Arrow from "./components/Arrow.vue";
+import Button from "./components/Button.vue";
+import MySwitch from "./components/Switch.vue";
 
-export default {
+import ToggleSlide from "./animations/ToggleSlide.vue";
+
+@Component({
   components: {
-    "my-switch": Switch,
-    "my-button": Button,
+    MySwitch,
+    Arrow,
+    Button,
+    ToggleSlide,
   },
-  data() {
-    return {
-      Global: Global,
-      version: VERSION,
-      sections: controlCenter,
-    };
-  },
+})
+export default class Setting extends Vue {
+  Global = store;
+  sections = controlCenter;
+  debouncedConvertValueType = debounce(this.convertValueType, 200);
+
   created() {
-    Requests.initial();
-    Requests.updatePoints();
-  },
-  methods: {
-    saveChange() {
-      GM_setValue("USER_SETTINGS", JSON.stringify(Global.USER_SETTINGS));
-      location.reload(true);
-    },
-    setDefault() {
-      returnDefaultValues();
-    },
-  },
-};
+    Requests.checkVersion();
+    const setting = document.querySelector("#helper-setting") as HTMLElement;
+    setting.style.display = "none";
+  }
+
+  /**自动转换input的值为对应类型
+   *
+   * 只可能是string或者number
+   */
+  convertValueType(settingId: string, newValue: string) {
+    let value: number | string;
+
+    switch (SETTING_TYPES[settingId]) {
+      case "number":
+        value = parseInt(newValue, 10);
+        break;
+      case "float":
+        value = parseFloat(newValue);
+        break;
+      default:
+        value = newValue;
+        break;
+    }
+
+    return value;
+  }
+
+  async saveChange() {
+    await setValue("USER_SETTINGS", store.USER_SETTINGS);
+    location.reload();
+  }
+
+  setDefault() {
+    returnDefaultValues();
+  }
+}
 </script>
 
-<style scoped>
-#container-setting-base {
-  display: none;
+<style>
+#helper-setting {
+  /* display: none; */
   position: fixed;
 
   top: 20%;
-  left: 50%;
-  width: 700px;
-  margin: 20px;
+  left: 20%;
   z-index: 101;
-
-  font-size: 16px;
-  line-height: 100%;
 
   background: rgba(255, 255, 255, 0.95);
   border: black 2px solid;
   border-radius: 20px;
 
-  transform: translate(-50%, 0%);
-  animation: slide_in 0.8s;
-  animation-timing-function: ease-out;
+  margin: 0 auto;
+  /* transform: translate(-50%, 0%); */
+  /* animation: slide_in 0.8s;
+  animation-timing-function: ease-out; */
+}
+
+#container-setting-title {
+  cursor: grab;
+  user-select: none;
+
+  font-size: 28px;
+  font-family: "华文新魏", "新宋体";
+  text-align: center;
+  line-height: normal;
+
+  background: rgba(0, 0, 0, 0);
+  margin-top: 10px;
+}
+</style>
+
+<style scoped>
+#container-setting-base {
+  display: table;
+  /* margin: 20px; */
+
+  font-size: 16px;
+  line-height: 100%;
 }
 
 @keyframes slide_in {
@@ -155,35 +202,6 @@ div.body {
   overflow: hidden;
 }
 
-/* 旋转箭头 */
-svg.arrow-down {
-  position: relative;
-  top: 5px;
-  left: 0px;
-  transition-duration: 0.6s;
-}
-
-svg.arrow-down.opened {
-  transform: rotate(180deg);
-}
-/* -------------------- */
-
-/* 抽屉 */
-.toggle-slide-leave-active,
-.toggle-slide-enter-active {
-  transition: all 0.6s;
-}
-
-.toggle-slide-enter,
-.toggle-slide-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-
-.toggle-slide-enter-to,
-.toggle-slide-leave {
-  max-height: 300px;
-}
 /* -------------------- */
 
 div.record {
@@ -237,20 +255,13 @@ hr {
   margin: 5px;
 }
 
-.container-setting-footer {
+#container-setting-footer {
   display: flex;
   justify-content: center;
   /* justify-content: flex-end; */
   margin: 5px 0;
 }
-.container-setting-footer .my-button {
+#container-setting-footer .my-button {
   margin: 0 5px;
 }
-
-/* #container-setting-save {
-  position: relative;
-  margin: 5px;
-  left: 50%;
-  transform: translate(-55%, 5%);
-} */
 </style>

@@ -1,19 +1,20 @@
 import Swal from "sweetalert2";
-import { Global } from "@src/global";
+import { DEBUG_MODE, store } from "@src/store";
 
 let time = Date.now();
 let buffer = time;
 function generateRandomInterval() {
     let rate = 1;
-    if (Global.USER_SETTINGS.randomRefresh) {
+    const { randomRefresh, refreshIntervalMin, refreshIntervalMax } = store.USER_SETTINGS;
+
+    if (randomRefresh) {
         rate = Math.random();
-        let currentRate =
-            Global.USER_SETTINGS.refreshIntervalMin / Global.USER_SETTINGS.refreshIntervalMax;
+        let currentRate = refreshIntervalMin / refreshIntervalMax;
         if (rate < currentRate) rate = currentRate;
     }
 
-    if (Global.USER_SETTINGS.debugMode) {
-        console.log(Global.USER_SETTINGS.refreshIntervalMax * rate * 60 * 1000);
+    if (DEBUG_MODE) {
+        console.log(refreshIntervalMax * rate * 60 * 1000);
         console.log(Date.now() - buffer);
         console.log(Date.now() - time);
         buffer = Date.now();
@@ -23,16 +24,18 @@ function generateRandomInterval() {
 }
 
 function nextChapter() {
-    const jumpButtons = top.document.querySelectorAll('a[onclick^="SelectSCO"]') as NodeListOf<
-        HTMLLinkElement
-    >;
-    const currentButton = top.document.querySelector("li.courseware_current a");
-    const currentNext = top.document.querySelector(
+    const topWindow = top as Window;
+
+    const jumpButtons = topWindow.document.querySelectorAll(
+        'a[onclick^="SelectSCO"]',
+    ) as NodeListOf<HTMLLinkElement>;
+    const currentButton = topWindow.document.querySelector("li.courseware_current a");
+    const currentNext = topWindow.document.querySelector(
         '[href="javascript:NextSCO();"]',
     ) as HTMLLinkElement;
 
     if (currentButton == jumpButtons[jumpButtons.length - 1]) {
-        if (Global.USER_SETTINGS.loopRefresh) jumpButtons[1].click(); //跳到开头，并跳过可能的课程说明页
+        if (store.USER_SETTINGS.loopRefresh) jumpButtons[1].click(); //跳到开头，并跳过可能的课程说明页
     } else {
         currentNext.click();
     }
@@ -55,11 +58,11 @@ function recur() {
     setTimeout(() => {
         nextChapter();
         recur();
-    }, Global.USER_SETTINGS.refreshIntervalMax * generateRandomInterval() * 60 * 1000);
+    }, store.USER_SETTINGS.refreshIntervalMax * generateRandomInterval() * 60 * 1000);
 }
 
 export async function autoRefresh() {
-    if (Global.USER_SETTINGS.autoRefresh) {
+    if (store.USER_SETTINGS.autoRefresh) {
         recur();
         notify();
     }

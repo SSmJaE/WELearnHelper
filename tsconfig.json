@@ -3,9 +3,11 @@
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "node",
+        "resolveJsonModule": true,
         "strict": true,
         "experimentalDecorators": true,
-        "resolveJsonModule": true,
+        "emitDecoratorMetadata": true,
+        "allowSyntheticDefaultImports": true,
         "allowJs": true,
         "sourceMap": true,
         "outDir": "./dist/",
@@ -23,6 +25,13 @@
             "@utils/*": [
                 "src/utils/*"
             ],
-        }
+        },
+        "typeRoots": [
+            "./node_modules/@types/",
+            "./src/types"
+        ],
     },
+    "include": [
+        "src/**/*"
+    ],
 }

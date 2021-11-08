@@ -83,6 +83,24 @@ const UNSOLVED = [
     "listening and speaking course (2nd ed) 4 for vocational college english", //新标准高职公共英语系列教材：实用听说教程（第二版）第三册
 ];
 
+// * -----------------------------------------------------------------------------------------------------------------------------
+
+import { store } from "@src/store";
+import { sleep } from "@src/utils/common";
+import { addMessage } from "@src/store/actions";
+
+import { parseEt } from "./et/parser";
+import { solveEt } from "./et/solver";
+
+import { parseManifest } from "./manifest/parser";
+import { solveManifest } from "./manifest/solver";
+import { parseWordTest } from "./wordTest/parser";
+
+import { parseDataSolution } from "./dataSolution/parser";
+import { solveDataSolution } from "./dataSolution/solver";
+
+import { parseReading } from "./reading/parser";
+
 const PARSER = new DOMParser();
 
 async function queryData(answerUrl: string) {
@@ -110,8 +128,8 @@ async function queryManifest(manifestUrl: string, identifier: string, courseInfo
 async function outputAnswers(answers: Answer[]) {
     let bufferTag = "";
     for (const answer of answers) {
-        if (Global.USER_SETTINGS.autoSolve) {
-            await sleep(Global.USER_SETTINGS.solveInterval);
+        if (store.USER_SETTINGS.autoSolve) {
+            await sleep(store.USER_SETTINGS.solveInterval);
         }
 
         addMessage(`${String(answer.index).padStart(2, "0")}、${answer.text}`);
@@ -123,21 +141,6 @@ async function outputAnswers(answers: Answer[]) {
         }
     }
 }
-
-import { Global, DEBUG_MODE } from "@src/global";
-import { addMessage, sleep } from "@src/utils/common";
-
-import { parseEt } from "./et/parser";
-import { solveEt } from "./et/solver";
-
-import { parseManifest } from "./manifest/parser";
-import { solveManifest } from "./manifest/solver";
-import { parseWordTest } from "./wordTest/parser";
-
-import { parseDataSolution } from "./dataSolution/parser";
-import { solveDataSolution } from "./dataSolution/solver";
-
-import { parseReading } from "./reading/parser";
 
 export async function determineCourseType(iframeUrl: string) {
     let courseInfo = /com\/(.*?)\//.exec(iframeUrl)![1];
@@ -161,12 +164,12 @@ export async function determineCourseType(iframeUrl: string) {
         answers = parseManifest(dom);
         if (document.querySelector('div[id^="word"]')) parseWordTest();
 
-        if (Global.USER_SETTINGS.autoSolve) solveManifest(answers);
+        if (store.USER_SETTINGS.autoSolve) solveManifest(answers);
     } else if (ET.includes(courseInfo)) {
         dom = await queryData(answerUrl);
 
         answers = parseEt(dom);
-        if (Global.USER_SETTINGS.autoSolve) solveEt(answers);
+        if (store.USER_SETTINGS.autoSolve) solveEt(answers);
     } else if (DATA_SOLUTION.includes(courseInfo)) {
         //直接在原始页面查找
         setTimeout(() => {
@@ -175,7 +178,7 @@ export async function determineCourseType(iframeUrl: string) {
             console.log(answers);
             outputAnswers(answers);
 
-            if (Global.USER_SETTINGS.autoSolve) solveDataSolution(answers);
+            if (store.USER_SETTINGS.autoSolve) solveDataSolution(answers);
         }, 2000);
     } else if (READING.includes(courseInfo)) {
         let answerUrl =

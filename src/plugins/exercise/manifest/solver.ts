@@ -1,4 +1,4 @@
-import { Global } from "@src/global";
+import { store } from "@src/store";
 import { sleep } from "@src/utils/common";
 
 export async function solveManifest(answers: any[]) {
@@ -12,7 +12,7 @@ export async function solveManifest(answers: any[]) {
     >;
 
     for (const answer of answers) {
-        await sleep(Global.USER_SETTINGS.solveInterval);
+        await sleep(store.USER_SETTINGS.solveInterval);
         switch (answer.type) {
             case "blank":
                 for (const inputAnswer of answer.text.split(",")) {
@@ -28,7 +28,7 @@ export async function solveManifest(answers: any[]) {
                 break;
             case "textarea":
                 (document.querySelector(".pattern textarea") as HTMLTextAreaElement).value =
-                    Global.USER_SETTINGS.defaultBlankAnswer;
+                    store.USER_SETTINGS.defaultBlankAnswer;
 
                 break;
             case "choice":

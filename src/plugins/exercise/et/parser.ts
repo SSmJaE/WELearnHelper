@@ -1,3 +1,5 @@
+import { store } from "@src/store";
+
 type AnswerType =
     | "et-tof"
     | "et-blank"
@@ -35,7 +37,7 @@ export function parseEt(dom: Document) {
     }
     return realAnswers;
 }
-import { Global } from "@src/global";
+
 function parseAnswer(element: HTMLElement) {
     let tag = element.tagName.toLowerCase() as AnswerType;
     let answerText = "";
@@ -44,12 +46,14 @@ function parseAnswer(element: HTMLElement) {
             answerText = element.getAttribute("key") as string;
 
             break;
+
         case "et-blank":
             if (isRepeat(element)) return;
             answerText = element.textContent!.split("|")[0];
             if (element.hasAttribute("block")) tag = "et-textarea";
 
             break;
+
         case "et-select":
             answerText = element.getAttribute("key") as string;
             try {
@@ -61,6 +65,7 @@ function parseAnswer(element: HTMLElement) {
             }
 
             break;
+
         case "et-choice":
             if (isRepeat(element)) {
                 //针对有只有inline的情况(视听说2 4-2)，也就是说，不能跳
@@ -71,6 +76,7 @@ function parseAnswer(element: HTMLElement) {
             answerText = element.getAttribute("key") as string;
 
             break;
+
         case "et-matching":
             if (isRepeat(element)) return;
             answerText = element
@@ -79,8 +85,9 @@ function parseAnswer(element: HTMLElement) {
                 .join("\n\t");
 
             break;
+
         case "et-reference":
-            if (!Global.USER_SETTINGS.showReference) return;
+            if (!store.USER_SETTINGS.showReference) return;
             answerText = element.innerHTML;
             // content.style.whiteSpace = "normal";
 

@@ -6,4 +6,4 @@ export let pluginSettings = [...examSettings, ...exerciseSettings, ...timeSettin
 
 //在此处暴露需要让上级访问的接口
 export * from "./exam/parser";
-export * from "./exam/requests";
+// export * from "./exam/requests";

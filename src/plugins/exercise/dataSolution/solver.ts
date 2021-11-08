@@ -1,4 +1,4 @@
-import { Global } from "@src/global";
+import { store } from "@src/store";
 import { sleep } from "@src/utils/common";
 
 export async function solveDataSolution(answers: any[]) {
@@ -8,7 +8,7 @@ export async function solveDataSolution(answers: any[]) {
     let inputOrder = 0;
 
     for (const answer of answers) {
-        await sleep(Global.USER_SETTINGS.solveInterval);
+        await sleep(store.USER_SETTINGS.solveInterval);
         switch (answer.type) {
             case "blank":
                 // ready_in(inputOnPaper[inputOrder]);

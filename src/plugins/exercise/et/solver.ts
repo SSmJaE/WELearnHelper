@@ -18,7 +18,7 @@ function event_trigger(element: HTMLElement) {
     } catch (error) {}
 }
 
-import { Global } from "@src/global";
+import { store } from "@src/store";
 import { sleep } from "@src/utils/common";
 
 export async function solveEt(answers: any[]) {
@@ -48,7 +48,7 @@ export async function solveEt(answers: any[]) {
     let optionOrder = 0;
 
     for (const answer of answers) {
-        await sleep(Global.USER_SETTINGS.solveInterval);
+        await sleep(store.USER_SETTINGS.solveInterval);
 
         switch (answer.type) {
             case "et-tof":
@@ -161,7 +161,7 @@ export async function solveEt(answers: any[]) {
                     matchingOrder < answer.element.getAttribute("key").split(",").length;
                     matchingOrder++
                 ) {
-                    await sleep(Global.USER_SETTINGS.solveInterval);
+                    await sleep(store.USER_SETTINGS.solveInterval);
                     let targetCircle =
                         answer.element
                             .getAttribute("key")

@@ -3,6 +3,9 @@
 // var soundfile = "";
 // var bufferingTimer: any;
 
+import { store } from "@src/store";
+import { addMessage } from "@src/store/actions";
+
 /**
  * 替换原生的playSound函数，以实现无限播放听力
  */
@@ -53,4 +56,59 @@ export function hackPlaySound() {
 
         jwplayer("soundplayer").play();
     };
+}
+
+export function parseResponse(json: QuestionResponse) {
+    console.log(json);
+
+    let status = "";
+    switch (json.status) {
+        case 0:
+            status = "新增收录题目，未收录答案";
+            break;
+        case 1:
+            status = "新增收录题目，且收录答案";
+            addMessage(status, "info");
+            addMessage(`用户${store.USER_SETTINGS.userAccount}积分+1`, "info");
+            break;
+        case 2:
+            status = "服务器已有题目，新增答案";
+            addMessage(status, "info");
+            addMessage(`用户${store.USER_SETTINGS.userAccount}积分+1`, "info");
+            break;
+        case 3:
+            status = "服务器已有答案，返回答案";
+            break;
+        case 4:
+            status = "服务器已有题目，没有答案";
+            break;
+        case 5:
+            status = "服务器没有题目，没有答案";
+            break;
+        case 6:
+            status = "没有标答，返回最可能答案";
+            break;
+    }
+    // addMessage(status, "info");
+
+    let answer = json.answer;
+    switch (json.status) {
+        case 3:
+            addMessage(answer as string, "success");
+            break;
+        case 4:
+        //fallthrough
+        case 5:
+            addMessage("尚未收录答案", "error");
+            break;
+        case 6:
+            for (let [option, possibility] of Object.entries(<string>answer)) {
+                addMessage(`${possibility} ${option}`, "success");
+            }
+    }
+
+    if (store.messages)
+        if (store.messages[store.messages.length - 1].info)
+            //前一条消息为空不添加
+            addMessage("", "hr");
 }

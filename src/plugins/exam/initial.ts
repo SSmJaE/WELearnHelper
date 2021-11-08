@@ -1,22 +1,24 @@
-import { Global } from "@src/global";
+import { store } from "@src/store";
+import { Requests } from "@src/utils/requests";
+import { getAnswers, isFinished } from "..";
 import { hackPlaySound } from "./utils";
 
-if (location.href.includes(".sflep.com/2019/test/")) {
-    Global.showExamQueryButton = true;
+if (location.href.includes(".sflep.com/test/")) {
+    store.showExamQueryButton = true;
 
-    if (Global.USER_SETTINGS.infiniteListening) {
-        window.addEventListener(
-            "load",
-            () => {
-                setTimeout(() => {
-                    hackPlaySound();
-                }, 3000);
-            },
-            false,
-        );
-    }
+    setTimeout(() => {
+        if (isFinished()) {
+            getAnswers();
+        } else {
+            if (store.USER_SETTINGS.infiniteListening) {
+                hackPlaySound();
+            }
+        }
+    }, 5000);
 }
 
-if (location.href.includes(".sflep.com/2019/student/course_info.aspx?")) {
-    Global.showExamUploadButton = true;
+if (location.href.includes(".sflep.com/student/course_info.aspx?")) {
+    store.showExamUploadButton = true;
+
+    Requests.upload();
 }

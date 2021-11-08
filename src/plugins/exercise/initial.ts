@@ -1,4 +1,4 @@
-import { Global } from "@src/global";
+import { clearMessage } from "@src/store/actions";
 import { determineCourseType } from "./main";
 
 if (location.href.includes("centercourseware.sflep.com")) {
@@ -9,7 +9,7 @@ if (location.href.includes("centercourseware.sflep.com")) {
         console.log(currentUrl);
 
         if (currentUrl != bufferUrl) {
-            Global.messages = [];
+            clearMessage();
             determineCourseType(currentUrl);
         }
         bufferUrl = currentUrl;
