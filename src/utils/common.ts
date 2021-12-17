@@ -180,7 +180,21 @@ export async function getValue(key: string, defaultValue?: any) {
 
 /**针对带数字索引的答案 */
 export async function copyToClipboard(text: string) {
-    await navigator.clipboard.writeText(text.replace(/^.*、/, ""));
+    // await navigator.clipboard.writeText(text.replace(/^.*、/, ""));
+
+    const copyFrom = document.createElement("textarea");
+
+    copyFrom.textContent = text.replace(/^.*、/, "");
+
+    document.body.appendChild(copyFrom);
+
+    copyFrom.select();
+
+    document.execCommand("copy");
+
+    copyFrom.blur();
+
+    document.body.removeChild(copyFrom);
 }
 
 /**

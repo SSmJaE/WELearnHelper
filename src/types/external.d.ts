@@ -5,6 +5,7 @@ declare global {
 
     const createSoundPlayer: Function;
     const jwplayer: Function;
+    const NextSCO: Function;
     let PlaySound: Function;
     let soundfile: string;
     let resPath: any;

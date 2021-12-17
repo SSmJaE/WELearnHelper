@@ -1,6 +1,6 @@
 const SETTINGS: SectionSetting[] = [
     {
-        title: "练习答案",
+        title: "练习",
         display: true,
         settings: [
             {
@@ -10,12 +10,6 @@ const SETTINGS: SectionSetting[] = [
                 default: true,
                 description: "是否显示听力、口语参考(适用视听说)",
             },
-        ],
-    },
-    {
-        title: "自动答题-练习部分",
-        display: true,
-        settings: [
             {
                 id: "autoSolve",
                 name: "自动答题",

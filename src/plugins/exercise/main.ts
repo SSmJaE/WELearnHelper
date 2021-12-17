@@ -22,6 +22,8 @@ const DATA_SOLUTION = [
     "new progressive college english integrated course 2", //全新版大学进阶英语：综合2
     "new progressive college english integrated course 3", //全新版大学进阶英语：综合3
     "new progressive college english integrated course 4", //全新版大学进阶英语：综合4
+    "//centercourseware.sflep.com/new progressive college english integrated course 1-sz/unit_01/main6.html?1-1-6&nocache=0.08870107701951402",
+    "new progressive college english integrated course 1-sz",
     "https://centercourseware.sflep.com/new target college english integrated course 2/unit_05/main.html?2-5-10&nocache=0.7739324146362139",
     "new target college english integrated course 1", //新目标大学英语《综合教程》 第一册；这个是所有页面混杂在一个大页面里的那个
     "new target college english integrated course 2", //新目标大学英语《综合教程》 第二册

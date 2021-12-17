@@ -38,7 +38,7 @@ export let DEBUG_MODE: boolean;
 
 if (process.env.NODE_ENV === "development") {
     BASE_URL = "http://localhost:53212/api/welearn";
-    // BASE_URL = "http://47.100.166.53/api/unipus";
+    // BASE_URL = "http://47.100.166.53/api/welearn";
     DEBUG_MODE = true;
 } else {
     BASE_URL = "http://47.100.166.53/api/welearn";

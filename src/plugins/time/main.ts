@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import { DEBUG_MODE, store } from "@src/store";
+import { getValue, setValue } from "@src/utils/common";
 
 let time = Date.now();
 let buffer = time;
@@ -26,31 +27,34 @@ function generateRandomInterval() {
 function nextChapter() {
     const topWindow = top as Window;
 
-    const jumpButtons = topWindow.document.querySelectorAll(
+    const jumpButtons = topWindow.document.querySelectorAll<HTMLLinkElement>(
         'a[onclick^="SelectSCO"]',
-    ) as NodeListOf<HTMLLinkElement>;
+    );
     const currentButton = topWindow.document.querySelector("li.courseware_current a");
-    const currentNext = topWindow.document.querySelector(
-        '[href="javascript:NextSCO();"]',
-    ) as HTMLLinkElement;
+    // const currentNext = topWindow.document.querySelector(
+    //     '[href="javascript:NextSCO();"]',
+    // ) as HTMLLinkElement;
 
     if (currentButton == jumpButtons[jumpButtons.length - 1]) {
-        if (store.USER_SETTINGS.loopRefresh) jumpButtons[1].click(); //跳到开头，并跳过可能的课程说明页
+        if (store.USER_SETTINGS.loopRefresh) {
+            jumpButtons[1].click(); //跳到开头，并跳过可能的课程说明页
+        }
     } else {
-        currentNext.click();
+        // currentNext.click();
+        NextSCO();
     }
 }
 
-function notify() {
-    let status = eval(GM_getValue("hasInformed", "false"));
+async function notify() {
+    let status = await getValue("hasInformed", false);
     if (!status) {
         Swal.fire({
-            title: "挂机提示",
-            text: "如果后台显示，不一定能自动切换页面",
+            title: "挂机(时长)提示",
+            text: "如果将浏览器置于后台，不一定能自动切换页面",
             icon: "info",
             confirmButtonText: "了解",
         });
-        GM_setValue("hasInformed", true);
+        await setValue("hasInformed", true);
     }
 }
 
