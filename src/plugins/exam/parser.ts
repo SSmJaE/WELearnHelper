@@ -43,21 +43,26 @@ export async function getAnswers() {
             // 练习未收录，单题dom查询
             for (const questionItemDiv of document.querySelectorAll<HTMLElement>(".itemDiv")) {
                 const domString = questionItemDiv.outerHTML;
-                const questionWithAnswers = await Requests.queryByDomString(domString);
 
-                for (const questionWithAnswer of questionWithAnswers) {
-                    try {
-                        addMessage(getQuestionIndex(questionItemDiv), "normal");
-                    } catch (error) {}
+                try {
+                    const questionWithAnswers = await Requests.queryByDomString(domString);
 
-                    if (questionWithAnswer.answerText) {
-                        addMessage(questionWithAnswer.answerText as string, "success");
-                    } else {
-                        addMessage("该题尚未收录答案", "error");
+                    for (const questionWithAnswer of questionWithAnswers) {
+                        try {
+                            addMessage(getQuestionIndex(questionItemDiv), "normal");
+                        } catch (error) {}
+
+                        if (questionWithAnswer.answerText) {
+                            addMessage(questionWithAnswer.answerText as string, "success");
+                        } else {
+                            addMessage("该题尚未收录答案", "error");
+                        }
+                        addMessage("", "hr");
+
+                        await sleep(QUERY_INTERVAL);
                     }
-                    addMessage("", "hr");
-
-                    await sleep(QUERY_INTERVAL);
+                } catch (error) {
+                    console.log(error);
                 }
             }
         }

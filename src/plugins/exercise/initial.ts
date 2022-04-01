@@ -1,5 +1,5 @@
 import { clearMessage } from "@src/store/actions";
-import { determineCourseType } from "./main";
+import { determineCourseType, initialCourseCatalog } from "./main";
 
 if (location.href.includes("centercourseware.sflep.com")) {
     let bufferUrl = "";
@@ -16,4 +16,5 @@ if (location.href.includes("centercourseware.sflep.com")) {
     }
 
     setInterval(watcher, 2000);
+    initialCourseCatalog();
 }

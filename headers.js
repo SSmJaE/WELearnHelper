@@ -2,7 +2,7 @@
 // @name         WELearn网课助手
 // @namespace    https://github.com/SSmJaE/WELearnHelper
 // @description  显示WE Learn随行课堂题目答案；支持班级测试；自动答题；刷时长；开放自定义设置
-// @version      0.9.1
+// @version      0.9.2
 // @author       SSmJaE
 // @license      GPL-3.0
 // @compatible   Chrome
@@ -18,5 +18,5 @@
 // @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
-// @require      https://cdn.jsdelivr.net/npm/vue/dist/vue.js
+// @require      https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js
 // ==/UserScript==

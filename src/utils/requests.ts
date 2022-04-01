@@ -1,6 +1,6 @@
 import { VERSION } from "@src/store";
 import { addMessage } from "@src/store/actions";
-import { requestErrorHandler } from "@utils/common";
+import { perSession, requestErrorHandler } from "@utils/common";
 import request from "@utils/proxy";
 
 interface ICommonResponse<T = null> {
@@ -16,10 +16,19 @@ interface IQuestionWithAnswer {
     answerText?: string;
 }
 
+interface IGetCourseCatalog {
+    dataSolution: string[];
+    et: string[];
+    manifest: string[];
+    reading: string[];
+    app: string[];
+}
+
 type ICheckVersionReturn = ICommonResponse<string[]>;
 type IQueryByTaskIdResponse = ICommonResponse<IQuestionWithAnswer[]>;
 type IQueryByQuestionIdResponse = ICommonResponse<IQuestionWithAnswer[]>;
 type IQueryByDomStringResponse = ICommonResponse<IQuestionWithAnswer[]>;
+type IGetCourseCatalogResponse = ICommonResponse<IGetCourseCatalog>;
 
 enum QueryTypes {
     queryByTaskId,
@@ -29,25 +38,20 @@ enum QueryTypes {
 
 export class Requests {
     @requestErrorHandler("脚本版本查询异常")
+    @perSession("LAST_CHECK_DATE")
     static async checkVersion() {
-        const hasChecked = sessionStorage.getItem("LAST_CHECK_DATE");
+        const response = await request.post<ICheckVersionReturn>("/version/", {
+            body: {
+                version: VERSION,
+            },
+        });
 
-        if (!hasChecked) {
-            const response = await request.post<ICheckVersionReturn>("/version/", {
-                body: {
-                    version: VERSION,
-                },
-            });
+        const returnJson = await response.json();
 
-            const returnJson = await response.json();
-
-            if (returnJson.status === false) {
-                throw new Error(returnJson.error);
-            } else {
-                addMessage(returnJson.data, "info");
-
-                sessionStorage.setItem("LAST_CHECK_DATE", new Date().toISOString());
-            }
+        if (returnJson.status === false) {
+            throw new Error(returnJson.error);
+        } else {
+            addMessage(returnJson.data, "info");
         }
     }
 
@@ -138,6 +142,22 @@ export class Requests {
                 addMessage("练习上传失败", "error");
                 addMessage(returnJson.error as string, "error");
             }
+        }
+    }
+
+    @requestErrorHandler("课程目录获取失败", "both")
+    @perSession("HAS_GET_COURSE_CATALOG")
+    static async getCourseCatalog() {
+        const response = await request.post<IGetCourseCatalogResponse>("/catalog/");
+
+        const returnJson = await response.json();
+
+        if (returnJson.status === false) {
+            throw new Error(returnJson.error);
+        } else {
+            addMessage("成功获取了最新的课程目录", "success");
+
+            return returnJson.data;
         }
     }
 
