@@ -30,9 +30,9 @@ export async function solveEt(answers: any[]) {
     const blankOnPaper = document.querySelectorAll("et-blank span.blank") as NodeListOf<
         HTMLSpanElement
     >;
-    const textareaOnPaper = document.querySelectorAll("et-blank textarea.blank") as NodeListOf<
-        HTMLTextAreaElement
-    >;
+    const textareaOnPaper = document.querySelectorAll(
+        'et-blank textarea[ng-model="blank.value"]',
+    ) as NodeListOf<HTMLTextAreaElement>;
     let blankOrder = 0;
     let textareaOrder = 0;
 
@@ -69,14 +69,15 @@ export async function solveEt(answers: any[]) {
 
                 tofOrder++;
                 break;
+
             case "et-blank": //普通填空题
                 ready_in(blankOnPaper[blankOrder]);
                 blankOnPaper[blankOrder].textContent = answer.text;
-                // (blankOnPaper[blankOrder] as HTMLSpanElement).value = answer.text;
                 event_trigger(blankOnPaper[blankOrder]);
 
                 blankOrder++;
                 break;
+
             case "et-textarea": //回答问题
                 if (answer.text.length) {
                     ready_in(textareaOnPaper[textareaOrder]);
@@ -87,19 +88,17 @@ export async function solveEt(answers: any[]) {
 
                 textareaOrder++;
                 break;
+
             case "et-select":
-                selectOnPaper[selectOrder].classList.add("correct");
-                // ready_in(selectOnPaper[selectOrder].querySelector('.key'));
-                selectOnPaper[selectOrder].querySelector("select")!.click();
-                // selectOnPaper[selectOrder].querySelector(".key").click();
-                angular
-                    .element(selectOnPaper[selectOrder].querySelector(".key"))
-                    .triggerHandler("change");
-                // angular.element(element).triggerHandler('');
-                event_trigger(selectOnPaper[selectOrder].querySelector(".key") as HTMLElement);
+                const watchedElement = selectOnPaper[selectOrder].querySelector("select") as any;
+
+                watchedElement!.value = `choice${answer.text}`;
+
+                watchedElement.dispatchEvent(new Event("change"));
 
                 selectOrder++;
                 break;
+
             case "et-choice":
                 let targetOption, options, optionCount;
                 let spanFlag = false;
@@ -155,6 +154,7 @@ export async function solveEt(answers: any[]) {
                 optionOrder++;
 
                 break;
+
             case "et-matching":
                 for (
                     let matchingOrder = 0;

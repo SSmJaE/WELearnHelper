@@ -56,11 +56,12 @@ export class Requests {
     }
 
     @requestErrorHandler("答案查询失败", "both")
-    static async queryByTaskId(taskId: number) {
+    static async queryByTaskId(taskId: number, isSchoolTest: boolean) {
         const response = await request.post<IQueryByTaskIdResponse>("/query/", {
             body: {
                 queryType: QueryTypes.queryByTaskId,
                 taskId: taskId,
+                isSchoolTest,
             },
         });
 
@@ -104,11 +105,12 @@ export class Requests {
     }
 
     @requestErrorHandler("答案收录失败")
-    static async collectAll(taskId: number, domString: string) {
+    static async collectAll(taskId: number, domString: string, isSchoolTest: boolean) {
         const response = await request.post<ICommonResponse>("/collect/", {
             body: {
                 taskId: taskId,
                 domString: domString,
+                isSchoolTest,
             },
         });
 

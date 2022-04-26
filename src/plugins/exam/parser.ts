@@ -11,7 +11,21 @@ export function isFinished() {
 }
 
 function getTaskId() {
-    return parseInt(/taskid=(\d*)/.exec(location.href)![1], 10);
+    // https://welearn.sflep.com/test/schooltest.aspx?schooltestid=1330
+    let isSchoolTest = false;
+    let taskId: number;
+
+    if (location.href.includes("schooltest")) {
+        isSchoolTest = true;
+        taskId = parseInt(/schooltestid=(\d*)/.exec(location.href)![1], 10);
+    } else {
+        taskId = parseInt(/taskid=(\d*)/.exec(location.href)![1], 10);
+    }
+
+    return {
+        isSchoolTest,
+        taskId,
+    };
 }
 
 function getQuestionIndex(questionItemDiv: HTMLElement) {
@@ -22,13 +36,13 @@ function getQuestionIds() {}
 
 export async function getAnswers() {
     clearMessage();
-    const taskId = getTaskId();
+    const { isSchoolTest, taskId } = getTaskId();
 
     if (isFinished()) {
         const domString = document.querySelector(".tab-content")!.outerHTML;
-        Requests.collectAll(taskId, domString);
+        Requests.collectAll(taskId, domString, isSchoolTest);
     } else {
-        const returnJson = await Requests.queryByTaskId(taskId);
+        const returnJson = await Requests.queryByTaskId(taskId, isSchoolTest);
 
         if (returnJson.status === true) {
             // 练习已收录

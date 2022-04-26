@@ -7,7 +7,8 @@ type AnswerType =
     | "et-choice"
     | "et-matching"
     | "et-reference"
-    | "et-textarea";
+    | "et-textarea"
+    | "et-sort";
 
 const ANSWER_TYPES: AnswerType[] = [
     "et-tof", //判断题
@@ -16,6 +17,7 @@ const ANSWER_TYPES: AnswerType[] = [
     "et-choice", //选择题(二选一，多选)
     "et-matching", //连线题
     "et-reference", //口语参考
+    "et-sort",
 ];
 
 export function parseEt(dom: Document) {
@@ -82,7 +84,7 @@ function parseAnswer(element: HTMLElement) {
             answerText = element
                 .getAttribute("key")!
                 .split(",")
-                .join("\n\t");
+                .join("\n\t<br/>");
 
             break;
 
@@ -90,6 +92,11 @@ function parseAnswer(element: HTMLElement) {
             if (!store.USER_SETTINGS.showReference) return;
             answerText = element.innerHTML;
             // content.style.whiteSpace = "normal";
+
+            break;
+
+        case "et-sort":
+            answerText = element.getAttribute("key") as string;
 
             break;
     }
