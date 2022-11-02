@@ -32,6 +32,15 @@ const DATA_SOLUTION = [
     "new target college english integrated course 2", //新目标大学英语《综合教程》 第二册
     "new target college english integrated course 3", //新目标大学英语《综合教程》 第三册
     "new target college english integrated course 4", //新目标大学英语《综合教程》 第四册
+    "New Target College English_V2_Integrated Course 1",
+    "New Target College English_V2_Integrated Course 2",
+    "New Target College English_V2_Integrated Course 3",
+    "New Target College English_V2_Integrated Course 4",
+    "New Advanced College English Grammar Course",
+    "New Advanced College English-Integrated Course 1", // todo 每切换一次，都会重新请求catalog，但还是同一个session
+    "New Advanced College English-Integrated Course 2", // 所以如果只是后端添加catalog，只有第一个页面有效
+    "New Advanced College English-Integrated Course 3",
+    "New Advanced College English-Integrated Course 4",
 ];
 
 /**et类型(url中包含data)理论上可以直接在原始页面上找(Demcorazy就是这么做的)，不过也可以统一通过ajax请求获取*/

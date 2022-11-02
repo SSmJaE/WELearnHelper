@@ -33,11 +33,11 @@ export async function initialCourseCatalog() {
 
     const { dataSolution, et, manifest, reading, app } = catalog;
 
-    MANIFEST.concat(manifest);
-    DATA_SOLUTION.concat(dataSolution);
-    ET.concat(et);
-    READING.concat(reading);
-    APP.concat(app);
+    MANIFEST.push(...manifest);
+    DATA_SOLUTION.push(...dataSolution);
+    ET.push(...et);
+    READING.push(...reading);
+    APP.push(...app);
 
     console.log({
         MANIFEST,
