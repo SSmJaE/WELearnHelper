@@ -134,8 +134,8 @@ const SwitchLabel = styled.label<{ width: number; height: number }>`
 `;
 
 export default function Switch({
-    // checked = false,
-    // onChange = () => {},
+    checked = false,
+    onChange = () => {},
     disabled = false,
     // width = 50,
     height = 25,
@@ -148,7 +148,7 @@ export default function Switch({
     height?: number;
     id?: string;
 }) {
-    const [checked, setChecked] = useState(false);
+    // const [checked, setChecked] = useState(false);
 
     return (
         <SwitchLabel className="my-switch" width={height * 2} height={height}>
@@ -157,8 +157,8 @@ export default function Switch({
                 type="checkbox"
                 checked={checked}
                 onChange={(e) => {
-                    // onChange(e.target.checked);
-                    setChecked(e.target.checked);
+                    onChange(e.target.checked);
+                    // setChecked(e.target.checked);
                 }}
                 disabled={disabled}
             />

@@ -21,7 +21,7 @@ export const commonSettings: SectionSetting<ICommonSettings>[] = [
             {
                 id: "userPoints",
                 name: "累计积分",
-                type: "readonly",
+                readonly: true,
                 default: 0,
                 valueType: "number",
                 description: "上传答案获取，暂无用处",

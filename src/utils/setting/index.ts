@@ -12,7 +12,7 @@ import { commonSettings } from "./common";
 export interface GenericSetting<T = any, K extends keyof T = keyof T> {
     id: K;
     name: string;
-    type?: "readonly";
+    readonly?: boolean;
     default: T[K];
     valueType: K extends keyof T
         ? T[K] extends infer V

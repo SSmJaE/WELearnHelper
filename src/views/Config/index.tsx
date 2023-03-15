@@ -12,6 +12,7 @@ import { MenuButton } from "../components/MenuButton";
 import PopOver from "../components/PopOver";
 import Switch from "../components/Switch";
 import { IPanel, TabContainer } from "./TabContainer";
+import { useDebounceFn } from "ahooks";
 
 const ConfigItem = styled.div(
     {
@@ -28,6 +29,144 @@ const ConfigItem = styled.div(
         },
     }),
 );
+
+function ConfigControl({
+    genericSetting: { id, valueType, readonly },
+}: {
+    genericSetting: GenericSetting;
+}) {
+    const [displayStatus, setDisplayStatus] = useState(false);
+    const [statusText, setStatusText] = useState("保存成功");
+
+    // const transition = useTransition(displayStatus, {
+    // TODO 对于mount、unmount，动画可能无效
+    const spring = useSpring({
+        from: {
+            right: "-100%",
+            opacity: 0,
+        },
+        to: {
+            right: "0%",
+            opacity: 1,
+        },
+    });
+    // });
+
+    const { userSettings } = useStore();
+
+    const value = userSettings[id as keyof typeof userSettings];
+
+    const [localValue, setLocalValue] = useState(value);
+
+    const { run: onChangeDebounced } = useDebounceFn(
+        (newValue: any) => {
+            if (newValue === value) return;
+
+            store.userSettings[id as keyof typeof userSettings] = newValue;
+            setDisplayStatus(true);
+            setStatusText("保存成功");
+            // api.start();
+
+            setTimeout(() => {
+                setDisplayStatus(false);
+            }, 1000);
+        },
+        {
+            wait: 1000,
+        },
+    );
+
+    useEffect(() => {
+        setLocalValue(value);
+    }, [value]);
+
+    useEffect(() => {
+        onChangeDebounced(localValue);
+    }, [localValue]);
+
+    let element: JSX.Element;
+
+    switch (valueType) {
+        case "string":
+            element = (
+                <textarea
+                    value={localValue as string}
+                    onBlur={(e) => setLocalValue(e.target.value)}
+                    onChange={(e) => setLocalValue(e.target.value)}
+                    disabled={readonly}
+                    style={{
+                        resize: "none",
+                    }}
+                ></textarea>
+            );
+            break;
+        case "number":
+            element = (
+                <input
+                    type={"number"}
+                    value={localValue as number}
+                    onBlur={(e) => setLocalValue(e.target.value)}
+                    onChange={(e) => setLocalValue(e.target.value)}
+                    style={{
+                        width: 60,
+                        textAlign: "center",
+                    }}
+                    disabled={readonly}
+                    // step={100}
+                ></input>
+            );
+            break;
+        case "boolean":
+            element = (
+                <Switch
+                    height={22}
+                    checked={localValue as boolean}
+                    onChange={setLocalValue}
+                    disabled={readonly}
+                />
+            );
+            break;
+    }
+
+    return (
+        <div
+            style={{
+                lineHeight: "normal",
+
+                display: "flex",
+                alignItems: "center",
+                // justifyContent: "space-between",
+                position: "relative",
+            }}
+        >
+            {/* {transition((style, item) => ( */}
+            {displayStatus && (
+                <animated.span
+                    style={{
+                        position: "relative",
+                        // right: 0,
+                        // width: "max-content",
+                        marginRight: 4,
+                        ...spring,
+                    }}
+                >
+                    {statusText}
+                </animated.span>
+            )}
+            {/* ))} */}
+            <div
+                style={{
+                    maxWidth: 200,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                {element}
+            </div>
+        </div>
+    );
+}
 
 function ConfigSection({ settings }: { settings: readonly GenericSetting[] }) {
     const theme = useTheme();
@@ -59,37 +198,17 @@ function ConfigSection({ settings }: { settings: readonly GenericSetting[] }) {
 
                             <div
                                 style={{
-                                    // position: "absolute",
-                                    // top: 8,
-                                    // right: 8,
-                                    // backgroundColor: "hotpink",
                                     maxHeight: 40,
-                                    lineHeight: "normal",
                                     // maxWidth: 200,
 
                                     display: "flex",
                                     alignItems: "center",
                                     // justifyContent: "space-between",
+
+                                    lineHeight: "normal",
                                 }}
                             >
-                                <span
-                                    style={{
-                                        marginRight: 4,
-                                    }}
-                                >
-                                    {"保存成功"}
-                                </span>
-                                {/* {setting.valueType} */}
-                                <Switch checked height={22} />
-                                {/* <input
-                                    style={
-                                        {
-                                            // height: 15,
-                                            // width: 300,
-                                        }
-                                    }
-                                ></input> */}
-                                {/* <textarea></textarea> */}
+                                <ConfigControl genericSetting={setting} />
                             </div>
                         </div>
                         <div
