@@ -1,51 +1,77 @@
-export * as actions from "./actions";
+import { proxy, useSnapshot } from "valtio";
+import { IWELearnExamSettings } from "../projects/welearn/exam/setting";
+import { IRecord } from "../utils/logger";
+import { IWELearnSettings, SectionSetting } from "../utils/setting";
+import { ICommonSettings } from "../utils/setting/common";
+// import { ICommonSettings } from "./utils/setting/common";
+import { devtools } from "valtio/utils";
 
-// export class Global {
-//     static messages: Message[] = [];
-//     static USER_SETTINGS: Setting = {};
-// }
-// 通过定义一个export default的类，是不是既可以保留const(普通对象内部无法const)，又可以重新赋值property(顶层导出变量会readonly, 无法重新赋值)?
-// 普通对象内部确实无法const，不过可以在这个对象的interface中readonly，但是这样要声明两次，不如直接class配合static一步到位
-// 导出class，绑定到vue的data中，并不能响应式(自动同步变量)，而object的导出可以，那就object吧
-// 直接new一个Vue实例作为event bus也是可以的，但是不想被框架绑架
+class Store {
+    visibility = {
+        log: true,
+        config: false,
+        floating: false,
+    };
+    setVisibility(key: keyof typeof this.visibility, value: boolean) {
+        this.visibility[key] = value;
+    }
+    position = {
+        floating: {
+            x: 0,
+            y: 0,
+        },
+        log: {
+            x: 0,
+            y: 0,
+        },
+    };
+    setPosition(key: keyof typeof this.position, value: any) {
+        this.position[key] = value;
+    }
 
+    tabIndex: number = 0;
+    setTabIndex(index: number) {
+        this.tabIndex = index;
+    }
 
-interface GlobalState {
-    /**所有要展示的消息*/
-    messages: Message[];
-    /**所有全局设置*/
-    USER_SETTINGS: UserSettings;
-    /**悬浮窗的折叠控制*/
-    collapse: boolean;
-    /**是否显示与考试相关的按钮*/
-    showExamQueryButton: boolean;
-    /**是否显示上传答案按钮*/
-    showExamUploadButton: boolean;
-    // [propName: string]: any;
+    userSettings: Partial<IWELearnSettings & ICommonSettings> = {};
+    sectionSettings: SectionSetting<IWELearnSettings & ICommonSettings>[] = [];
+
+    /**
+     * 通过集成了所有插件设置的设置中心，设置USER_SETTINGS的默认值
+     */
+    setDefaultValues() {
+        for (const section of this.sectionSettings) {
+            for (const generic of section.settings) {
+                if (this.userSettings[generic.id] === undefined) {
+                    this.userSettings[generic.id] = generic.default as any;
+                }
+            }
+        }
+    }
+
+    /** 恢复默认值 */
+    resetDefaultValues() {
+        for (const section of this.sectionSettings) {
+            for (const generic of section.settings) {
+                this.userSettings[generic.id] = generic.default as any;
+            }
+        }
+    }
+
+    logs: IRecord[] = [];
+    clearLogs() {
+        this.logs = [];
+    }
 }
 
-export let store: GlobalState = {
-    messages: [],
-    USER_SETTINGS: {} as UserSettings,
-    collapse: false,
-    showExamQueryButton: false,
-    showExamUploadButton: false,
-};
+export const store = proxy(new Store());
 
-// *--------------------以下为常量
-export let BASE_URL: string | null;
-export let DEBUG_MODE: boolean;
+devtools(store, {
+    name: "store",
+});
 
-if (process.env.NODE_ENV === "development") {
-    // BASE_URL = "http://localhost:53212/api/welearn";
-    BASE_URL = "http://47.100.166.53/api/welearn";
-    DEBUG_MODE = true;
-} else {
-    BASE_URL = "http://47.100.166.53/api/welearn";
-    DEBUG_MODE = false;
-}
+export const useStore = () => useSnapshot(store);
 
-import * as PACKAGE from "../../package.json";
-
-export const VERSION = PACKAGE.version;
-export const QUERY_INTERVAL = 3000; //单位ms
+export const QUERY_INTERVAL = 2000;
+export const DEBUG_MODE = false;
