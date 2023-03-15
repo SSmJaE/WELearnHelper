@@ -1,4 +1,5 @@
 // import Swal from "sweetalert2";
+import logger from "@/src/utils/logger";
 import { DEBUG_MODE, store } from "@src/store";
 import { getValue, setValue } from "@utils/polyfill";
 
@@ -15,9 +16,9 @@ function generateRandomInterval() {
     }
 
     if (DEBUG_MODE) {
-        console.log(refreshIntervalMax * rate * 60 * 1000);
-        console.log(Date.now() - buffer);
-        console.log(Date.now() - time);
+        logger.debug(refreshIntervalMax * rate * 60 * 1000);
+        logger.debug(Date.now() - buffer);
+        logger.debug(Date.now() - time);
         buffer = Date.now();
     }
 

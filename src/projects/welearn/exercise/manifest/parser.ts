@@ -1,15 +1,17 @@
+import logger from "@/src/utils/logger";
+
 export function parseManifest(dom: Document) {
     let realAnswers: Answer[] = [];
 
     let answers = dom.querySelectorAll("correctResponse value");
-    console.log(answers);
+    logger.debug(answers);
     let index = 1;
     for (const element of answers) {
         const answerArray = parseAnswer(element as HTMLElement, dom) as any;
         for (const answer of answerArray) {
             if (answer) {
                 answer.index = index;
-                console.log(answer);
+                logger.debug(answer);
                 realAnswers.push(answer);
             }
             index++;
@@ -30,7 +32,7 @@ function parseAnswer(element: HTMLElement, dom: Document) {
         let selector = `[identifier="${identifier}"]`;
         try {
             answerText = dom.querySelector(selector)!.textContent as string;
-            // console.log(answerText);
+            // logger.debug(answerText);
         } catch (error) {
             answerText = element.textContent as string; //高职第七八单元填空
         }

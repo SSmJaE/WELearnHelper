@@ -75,12 +75,12 @@ export function perSession(storageKey: string) {
             if (!hasChecked) {
                 const result = originalMethod.apply(this, args);
 
-                console.log(`${storageKey}未执行过，开始执行`);
+                logger.debug(`${storageKey}未执行过，开始执行`);
                 sessionStorage.setItem(storageKey, new Date().toISOString());
 
                 return result;
             } else {
-                console.log(`${storageKey}已执行过，放弃执行`);
+                logger.debug(`${storageKey}已执行过，放弃执行`);
                 return Promise.resolve();
             }
         };

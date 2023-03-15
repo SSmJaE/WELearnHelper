@@ -1,14 +1,16 @@
+import logger from "@/src/utils/logger";
+
 export function parseReading(dom: Document) {
     let realAnswers = [];
 
     let answers = dom.querySelectorAll("correctResponse value");
-    console.log(answers);
+    logger.debug(answers);
     let index = 1;
     for (const element of answers) {
         const answer = parseAnswer(element as HTMLElement, dom) as Answer;
         if (answer) {
             answer.index = index;
-            console.log(answer);
+            logger.debug(answer);
             realAnswers.push(answer);
         }
         index++;

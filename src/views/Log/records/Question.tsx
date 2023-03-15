@@ -10,7 +10,7 @@ import Button from "../../components/Button";
 import { animated, config, useSpring, useSprings, useTrail } from "@react-spring/web";
 import { useTheme } from "@emotion/react";
 import { store } from "@/src/store";
-import { IQuestionContent, IQuestionRecord } from "@/src/utils/logger";
+import logger, { IQuestionContent, IQuestionRecord } from "@/src/utils/logger";
 import { ErrorBoundary } from "react-error-boundary";
 import { InlineTag, useSlideIn } from "../../components/InlineTag";
 
@@ -152,7 +152,7 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
                             try {
                                 instance?.destroy();
                             } catch (error) {
-                                console.log("typeit destroy error");
+                                logger.debug("typeit destroy error");
                             }
                         },
                     }}

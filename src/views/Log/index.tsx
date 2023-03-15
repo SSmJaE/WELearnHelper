@@ -209,7 +209,7 @@ export function LogPanel() {
     //     status = true;
     // }, []);
 
-    // console.log({
+    // logger.debug({
     //     floating,
     // });
 

@@ -60,7 +60,7 @@ export function hackPlaySound() {
 }
 
 export function parseResponse(json: QuestionResponse) {
-    console.log(json);
+    logger.debug(json);
 
     let status = "";
     switch (json.status) {

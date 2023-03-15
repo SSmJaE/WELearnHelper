@@ -30,7 +30,7 @@ export async function initialCourseCatalog() {
     // 所以想要同时实现这两点的话，需要在此处手动判断catalog的返回值是否有效
     // 不想在此处判断的话，就将此处进行的操作，放在getCourseCatalog中即可
 
-    console.log({ catalog });
+    logger.debug({ catalog });
     if (catalog === undefined) return;
 
     const { dataSolution, et, manifest, reading, app } = catalog;
@@ -41,7 +41,7 @@ export async function initialCourseCatalog() {
     READING.push(...reading);
     APP.push(...app);
 
-    console.log({
+    logger.debug({
         MANIFEST,
         DATA_SOLUTION,
         ET,
@@ -58,7 +58,7 @@ async function queryData(answerUrl: string) {
 
     let htmlDom = PARSER.parseFromString(text, "text/html");
     // if (DEBUG_MODE)
-    console.log(htmlDom);
+    logger.debug(htmlDom);
     return htmlDom;
 }
 
@@ -102,7 +102,7 @@ async function outputAnswers(answers: Answer[]) {
                 couldSolve: true,
                 hasSolved: true,
                 solveThis: async () => {
-                    console.log("solve this");
+                    logger.debug("solve this");
                 },
             },
         });
@@ -120,7 +120,7 @@ async function outputAnswers(answers: Answer[]) {
 export async function determineCourseType(iframeUrl: string) {
     let courseInfo = /com\/(.*?)\//.exec(iframeUrl)![1];
     courseInfo = decodeURI(courseInfo);
-    console.log(courseInfo);
+    logger.debug(courseInfo);
 
     let identifier: string | undefined = undefined;
     try {
@@ -152,7 +152,7 @@ export async function determineCourseType(iframeUrl: string) {
         setTimeout(() => {
             answers = parseDataSolution();
 
-            console.log(answers);
+            logger.debug(answers);
 
             if (answers.length) {
                 outputAnswers(answers);
@@ -173,14 +173,14 @@ export async function determineCourseType(iframeUrl: string) {
         logger.info(`未适配的课程类型，请在Github反馈`);
         logger.info(`${courseInfo}`);
         logger.info(`注意页面上是否有二维码，且注明需在app中使用，这种题型只能用app`);
-        console.log("未处理的课程类型");
-        console.log(courseInfo);
-        console.log(identifier);
+        logger.debug("未处理的课程类型");
+        logger.debug(courseInfo);
+        logger.debug(identifier);
         // add_to_container("", document.querySelectorAll(".daan"));
         // add_to_container("", document.querySelectorAll(".tianking .tl_daan"));
     }
 
-    console.log(answers);
+    logger.debug(answers);
 
     if (answers.length) {
         hasAnswer = true;

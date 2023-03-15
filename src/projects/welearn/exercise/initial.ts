@@ -1,3 +1,4 @@
+import logger from "@/src/utils/logger";
 import { store } from "@store";
 import { determineCourseType, initialCourseCatalog } from "./main";
 
@@ -6,7 +7,7 @@ if (location.href.includes("centercourseware.sflep.com")) {
 
     function watcher() {
         let currentUrl = location.href;
-        console.log(currentUrl);
+        logger.debug(currentUrl);
 
         if (currentUrl != bufferUrl) {
             store.clearLogs();

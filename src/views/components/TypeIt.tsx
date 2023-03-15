@@ -1,3 +1,4 @@
+import logger from "@/src/utils/logger";
 import React, { forwardRef, useRef, useEffect, useState } from "react";
 import { default as TypeItCore, TypeItOptions } from "typeit";
 
@@ -78,7 +79,7 @@ const TypeIt: React.FunctionComponent<TypeItProps> = (props: TypeItProps) => {
             try {
                 instanceRef.current?.destroy();
             } catch (error) {
-                console.log("[eocs-helper] : TypeIt", error);
+                logger.debug("TypeIt", error);
             }
         };
     }, []);

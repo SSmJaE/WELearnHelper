@@ -1,3 +1,4 @@
+import logger from "../logger";
 import { injectToContent } from "./extension/inject";
 
 declare let GM_setValue: any;
@@ -7,7 +8,7 @@ declare let GM_setValue: any;
  */
 export async function setValue(key: string, value: any) {
     typeof GM_setValue === "function" || function GM_setValue() {};
-    console.log(GM_setValue);
+    logger.debug(GM_setValue);
     if (process.env.CRX) {
         injectToContent("setValue", {
             key: key,
@@ -25,11 +26,8 @@ declare let GM_getValue: any;
  *
  * 如果调用的是GM_getValue，返回JSON.parse后的结果 */
 export async function getValue(key: string, defaultValue?: any) {
-    if (!window.GM_getValue) {
-        window.GM_getValue = () => {};
-    }
-    // typeof GM_getValue === "function" || function GM_getValue() {};
-    console.log(GM_getValue);
+    typeof GM_getValue === "function" || function GM_getValue() {};
+    logger.debug(GM_setValue);
 
     let returnValue: any;
     if (process.env.CRX) {

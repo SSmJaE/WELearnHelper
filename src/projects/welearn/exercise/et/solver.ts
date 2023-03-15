@@ -18,6 +18,7 @@ function event_trigger(element: HTMLElement) {
     } catch (error) {}
 }
 
+import logger from "@/src/utils/logger";
 import { store } from "@src/store";
 import { sleep } from "@src/utils";
 
@@ -108,7 +109,7 @@ export async function solveEt(answers: any[]) {
                 } catch (error) {
                     options = ["1"]; //不检查答案的选择题
                 }
-                console.log(options);
+                logger.debug(options);
 
                 if (!(optionCount = answer.element.querySelectorAll("li").length)) {
                     optionCount = answer.element.querySelectorAll("span").length;
@@ -132,7 +133,7 @@ export async function solveEt(answers: any[]) {
                         targetOption = optionCount * optionOrder + parseInt(option) - 1;
                     }
 
-                    console.log(
+                    logger.debug(
                         `题号${optionOrder} span${spanOrder} 选项${targetOption} 选项数${optionCount}`,
                     );
                     if (spanFlag && optionCount) {

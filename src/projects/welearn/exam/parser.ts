@@ -79,7 +79,7 @@ export async function getAnswers() {
                         await sleep(QUERY_INTERVAL);
                     }
                 } catch (error) {
-                    console.log(error);
+                    logger.debug(error);
                 }
             }
         }

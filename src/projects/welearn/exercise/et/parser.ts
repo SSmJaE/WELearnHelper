@@ -1,3 +1,4 @@
+import logger from "@/src/utils/logger";
 import { store } from "@src/store";
 
 type AnswerType =
@@ -24,13 +25,13 @@ export function parseEt(dom: Document) {
     let realAnswers = [];
     for (const answerType of ANSWER_TYPES) {
         let answers = dom.querySelectorAll(answerType);
-        console.log(answers);
+        logger.debug(answers);
         let index = 1;
         for (const element of answers) {
             const answer = parseAnswer(element as HTMLElement) as Answer | null;
             if (answer) {
                 answer.index = index;
-                console.log(answer);
+                logger.debug(answer);
                 realAnswers.push(answer);
 
                 index++;
@@ -124,7 +125,7 @@ function isRepeat(answerNode: HTMLElement) {
             if (parentTag == "ET-WEB-ONLY") webFlag++;
         }
     } catch (error) {
-        // if (USER_SETTINGS.debugMode) console.log(error);
+        // if (USER_SETTINGS.debugMode) logger.debug(error);
     } finally {
         if (webFlag && mobileFlag) {
             //针对web下嵌套mobile的题目，如视听说2的3-2-3
