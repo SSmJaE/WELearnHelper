@@ -74,6 +74,14 @@ async function queryManifest(manifestUrl: string, identifier: string, courseInfo
     return queryData(answerUrl);
 }
 
+export interface Answer {
+    text: string;
+    type: string;
+    element: HTMLElement;
+    index: number;
+    [prop: string]: any;
+}
+
 async function outputAnswers(answers: Answer[]) {
     let bufferTag = "";
     for (const answer of answers) {

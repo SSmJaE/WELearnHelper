@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import styled from "@emotion/styled";
-import { store, useStore } from "../../store";
-import { IPanel, TabContainer } from "./TabContainer";
-import { GenericSetting } from "../../utils/setting";
-// import { makeDraggable } from "../../utils/draggable";
 import Draggable from "react-draggable";
-import { useSnapshot } from "valtio";
-import PopOver from "../components/PopOver";
-import { MenuBar } from "../components/MenuBar";
+
 import { useTheme } from "@emotion/react";
+import styled from "@emotion/styled";
 import { animated, config, useSpring, useTransition } from "@react-spring/web";
-import { Close } from "@icon-park/react";
+
+import { store, useStore } from "../../store";
+import { GenericSetting } from "../../utils/setting";
+import { MenuBar } from "../components/MenuBar";
 import { MenuButton } from "../components/MenuButton";
+import PopOver from "../components/PopOver";
+import Switch from "../components/Switch";
+import { IPanel, TabContainer } from "./TabContainer";
 
 const ConfigItem = styled.div(
     {
@@ -66,17 +66,29 @@ function ConfigSection({ settings }: { settings: readonly GenericSetting[] }) {
                                     maxHeight: 40,
                                     lineHeight: "normal",
                                     // maxWidth: 200,
+
+                                    display: "flex",
+                                    alignItems: "center",
+                                    // justifyContent: "space-between",
                                 }}
                             >
+                                <span
+                                    style={{
+                                        marginRight: 4,
+                                    }}
+                                >
+                                    {"保存成功"}
+                                </span>
                                 {/* {setting.valueType} */}
-                                <input
+                                <Switch checked height={22} />
+                                {/* <input
                                     style={
                                         {
                                             // height: 15,
                                             // width: 300,
                                         }
                                     }
-                                ></input>
+                                ></input> */}
                                 {/* <textarea></textarea> */}
                             </div>
                         </div>

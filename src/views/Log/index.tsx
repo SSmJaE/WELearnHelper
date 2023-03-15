@@ -323,6 +323,7 @@ export function LogPanel() {
                                 }}
                                 style={{
                                     lineHeight: "normal",
+                                    marginLeft: 4,
                                 }}
                             >
                                 {/* <ClickToFold theme="filled" size="28" fill={theme.colors.active} /> */}
