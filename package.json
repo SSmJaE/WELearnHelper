@@ -19,6 +19,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.5",
+    "react-error-boundary": "^3.1.4",
     "simplebar-react": "^3.2.1",
     "typeit-react": "^2.6.4",
     "valtio": "^1.10.3"

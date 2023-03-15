@@ -31,7 +31,7 @@ export function dispatchRecord(record: any) {
 
     switch (record.type) {
         case "info":
-            recordDisplay = <InfoRecord record={{}} />;
+            recordDisplay = <InfoRecord record={record} />;
             break;
 
         case "question":

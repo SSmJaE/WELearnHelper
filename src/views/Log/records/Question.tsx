@@ -1,4 +1,3 @@
-import styled from "@emotion/styled";
 import { createRef, useState } from "react";
 import { useHover, useMount } from "ahooks";
 // import Typed from "typed.js";
@@ -11,19 +10,8 @@ import { animated, config, useSpring, useSprings, useTrail } from "@react-spring
 import { useTheme } from "@emotion/react";
 import { store } from "@/src/store";
 import { IQuestionContent, IQuestionRecord } from "@/src/utils/logger";
-
-// import Typist from "react-typist";
-
-const InlineTag = styled(animated.span)({
-    marginRight: 4,
-    // border: "1px dashed black",
-    borderRadius: 4,
-    padding: "2px 4px",
-    // lineHeight: "1.5em",
-    height: "24px",
-    position: "relative",
-    userSelect: "none",
-});
+import { ErrorBoundary } from "react-error-boundary";
+import { InlineTag, useSlideIn } from "../../components/InlineTag";
 
 const defaultColorMapping = {
     GPT: "orange",
@@ -105,13 +93,9 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
 
     const theme = useTheme();
 
-    const [spring, api] = useSpring(() => ({
-        from: { opacity: 1, left: "-100%" },
-        to: { opacity: 1, left: "0%" },
-        config: {
-            ...config.gentle,
-        },
-    }));
+    const [spring, api] = useSlideIn();
+
+    // TODO 尝试函数式风格声明typedit，避免销毁时报错无法捕获
 
     return (
         <div
@@ -155,21 +139,27 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
             {/* 不考虑虚拟列表的话，没必要conditional 选择typeit还是普通span */}
 
             {store.userSettings.enableTyping ? (
-                <TypeIt
-                    options={{
-                        startDelay: 600,
-                        // waitUntilVisible: true,
-                        cursorChar: "█",
-                        speed: 25,
-                        lifeLike: true,
-                        afterComplete: (instance: any) => {
-                            instance.destroy();
-                        },
-                    }}
-                    style={{}}
-                >
-                    {record.content.answerText}
-                </TypeIt>
+                <ErrorBoundary FallbackComponent={<div>哈哈哈</div>}>
+                    <TypeIt
+                        options={{
+                            startDelay: 600,
+                            // waitUntilVisible: true,
+                            cursorChar: "█",
+                            speed: 25,
+                            lifeLike: true,
+                            afterComplete: (instance: any) => {
+                                try {
+                                    instance?.destroy();
+                                } catch (error) {
+                                    console.log("typeit destroy error");
+                                }
+                            },
+                        }}
+                        style={{}}
+                    >
+                        {record.content.answerText}
+                    </TypeIt>
+                </ErrorBoundary>
             ) : (
                 <animated.span
                     style={{

@@ -14,6 +14,7 @@ specifiers:
   react: ^18.2.0
   react-dom: ^18.2.0
   react-draggable: ^4.4.5
+  react-error-boundary: ^3.1.4
   simplebar-react: ^3.2.1
   typeit-react: ^2.6.4
   typescript: ^4.9.5
@@ -30,6 +31,7 @@ dependencies:
   react: registry.npmmirror.com/react/18.2.0
   react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
   react-draggable: registry.npmmirror.com/react-draggable/4.4.5_biqbaboplfbrettd7655fr4n2y
+  react-error-boundary: registry.npmmirror.com/react-error-boundary/3.1.4_react@18.2.0
   simplebar-react: registry.npmmirror.com/simplebar-react/3.2.1_react@18.2.0
   typeit-react: registry.npmmirror.com/typeit-react/2.6.4
   valtio: registry.npmmirror.com/valtio/1.10.3_react@18.2.0
@@ -1619,6 +1621,19 @@ packages:
       prop-types: registry.npmmirror.com/prop-types/15.8.1
       react: registry.npmmirror.com/react/18.2.0
       react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
+    dev: false
+
+  registry.npmmirror.com/react-error-boundary/3.1.4_react@18.2.0:
+    resolution: {integrity: sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-error-boundary/-/react-error-boundary-3.1.4.tgz}
+    id: registry.npmmirror.com/react-error-boundary/3.1.4
+    name: react-error-boundary
+    version: 3.1.4
+    engines: {node: '>=10', npm: '>=6'}
+    peerDependencies:
+      react: '>=16.13.1'
+    dependencies:
+      '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.21.0
+      react: registry.npmmirror.com/react/18.2.0
     dev: false
 
   registry.npmmirror.com/react-is/16.13.1:

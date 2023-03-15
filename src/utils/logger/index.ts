@@ -37,6 +37,8 @@ export interface IQuestionContent {
 
 export type IQuestionRecord = IRecord<"question", IQuestionContent>;
 
+export type IInfoRecord = IRecord<"info", string>;
+
 export class Logger {
     maxSize: number;
     shiftOffset: number;
