@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { animated, config, useSpring } from "@react-spring/web";
+import { animated, config, Spring, useSpring } from "@react-spring/web";
 
 // import Typist from "react-typist";
 export const InlineTag = styled(animated.span)({
@@ -14,13 +14,13 @@ export const InlineTag = styled(animated.span)({
 });
 
 export function useSlideIn() {
-    const [spring, api] = useSpring(() => ({
+    const spring = useSpring({
         from: { opacity: 1, left: "-100%" },
         to: { opacity: 1, left: "0%" },
         config: {
             ...config.gentle,
         },
-    }));
+    });
 
-    return [spring, api];
+    return spring;
 }

@@ -353,7 +353,12 @@ export function LogPanel() {
                     {logs.map((record, index) => {
                         return (
                             // TODO hasExtra => !disabled，避免页面上的PopOver过多，略微优化一下性能
-                            <PopOver content={"extra"} placement={"right"} disabled={false}>
+                            <PopOver
+                                key={record.timestamp}
+                                content={"extra"}
+                                placement={"right"}
+                                disabled={false}
+                            >
                                 <RecordContainer
                                     key={record.timestamp}
                                     style={{

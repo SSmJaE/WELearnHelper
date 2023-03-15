@@ -16,7 +16,7 @@ specifiers:
   react-draggable: ^4.4.5
   react-error-boundary: ^3.1.4
   simplebar-react: ^3.2.1
-  typeit-react: ^2.6.4
+  typeit: ^8.7.1
   typescript: ^4.9.5
   valtio: ^1.10.3
   vite: ^4.1.4
@@ -33,7 +33,7 @@ dependencies:
   react-draggable: registry.npmmirror.com/react-draggable/4.4.5_biqbaboplfbrettd7655fr4n2y
   react-error-boundary: registry.npmmirror.com/react-error-boundary/3.1.4_react@18.2.0
   simplebar-react: registry.npmmirror.com/simplebar-react/3.2.1_react@18.2.0
-  typeit-react: registry.npmmirror.com/typeit-react/2.6.4
+  typeit: registry.npmmirror.com/typeit/8.7.1
   valtio: registry.npmmirror.com/valtio/1.10.3_react@18.2.0
 
 devDependencies:
@@ -1806,16 +1806,6 @@ packages:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tslib/-/tslib-2.5.0.tgz}
     name: tslib
     version: 2.5.0
-    dev: false
-
-  registry.npmmirror.com/typeit-react/2.6.4:
-    resolution: {integrity: sha512-ZFx7MYYirvQ1P6qvzN+ONMOWzkktuw2skBln/GQc5xpzqfSA48J2Fn5De/KtVkYbWOuLfKBPTwzJTH+clbAsAA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/typeit-react/-/typeit-react-2.6.4.tgz}
-    name: typeit-react
-    version: 2.6.4
-    dependencies:
-      react: registry.npmmirror.com/react/18.2.0
-      react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
-      typeit: registry.npmmirror.com/typeit/8.7.1
     dev: false
 
   registry.npmmirror.com/typeit/8.7.1:

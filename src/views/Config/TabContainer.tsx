@@ -1,10 +1,10 @@
-import { store, useStore } from "../../store";
-
-import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
-import { useTheme } from "@emotion/react";
 
+import { useTheme } from "@emotion/react";
+import styled from "@emotion/styled";
 import { animated, config, useSpringRef, useTransition } from "@react-spring/web";
+
+import { store, useStore } from "../../store";
 
 export interface IPanel {
     label: string;
@@ -16,7 +16,6 @@ const TabHeader = styled.div({
     fontSize: 20,
     cursor: "pointer",
     border: "1px solid black",
-    // borderRight: "1px solid black",
     borderRadius: 4,
     display: "flex",
     justifyContent: "center",
@@ -28,63 +27,36 @@ const TabHeader = styled.div({
 export function TabContainer({ panel }: { panel: IPanel[] }) {
     const { tabIndex } = useStore();
 
+    const theme = useTheme();
     const [hoverTab, setHoverTab] = useState<null | number>(null);
 
-    const theme = useTheme();
-
+    const transRef = useSpringRef();
     const [direction, setDirection] = useState(true);
 
-    const transRef = useSpringRef();
-
-    // const [transitions, api] = useTransition(
-    const transitions = useTransition(
-        // [tabIndex],
-        tabIndex,
-        // (tabIndex) => tabIndex,
-        // () => ({
-        {
-            ref: transRef,
-            // keys: tabIndex,
-
-            from: {
-                // transform: `translate3d(${dir === 1 ? 100 : -100}%,0,0) scale(0.8)`,
-                // transform: "translate3d(100%,0,0) scale(0.8)",
-                transform: `translate(0,${direction ? 100 : -100}%)`,
-                scale: 0.8,
-                // top: direction ? "100%" : "-100%",
-                position: "absolute",
-                opacity: 0, // 如果旧元素的item只有2，新元素的item有4，加上淡出效果，看起来舒服点，就不折腾zIndex和backgroundColor了
-            },
-            enter: {
-                transform: "translate(0,0%)",
-                scale: 1,
-                position: "relative",
-                opacity: 1,
-                // top: "0%",
-            },
-            leave: {
-                // transform: `translate3d(${dir === 1 ? -100 : 100}%,0,0) scale(0.8)`,
-                // transform: "translate3d(-100%,0,0) scale(0.8)",
-                // transform: `${
-                //     direction ? "translate3d(-100%,0,0)" : "translate3d(100%,0,0)"
-                // } scale(0.8)`,
-                transform: `translate(0,${direction ? -100 : 100}%)`,
-                scale: 0.8,
-                position: "absolute",
-                opacity: 0,
-                // top: direction ? "-100%" : "100%",
-                // opacity: 0,
-            },
-            // config: { duration: 600 },
-            config: {
-                ...config.wobbly,
-            },
-            // exitBeforeEnter: true,
-            // unique: true,
-            // }),
+    const transition = useTransition(tabIndex, {
+        ref: transRef,
+        from: {
+            transform: `translate(0,${direction ? 100 : -100}%)`,
+            scale: 0.8,
+            position: "absolute",
+            opacity: 0, // 如果旧元素的item只有2，新元素的item有4，加上淡出效果，看起来舒服点，就不折腾zIndex和backgroundColor了
         },
-        // [tabIndex, direction],
-    );
+        enter: {
+            transform: "translate(0,0%)",
+            scale: 1,
+            position: "relative",
+            opacity: 1,
+        },
+        leave: {
+            transform: `translate(0,${direction ? -100 : 100}%)`,
+            scale: 0.8,
+            position: "absolute",
+            opacity: 0,
+        },
+        config: {
+            ...config.wobbly,
+        },
+    });
 
     useEffect(() => {
         transRef.start();
@@ -102,11 +74,8 @@ export function TabContainer({ panel }: { panel: IPanel[] }) {
         >
             <div
                 style={{
-                    // position: "fixed",
                     minWidth: 100,
                     margin: "8px 0px 8px 8px",
-                    // top: 0,
-                    // boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
                 }}
             >
                 {panel.map((p, index) => (
@@ -147,54 +116,23 @@ export function TabContainer({ panel }: { panel: IPanel[] }) {
                     flexDirection: "column",
                     position: "relative",
                     overflow: "hidden",
-                    // width: 500,
                     margin: 8,
-
-                    // height: "max-content",
                 }}
             >
-                {transitions((style: any, index) => (
+                {transition((style: any, index) => (
                     <animated.div
                         key={`${panel[index].label}-${index}-content}`}
                         style={{
                             width: "100%",
-                            // height: "100%",
                             flexGrow: 1,
-                            // display: "flex",
-                            // flexDirection: "column",
-                            // margin: 8,
-                            // padding: 8,
-                            // position: "absolute",
-                            ...style,
-                            // height: "500px",
-                            // width: "calc(100% - 80px)",
-                            // marginLeft: 100,
                             lineHeight: "normal",
                             fontFamily: "华文新魏",
+                            ...style,
                         }}
                     >
                         {panel[index].content}
                     </animated.div>
                 ))}
-
-                {/* {panel.map((p, index) =>
-                tabIndex === index ? (
-                    <div
-                        key={`${p.label}-content}`}
-                        style={{
-                            flexGrow: 1,
-                            display: "flex",
-                            height: "100%",
-                            // width: "calc(100% - 80px)",
-                            // marginLeft: 100,
-                        }}
-                    >
-                        {p.content}
-                    </div>
-                ) : (
-                    <></>
-                ),
-            )} */}
             </div>
         </div>
     );

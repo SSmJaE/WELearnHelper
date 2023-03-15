@@ -21,7 +21,7 @@
     "react-draggable": "^4.4.5",
     "react-error-boundary": "^3.1.4",
     "simplebar-react": "^3.2.1",
-    "typeit-react": "^2.6.4",
+    "typeit": "^8.7.1",
     "valtio": "^1.10.3"
   },
   "devDependencies": {

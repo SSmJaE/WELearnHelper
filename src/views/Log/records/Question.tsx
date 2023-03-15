@@ -2,7 +2,8 @@ import { createRef, useState } from "react";
 import { useHover, useMount } from "ahooks";
 // import Typed from "typed.js";
 import { useRef } from "react";
-import TypeIt from "typeit-react";
+// import TypeIt from "typeit-react";
+import TypeIt from "../../components/TypeIt";
 
 import Button from "../../components/Button";
 
@@ -93,12 +94,12 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
 
     const theme = useTheme();
 
-    const [spring, api] = useSlideIn();
+    const spring = useSlideIn();
 
     // TODO 尝试函数式风格声明typedit，避免销毁时报错无法捕获
 
     return (
-        <div
+        <animated.div
             onMouseEnter={() => {
                 setHover(true);
             }}
@@ -108,6 +109,7 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
             style={{
                 position: "relative",
                 lineHeight: "24px",
+                // ...(store.userSettings.enableTyping ? spring : {}),
             }}
         >
             {/* 题号 */}
@@ -139,31 +141,30 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
             {/* 不考虑虚拟列表的话，没必要conditional 选择typeit还是普通span */}
 
             {store.userSettings.enableTyping ? (
-                <ErrorBoundary FallbackComponent={<div>哈哈哈</div>}>
-                    <TypeIt
-                        options={{
-                            startDelay: 600,
-                            // waitUntilVisible: true,
-                            cursorChar: "█",
-                            speed: 25,
-                            lifeLike: true,
-                            afterComplete: (instance: any) => {
-                                try {
-                                    instance?.destroy();
-                                } catch (error) {
-                                    console.log("typeit destroy error");
-                                }
-                            },
-                        }}
-                        style={{}}
-                    >
-                        {record.content.answerText}
-                    </TypeIt>
-                </ErrorBoundary>
+                <TypeIt
+                    options={{
+                        startDelay: 600,
+                        // waitUntilVisible: true,
+                        cursorChar: "█",
+                        speed: 25,
+                        lifeLike: true,
+                        afterComplete: (instance: any) => {
+                            try {
+                                instance?.destroy();
+                            } catch (error) {
+                                console.log("typeit destroy error");
+                            }
+                        },
+                    }}
+                    style={{}}
+                >
+                    {record.content.answerText}
+                </TypeIt>
             ) : (
                 <animated.span
                     style={{
                         ...spring,
+                        position: "relative",
                     }}
                 >
                     {record.content.answerText}
@@ -185,6 +186,6 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
             </div>
 
             {/* <div>hover时，在面板外部显示的tooltip(题目解析，或者听力原文)</div> */}
-        </div>
+        </animated.div>
     );
 }

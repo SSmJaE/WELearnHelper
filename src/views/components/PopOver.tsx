@@ -79,7 +79,7 @@ export default function PopOver({
                             padding: 8,
                             zIndex: 9999,
                             fontFamily: "华文新魏",
-                            lineHeight: "24px",
+                            lineHeight: "normal",
                         }}
                         {...getFloatingProps()}
                     >

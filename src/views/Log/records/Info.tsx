@@ -7,6 +7,7 @@ import { InlineTag, useSlideIn } from "../../components/InlineTag";
 const InfoRecordContainer = styled(animated.span)(
     {
         lineHeight: "24px",
+        position: "relative",
     },
     ({ theme }) => ({
         a: {
@@ -25,7 +26,7 @@ const InfoRecordContainer = styled(animated.span)(
 
 /** 对其中的link，做一点美化处理(比如淡蓝色背景，深蓝色下划线) */
 export function InfoRecord({ record }: { record: IInfoRecord }) {
-    const [spring, api] = useSlideIn();
+    const spring = useSlideIn();
     const theme = useTheme();
 
     return (
@@ -45,9 +46,9 @@ export function InfoRecord({ record }: { record: IInfoRecord }) {
                 提示
             </InlineTag>
             <InfoRecordContainer
-                // style={{
-                //     ...spring,
-                // }}
+                style={{
+                    ...spring,
+                }}
                 dangerouslySetInnerHTML={{
                     __html: `${record.content}<a href="https://github.com/SSmJaE/WELearnHelper" target="_blank"><u>Github</u></a>`,
                 }}

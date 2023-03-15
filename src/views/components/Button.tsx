@@ -14,7 +14,7 @@ const ButtonContainer = styled.span<{ disabled: boolean }>(
         borderRadius: 4,
         marginLeft: 4,
         border: "1px solid transparent",
-        lineHeight: "24px",
+        lineHeight: "normal",
         // height: 24,
         // line-height: normal,
         fontFamily: "华文新魏",
