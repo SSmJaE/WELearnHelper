@@ -4,8 +4,8 @@ on :
   workflow_dispatch 
   
 jobs:
-  build_script:
-    name: 输出为userscript
+  release:
+    name: 自动release
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,7 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version : latest
-          run-install : true
+          run_install : true
 
       - name: get version
         id: package-version
