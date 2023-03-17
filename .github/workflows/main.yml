@@ -4,14 +4,11 @@ on :
   - push
   
 jobs:
-  release:
-    name: 自动release
+  check:
+    name : 检查是否有新版本
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        
       - name: Check if version has been updated
         id: check
         uses: EndBug/version-check@v2
@@ -21,7 +18,21 @@ jobs:
         run: > 
           echo "Version change found in commit ${{ steps.check.outputs.commit }}! 
           New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
+          
+    outputs:
+      hasNewVersion: ${{ steps.check.outputs.changed }}
 
+  release:
+    name: 自动release
+    runs-on: ubuntu-latest
+    
+    needs: [check]
+    if: needs.check.outputs.hasNewVersion == 'true'
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -32,10 +43,6 @@ jobs:
         with:
           version : latest
           run_install : true
-
-#       - name: get version
-#         id: package-version
-#         uses: martinbeentjes/npm-get-version-action@main
 
       - name: 打包userscript
         run: pnpm run build:js
