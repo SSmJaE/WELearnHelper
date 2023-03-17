@@ -1,7 +1,7 @@
 name : release
 
 on :
-  workflow_dispatch 
+  - push
   
 jobs:
   release:
@@ -11,6 +11,16 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        
+      - name: Check if version has been updated
+        id: check
+        uses: EndBug/version-check@v2
+
+      - name: Log when changed
+        if: steps.check.outputs.changed == 'true'
+        run: > 
+          echo "Version change found in commit ${{ steps.check.outputs.commit }}! 
+          New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -23,9 +33,9 @@ jobs:
           version : latest
           run_install : true
 
-      - name: get version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@main
+#       - name: get version
+#         id: package-version
+#         uses: martinbeentjes/npm-get-version-action@main
 
       - name: 打包userscript
         run: pnpm run build:js
@@ -33,7 +43,7 @@ jobs:
       - name: 发布userscript
         uses: softprops/action-gh-release@v1
         with:
-          tag_name :  ${{ steps.package-version.outputs.current-version}}
+          tag_name :  ${{ steps.check.outputs.version }}
           files: ./dist/*.js
           
       # 发布extension
@@ -57,7 +67,7 @@ jobs:
       - name : 发布extension
         uses: softprops/action-gh-release@v1
         with:
-          tag_name :  ${{ steps.package-version.outputs.current-version}}
+          tag_name :  ${{ steps.check.outputs.version }}
           files: ./dist/*.zip
       
 
