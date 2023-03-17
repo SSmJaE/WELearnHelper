@@ -1,9 +1,18 @@
 {
   "compilerOptions": {
+    "strict": true,
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    // "metadata", // TODO 必须是metadata，不能是metadata.ts，也不能是*.ts，不知道为什么
+    "metadata.json",
+    "vite.common.ts",
+    "vite.extension.ts",
+    "vite.userscript.ts",
+  ]
 }

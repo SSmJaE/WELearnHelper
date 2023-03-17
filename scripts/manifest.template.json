@@ -1,0 +1,40 @@
+{
+    "manifest_version": 2,
+    "name": "",
+    "version": "",
+    "description": "",
+    "icons": {
+        "16": "icon.png",
+        "32": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_title": ""
+    },
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "content_scripts": [
+        {
+            "matches": [],
+            "js": [
+                "inject.js",
+                "content.js"
+            ],
+            "run_at": "document_end",
+            "all_frames": true
+        }
+    ],
+    "permissions": [
+        "storage"
+    ],
+    "web_accessible_resources": [
+        "main.js"
+    ],
+    "homepage_url": "https://www.github.com/SSmJaE/",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}

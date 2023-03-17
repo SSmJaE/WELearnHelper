@@ -62,7 +62,8 @@
     }
   },
   "include": [
-    "src"
+    "src",
+    "metadata"
   ],
   "references": [
     {

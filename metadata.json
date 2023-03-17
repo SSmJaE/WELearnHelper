@@ -1,0 +1,35 @@
+{
+    "apiServer": "http://47.100.166.53/api",
+    "homepage": "https://www.github.com/SSmJaE/",
+    "projects": {
+        "welearn": {
+            "title": "随行课堂网课助手",
+            "name": "WELearn网课助手",
+            "version": "1.0.0",
+            "matches": [
+                "*://course.sflep.com/*",
+                "*://welearn.sflep.com/*",
+                "*://courseappserver.sflep.com/*",
+                "*://centercourseware.sflep.com/*"
+            ],
+            "namespace": "https://github.com/SSmJaE/WELearnHelper",
+            "description": "显示WE Learn随行课堂题目答案；支持班级测试；自动答题；刷时长；开放自定义设置",
+            "connect": [
+                "localhost",
+                "47.100.166.53"
+            ]
+        },
+        "tsinghua": {
+            "title": "清华社网课助手",
+            "name": "TsinghuaELTHelper",
+            "version": "0.1.0",
+            "matches": [],
+            "namespace": "https://github.com/SSmJaE/TsinghuaELTHelper",
+            "description": "显示清华社网课题目答案",
+            "connect": [
+                "localhost",
+                "47.100.166.53"
+            ]
+        }
+    }
+}

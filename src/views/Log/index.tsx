@@ -8,7 +8,7 @@ import { Global, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { animated, config, useSpring } from "@react-spring/web";
 
-import metadata from "../../../metadata";
+import metadata from "../../../metadata.json";
 import { store, useStore } from "../../store";
 import { MenuBar } from "../components/MenuBar";
 import { MenuButton } from "../components/MenuButton";
@@ -18,6 +18,8 @@ import { QuestionRecord } from "./records/Question";
 
 function getAppTitle() {
     const defaultTitle = "EOCS网课助手";
+
+    // console.log(process.env.COMPILE_PLATFORM)
 
     if (process.env.COMPILE_PLATFORM) {
         return metadata.projects[process.env.COMPILE_PLATFORM]?.title ?? defaultTitle;

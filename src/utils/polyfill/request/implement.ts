@@ -1,7 +1,7 @@
 import { GM_xmlhttpRequest } from "$";
 import queryString from "query-string";
 
-import metadata from "@/metadata";
+import metadata from "@/metadata.json";
 import { injectToContent } from "@utils/polyfill/extension/inject";
 
 import {
@@ -12,7 +12,7 @@ import {
 } from "./types";
 
 /**
- * 如果url以/开头，则自动拼接BASE_URL，比如 /api/xxx => [apiServer]/api/xxx
+ * 如果url以/开头，则自动拼接BASE_URL，比如 /query => [apiServer]/[platform]/xxx
  *
  * 不然，则直接使用url，比如 https://www.baidu.com => https://www.baidu.com
  */
@@ -23,7 +23,7 @@ export function getFullUrl(url: string, query: any) {
     }
 
     return queryString.stringifyUrl({
-        url: url.startsWith("/") ? metadata.apiServer + url : url,
+        url: url.startsWith("/") ? `${metadata.apiServer}/${process.env.COMPILE_PLATFORM}` : url,
         query: query,
     });
 }
