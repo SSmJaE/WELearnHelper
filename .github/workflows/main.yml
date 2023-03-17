@@ -27,13 +27,13 @@ jobs:
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main
 
-      - name: Build project
+      - name: 打包userscript
         run: pnpm run build:js
         
       - name: 发布userscript
         uses: softprops/action-gh-release@v1
         with:
-          tag :  ${{ steps.package-version.outputs.current-version}}
+          tag_name :  ${{ steps.package-version.outputs.current-version}}
           files: ./dist/*.js
           
       # 发布extension
@@ -48,12 +48,16 @@ jobs:
       - name : 生成manifest.json
         run: python run ./scripts/metadata.py
           
+      - name : build extension
+        run: pnpm run build:crx
+        
+      - name : zip
+        run : python ./scripts/zip.py
+        
       - name : 发布extension
         uses: softprops/action-gh-release@v1
         with:
-          tag :  ${{ steps.package-version.outputs.current-version}}
-          files: |
-            ./dist/*.js
-            ./dist/manifest.json
+          tag_name :  ${{ steps.package-version.outputs.current-version}}
+          files: ./dist/*.zip
       
 
