@@ -46,7 +46,7 @@ jobs:
         run: pip install python-dotenv
         
       - name : 生成manifest.json
-        run: python run ./scripts/metadata.py
+        run: python ./scripts/metadata.py
           
       - name : build extension
         run: pnpm run build:crx
