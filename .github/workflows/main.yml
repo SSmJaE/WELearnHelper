@@ -1,41 +1,65 @@
-name : release
+name: release
 
-on :
-  - push
-  
+on: push
+
 jobs:
-  check:
-    name : 检查是否有新版本
+  metadata:
+    name: 根据metadata，修改package.json
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-    
+
+      - name: Setup Python # Set Python version
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: 修改package.json
+        run: python ./scripts/version.py
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: "根据metadata自动修改package.json的版本"
+          add: "package.json"
+
+  check:
+    name: 检查是否有新版本
+    runs-on: ubuntu-latest
+
+    needs: [metadata]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
       - name: Check if version has been updated
         id: check
         uses: EndBug/version-check@v2
 
       - name: Log when changed
         if: steps.check.outputs.changed == 'true'
-        run: > 
+        run: >
           echo "Version change found in commit ${{ steps.check.outputs.commit }}! 
           New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
-          
+
     outputs:
       hasNewVersion: ${{ steps.check.outputs.changed }}
 
   release:
     name: 自动release
     runs-on: ubuntu-latest
-    
+
     needs: [check]
     if: needs.check.outputs.hasNewVersion == 'true'
-    
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -44,8 +68,8 @@ jobs:
       - name: Install dependencies
         uses: pnpm/action-setup@v2
         with:
-          version : latest
-          run_install : false
+          version: latest
+          run_install: false
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -66,35 +90,45 @@ jobs:
 
       - name: 打包userscript
         run: pnpm run build:js
-        
+
       - name: 发布userscript
         uses: softprops/action-gh-release@v1
         with:
-          tag_name :  ${{ steps.check.outputs.version }}
+          tag_name: ${{ steps.check.outputs.version }}
           files: ./dist/*.js
-          
+
       # 发布extension
       - name: Setup Python # Set Python version
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-          
+
       - name: Install dependencies
         run: pip install python-dotenv
-        
-      - name : 生成manifest.json
-        run: python ./scripts/metadata.py
-          
-      - name : build extension
+
+      - name: 生成manifest.json
+        run: python ./scripts/manifest.py
+
+      - name: build extension
         run: pnpm run build:crx
-        
-      - name : zip
-        run : python ./scripts/zip.py
-        
-      - name : 发布extension
+
+      - name: zip
+        run: python ./scripts/zip.py
+
+      - name: 发布extension
         uses: softprops/action-gh-release@v1
         with:
-          tag_name :  ${{ steps.check.outputs.version }}
+          tag_name: ${{ steps.check.outputs.version }}
           files: ./dist/*.zip
-      
 
+      - name: 同步release到专门的repo中，方便第三方进行webhook
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'SSmJaE',
+              repo: 'MyUserScripts',
+              workflow_id: 'main.yml',
+              ref: 'master'
+            })
