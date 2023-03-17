@@ -2,6 +2,9 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import monkey, { cdn } from "vite-plugin-monkey";
 import path from "node:path";
+import dotenv from "dotenv";
+
+dotenv.config(); // load env vars from .env
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,6 +36,7 @@ export default defineConfig({
                     "https://centercourseware.sflep.com/*",
                 ],
             },
+            server: { mountGmApi: true },
             build: {
                 externalGlobals: {
                     react: cdn.jsdelivr("React", "umd/react.production.min.js"),

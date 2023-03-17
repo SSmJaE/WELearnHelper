@@ -19,8 +19,8 @@ import { QuestionRecord } from "./records/Question";
 function getAppTitle() {
     const defaultTitle = "EOCS网课助手";
 
-    if (process.env.COMPILE_PROJECT) {
-        return metadata.projects[process.env.COMPILE_PROJECT]?.title ?? defaultTitle;
+    if (process.env.COMPILE_PLATFORM) {
+        return metadata.projects[process.env.COMPILE_PLATFORM]?.title ?? defaultTitle;
     }
 
     return defaultTitle;

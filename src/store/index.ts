@@ -1,10 +1,11 @@
-import { proxy, useSnapshot } from "valtio";
-import { IWELearnExamSettings } from "../projects/welearn/exam/setting";
-import { IRecord } from "../utils/logger";
+import { throttle } from "lodash";
+import { proxy, subscribe, useSnapshot } from "valtio";
+import { devtools } from "valtio/utils";
+
+import logger, { IRecord } from "../utils/logger";
+import { setValue } from "../utils/polyfill";
 import { IWELearnSettings, SectionSetting } from "../utils/setting";
 import { ICommonSettings } from "../utils/setting/common";
-// import { ICommonSettings } from "./utils/setting/common";
-import { devtools } from "valtio/utils";
 
 class Store {
     visibility = {
@@ -34,8 +35,16 @@ class Store {
         this.tabIndex = index;
     }
 
-    userSettings: Partial<IWELearnSettings & ICommonSettings> = {};
+    userSettings = {} as IWELearnSettings & ICommonSettings;
     sectionSettings: SectionSetting<IWELearnSettings & ICommonSettings>[] = [];
+
+    /** 因为subscribe了这个key，如果直接替换(=)，会导致subscribe失效 */
+    setUserSettings(userSettings: Partial<IWELearnSettings & ICommonSettings>) {
+        for (const [key, value] of Object.entries(userSettings)) {
+            // @ts-ignore
+            this.userSettings[key] = value;
+        }
+    }
 
     /**
      * 通过集成了所有插件设置的设置中心，设置USER_SETTINGS的默认值
@@ -44,7 +53,8 @@ class Store {
         for (const section of this.sectionSettings) {
             for (const generic of section.settings) {
                 if (this.userSettings[generic.id] === undefined) {
-                    this.userSettings[generic.id] = generic.default as any;
+                    // @ts-ignore
+                    this.userSettings[generic.id] = generic.default;
                 }
             }
         }
@@ -54,7 +64,8 @@ class Store {
     resetDefaultValues() {
         for (const section of this.sectionSettings) {
             for (const generic of section.settings) {
-                this.userSettings[generic.id] = generic.default as any;
+                // @ts-ignore
+                this.userSettings[generic.id] = generic.default;
             }
         }
     }
@@ -67,11 +78,18 @@ class Store {
 
 export const store = proxy(new Store());
 
+export const useStore = () => useSnapshot(store);
+
 devtools(store, {
     name: "store",
 });
 
-export const useStore = () => useSnapshot(store);
+subscribe(store.userSettings, async () => {
+    await setValue("userSettings", store.userSettings);
+    logger.debug("userSettings已持久化");
+});
 
-export const QUERY_INTERVAL = 2000;
-export const DEBUG_MODE = false;
+export const CONSTANT = {
+    QUERY_INTERVAL: 2000,
+    DEBUG_MODE: false,
+} as const;

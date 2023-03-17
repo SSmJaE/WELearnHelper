@@ -85,8 +85,8 @@ export class Logger {
     hr() {
         return this.log({ type: "hr", content: "" });
     }
-    debug(content: any) {
-        console.log(`[eocs-helper] : `, content);
+    debug(...content: any) {
+        console.log(`[eocs-helper]`, ...content);
     }
 }
 

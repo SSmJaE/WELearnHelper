@@ -59,7 +59,8 @@ export function hackPlaySound() {
     };
 }
 
-export function parseResponse(json: QuestionResponse) {
+// QuestionResponse
+export function parseResponse(json: any) {
     logger.debug(json);
 
     let status = "";

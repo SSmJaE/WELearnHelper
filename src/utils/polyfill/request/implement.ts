@@ -1,4 +1,5 @@
-// import queryString from "query-string";
+import { GM_xmlhttpRequest } from "$";
+import queryString from "query-string";
 
 import metadata from "@/metadata";
 import { injectToContent } from "@utils/polyfill/extension/inject";
@@ -21,13 +22,10 @@ export function getFullUrl(url: string, query: any) {
             throw new Error("query params不应为嵌套对象，拍平或者手动序列化子对象");
     }
 
-    // TODO
-    // return queryString.stringifyUrl({
-    //     url: url.startsWith("/") ? metadata.apiServer + url : url,
-    //     query: query,
-    // });
-
-    return url;
+    return queryString.stringifyUrl({
+        url: url.startsWith("/") ? metadata.apiServer + url : url,
+        query: query,
+    });
 }
 
 /**对crx sendMessage的封装，以实现一致的fetch风格的request通用接口 */
@@ -41,7 +39,7 @@ export async function requestForExtension<T = any>(
     },
 ): Promise<CustomRequestResponse<T>> {
     return new Promise(async (resolve, reject) => {
-        const response = await injectToContent(
+        injectToContent(
             "request",
             {
                 url: getFullUrl(url, query),
@@ -68,10 +66,6 @@ export async function requestForExtension<T = any>(
     });
 }
 
-// 必须存在
-declare let GM_xmlhttpRequest: any;
-typeof GM_xmlhttpRequest === "function" || function GM_xmlhttpRequest() {};
-
 /**对GM_xmlhttpRequest的封装，以实现一致的fetch风格的request通用接口 */
 export function requestForUserscript<T = any>(
     url: string,
@@ -82,14 +76,18 @@ export function requestForUserscript<T = any>(
         query: undefined,
     },
 ) {
+    // 避免在浏览器环境(非脚本管理器)下报错
+    typeof GM_xmlhttpRequest === "function" || function GM_xmlhttpRequest() {};
+
     return new Promise<CustomRequestResponse<T>>((resolve, reject) => {
         GM_xmlhttpRequest({
             url: getFullUrl(url, query),
-            method,
+            method: method as any,
             headers,
             data: typeof body === "object" ? JSON.stringify(body) : body,
             timeout: 5000,
             responseType: "json",
+            // @ts-ignore
             onload(response: GM_xmlhttpResponse) {
                 const { status: statusCode } = response;
                 if (statusCode >= 200 && statusCode <= 300) {
@@ -102,8 +100,11 @@ export function requestForUserscript<T = any>(
                     reject(response);
                 }
             },
+            // @ts-ignore
             onabort: (response: GM_xmlhttpResponse) => reject(response),
+            // @ts-ignore
             onerror: (response: GM_xmlhttpResponse) => reject(response),
+            // @ts-ignore
             ontimeout: (response: GM_xmlhttpResponse) => reject(response),
         });
     });

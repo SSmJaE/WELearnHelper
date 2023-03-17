@@ -14,7 +14,7 @@ export function ConfigControl({
 }) {
     const [statusText, setStatusText] = useState("");
 
-    const [spring, api] = useSpring<{ right: string }>(() => ({
+    const [spring, api] = useSpring<{ right: string; opacity: number }>(() => ({
         config: {
             ...config.wobbly,
         },
@@ -30,6 +30,7 @@ export function ConfigControl({
         (newValue: any) => {
             if (newValue === value) return;
 
+            // @ts-ignore
             store.userSettings[id as keyof typeof userSettings] = newValue;
             setStatusText("保存成功");
 
@@ -45,6 +46,7 @@ export function ConfigControl({
     useEffect(() => {
         api.start({
             right: statusText ? "0%" : "-100%",
+            opacity: statusText ? 1 : 0,
         });
     }, [statusText]);
 
@@ -68,6 +70,9 @@ export function ConfigControl({
                     disabled={readonly}
                     style={{
                         resize: "none",
+                        height: 40,
+                        fontSize: 16,
+                        lineHeight: "normal",
                     }}
                 ></textarea>
             );

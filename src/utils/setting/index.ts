@@ -7,6 +7,7 @@ import { IWELearnTimeSettings, WELearnTimeSettings } from "@src/projects/welearn
 import { store } from "@store";
 import { getValue } from "@utils/polyfill";
 import { commonSettings } from "./common";
+import logger from "../logger";
 
 /**用于自动转换string至指定类型 */
 export interface GenericSetting<T = any, K extends keyof T = keyof T> {
@@ -110,7 +111,6 @@ export function mergeSettings(...arrayOfSectionSettings: SectionSetting[][]) {
  */
 export async function initialUserSettings() {
     //每次启动都会初始化USER_SETTINGS，所以需要先集成所有插件的设置，因为是根据插件的设置设定前者的默认值
-
     const sectionSettings = mergeSettings(
         WELearnExamSettings,
         WELearnExerciseSettings,
@@ -121,7 +121,13 @@ export async function initialUserSettings() {
     store.sectionSettings = sectionSettings;
 
     // TODO 是都需要检查取出的值的合法性？
-    // store.userSettings = await getValue("USER_SETTINGS", {});
+    // 不能直接=，需要保证object的引用不变，因为subscribe了
+    store.setUserSettings(await getValue("userSettings", {}));
+    logger.debug("设置已读取", { ...store.userSettings });
 
-    store.setDefaultValues();
+    // 设置默认值
+    if (Object.keys(store.userSettings).length === 0) {
+        store.setDefaultValues();
+        logger.debug("设置为空，已初始化", { ...store.userSettings });
+    }
 }

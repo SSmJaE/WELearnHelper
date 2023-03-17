@@ -8,7 +8,7 @@ export const MenuBar = styled.div(
         userSelect: "none",
         padding: "8px 8px",
         position: "relative",
-        height: 40,
+        height: 50,
         fontFamily: "华文新魏",
     },
     ({ isDragging }: { isDragging: boolean }) => ({

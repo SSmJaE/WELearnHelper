@@ -16,6 +16,7 @@ if (location.href.includes("centercourseware.sflep.com")) {
         bufferUrl = currentUrl;
     }
 
+    // 页面刷新时，会自动销毁，所以这里不主动处理也没啥问题
     setInterval(watcher, 200);
     initialCourseCatalog();
 }

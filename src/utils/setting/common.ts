@@ -3,7 +3,7 @@ import { SectionSetting } from ".";
 export interface ICommonSettings {
     userAccount: string;
     userPoints: number;
-    autoSlide: boolean;
+    autoScrollDown: boolean;
     enableTyping: boolean;
 }
 
@@ -40,7 +40,7 @@ export const commonSettings: SectionSetting<ICommonSettings>[] = [
         title: "UI相关",
         settings: [
             {
-                id: "autoSlide",
+                id: "autoScrollDown",
                 name: "自动下滑",
                 default: true,
                 valueType: "boolean",

@@ -1,9 +1,12 @@
 import "@src/projects/welearn/initial";
 
+// import dotenv from "dotenv";
+// dotenv.config();
+
 import React from "react";
 import ReactDOM from "react-dom/client";
-import logger from "./utils/logger";
 
+import logger from "./utils/logger";
 import { initialUserSettings } from "./utils/setting";
 import App from "./views/App";
 
@@ -26,14 +29,14 @@ function initialize() {
     }
 
     if (!isAvailable) {
-        logger.debug( "not in eocs page");
+        logger.debug("not in eocs page");
         return;
     }
 
     // 这个是有时候，页面并没有整体刷新，只是替换了页面的内容，比如基于angular的情况；
     // 但是会再次触发脚本，所以需要判断一下
     if (document.querySelector(`#${EXTENSION_ID}`)) {
-        logger.debug( "already initialized");
+        logger.debug("already initialized");
         return;
     }
 
@@ -51,5 +54,7 @@ function initialize() {
     );
 }
 
-await initialUserSettings();
-initialize();
+(async function () {
+    await initialUserSettings();
+    initialize();
+})();

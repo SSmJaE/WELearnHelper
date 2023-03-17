@@ -1,3 +1,4 @@
+// @ts-nocheck
 import logger from "@/src/utils/logger";
 import React, { forwardRef, useRef, useEffect, useState } from "react";
 import { default as TypeItCore, TypeItOptions } from "typeit";

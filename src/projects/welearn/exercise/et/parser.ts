@@ -1,5 +1,6 @@
 import logger from "@/src/utils/logger";
 import { store } from "@src/store";
+import { Answer } from "../main";
 
 type AnswerType =
     | "et-tof"

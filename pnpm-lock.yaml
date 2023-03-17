@@ -6,11 +6,15 @@ specifiers:
   '@floating-ui/react': ^0.20.1
   '@react-spring/web': ^9.7.1
   '@types/chrome': ^0.0.222
+  '@types/lodash': ^4.14.191
   '@types/node': ^18.15.1
   '@types/react': ^18.0.28
   '@types/react-dom': ^18.0.11
   '@vitejs/plugin-react': ^3.1.0
   ahooks: ^3.7.5
+  dotenv: ^16.0.3
+  lodash: ^4.17.21
+  query-string: ^8.1.0
   react: ^18.2.0
   react-dom: ^18.2.0
   react-draggable: ^4.4.5
@@ -28,6 +32,8 @@ dependencies:
   '@floating-ui/react': registry.npmmirror.com/@floating-ui/react/0.20.1_biqbaboplfbrettd7655fr4n2y
   '@react-spring/web': registry.npmmirror.com/@react-spring/web/9.7.1_biqbaboplfbrettd7655fr4n2y
   ahooks: registry.npmmirror.com/ahooks/3.7.5_react@18.2.0
+  lodash: registry.npmmirror.com/lodash/4.17.21
+  query-string: registry.npmmirror.com/query-string/8.1.0
   react: registry.npmmirror.com/react/18.2.0
   react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
   react-draggable: registry.npmmirror.com/react-draggable/4.4.5_biqbaboplfbrettd7655fr4n2y
@@ -38,10 +44,12 @@ dependencies:
 
 devDependencies:
   '@types/chrome': registry.npmmirror.com/@types/chrome/0.0.222
+  '@types/lodash': registry.npmmirror.com/@types/lodash/4.14.191
   '@types/node': registry.npmmirror.com/@types/node/18.15.1
   '@types/react': registry.npmmirror.com/@types/react/18.0.28
   '@types/react-dom': registry.npmmirror.com/@types/react-dom/18.0.11
   '@vitejs/plugin-react': registry.npmmirror.com/@vitejs/plugin-react/3.1.0_vite@4.1.4
+  dotenv: registry.npmmirror.com/dotenv/16.0.3
   typescript: registry.npmmirror.com/typescript/4.9.5
   vite: registry.npmmirror.com/vite/4.1.4_@types+node@18.15.1
   vite-plugin-monkey: registry.npmmirror.com/vite-plugin-monkey/2.12.1_vite@4.1.4
@@ -918,6 +926,12 @@ packages:
     version: 2.2.7
     dev: false
 
+  registry.npmmirror.com/@types/lodash/4.14.191:
+    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/lodash/-/lodash-4.14.191.tgz}
+    name: '@types/lodash'
+    version: 4.14.191
+    dev: true
+
   registry.npmmirror.com/@types/node/18.15.1:
     resolution: {integrity: sha512-U2TWca8AeHSmbpi314QBESRk7oPjSZjDsR+c+H4ECC1l+kFgpZf8Ydhv3SJpPy51VyZHHqxlb6mTTqYNNRVAIw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/node/-/node-18.15.1.tgz}
     name: '@types/node'
@@ -1153,6 +1167,13 @@ packages:
       ms: registry.npmmirror.com/ms/2.1.2
     dev: true
 
+  registry.npmmirror.com/decode-uri-component/0.4.1:
+    resolution: {integrity: sha512-+8VxcR21HhTy8nOt6jf20w0c9CADrw1O8d+VZ/YzzCt4bJ3uBjw+D1q2osAB8RnpwwaeYBxy0HyKQxD5JBMuuQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/decode-uri-component/-/decode-uri-component-0.4.1.tgz}
+    name: decode-uri-component
+    version: 0.4.1
+    engines: {node: '>=14.16'}
+    dev: false
+
   registry.npmmirror.com/define-lazy-prop/2.0.0:
     resolution: {integrity: sha512-Ds09qNh8yw3khSjiJjiUInaGX9xlqZDY7JVryGxdxV7NPeuqQfplOpQ66yJFZut3jLa5zOwkXw1g9EI2uKh4Og==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/define-lazy-prop/-/define-lazy-prop-2.0.0.tgz}
     name: define-lazy-prop
@@ -1205,6 +1226,13 @@ packages:
       dom-serializer: registry.npmmirror.com/dom-serializer/2.0.0
       domelementtype: registry.npmmirror.com/domelementtype/2.3.0
       domhandler: registry.npmmirror.com/domhandler/5.0.3
+    dev: true
+
+  registry.npmmirror.com/dotenv/16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/dotenv/-/dotenv-16.0.3.tgz}
+    name: dotenv
+    version: 16.0.3
+    engines: {node: '>=12'}
     dev: true
 
   registry.npmmirror.com/electron-to-chromium/1.4.328:
@@ -1278,6 +1306,13 @@ packages:
     name: escape-string-regexp
     version: 4.0.0
     engines: {node: '>=10'}
+    dev: false
+
+  registry.npmmirror.com/filter-obj/5.1.0:
+    resolution: {integrity: sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/filter-obj/-/filter-obj-5.1.0.tgz}
+    name: filter-obj
+    version: 5.1.0
+    engines: {node: '>=14.16'}
     dev: false
 
   registry.npmmirror.com/find-root/1.1.0:
@@ -1595,6 +1630,17 @@ packages:
     version: 2.5.0
     dev: false
 
+  registry.npmmirror.com/query-string/8.1.0:
+    resolution: {integrity: sha512-BFQeWxJOZxZGix7y+SByG3F36dA0AbTy9o6pSmKFcFz7DAj0re9Frkty3saBn3nHo3D0oZJ/+rx3r8H8r8Jbpw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/query-string/-/query-string-8.1.0.tgz}
+    name: query-string
+    version: 8.1.0
+    engines: {node: '>=14.16'}
+    dependencies:
+      decode-uri-component: registry.npmmirror.com/decode-uri-component/0.4.1
+      filter-obj: registry.npmmirror.com/filter-obj/5.1.0
+      split-on-first: registry.npmmirror.com/split-on-first/3.0.0
+    dev: false
+
   registry.npmmirror.com/react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-dom/-/react-dom-18.2.0.tgz}
     id: registry.npmmirror.com/react-dom/18.2.0
@@ -1768,6 +1814,13 @@ packages:
     name: source-map
     version: 0.5.7
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  registry.npmmirror.com/split-on-first/3.0.0:
+    resolution: {integrity: sha512-qxQJTx2ryR0Dw0ITYyekNQWpz6f8dGd7vffGNflQQ3Iqj9NJ6qiZ7ELpZsJ/QBhIVAiDfXdag3+Gp8RvWa62AA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/split-on-first/-/split-on-first-3.0.0.tgz}
+    name: split-on-first
+    version: 3.0.0
+    engines: {node: '>=12'}
     dev: false
 
   registry.npmmirror.com/stylis/4.1.3:

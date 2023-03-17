@@ -1,4 +1,5 @@
 import logger from "@/src/utils/logger";
+import { Answer } from "../main";
 
 export function parseReading(dom: Document) {
     let realAnswers = [];

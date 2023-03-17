@@ -1,3 +1,5 @@
+import { isEqual } from "lodash";
+
 import { ExtensionMessageCallback, ExtensionMessageType, IExtensionMessage } from "./types";
 
 function injectJs(source: string) {
@@ -35,7 +37,7 @@ export function injectToContent(
     // 如果无法序列化，让其直接在inject中报错，方便调试
     const jsonablePayload = JSON.parse(JSON.stringify(payload));
 
-    if (!deepEqual(jsonablePayload, payload)) {
+    if (!isEqual(jsonablePayload, payload)) {
         throw new Error("payload is not jsonable");
     }
 

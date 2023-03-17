@@ -1,4 +1,5 @@
 export {};
+
 declare global {
     const $: any; //todo types/jQuery
     const angular: any; //todo types/jQuery
@@ -10,4 +11,6 @@ declare global {
     let soundfile: string;
     let resPath: any;
     let bufferingTimer: any;
+
+    const unsafeWindow: Window;
 }

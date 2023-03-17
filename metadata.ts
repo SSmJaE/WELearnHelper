@@ -1,5 +1,5 @@
 export default {
-    apiServer: "47.100.166.53",
+    apiServer: "http://47.100.166.53/api/welearn",
     projects: {
         welearn: {
             title: "随行课堂网课助手",
@@ -10,6 +10,11 @@ export default {
                 "*://courseappserver.sflep.com/*",
                 "*://centercourseware.sflep.com/*",
             ],
-        }
-    }
+        },
+        tsinghua: {
+            title: "清华社网课助手",
+            version: "0.1.0",
+            matches: [],
+        },
+    },
 };

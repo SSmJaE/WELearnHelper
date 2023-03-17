@@ -1,6 +1,6 @@
 import { sleep } from "@utils";
 import { WELearnAPI } from "@api/welearn";
-import { QUERY_INTERVAL } from "@src/store";
+import { CONSTANT } from "@src/store";
 // import { addMessage, clearMessage } from "@src/store/actions";
 import logger from "@utils/logger";
 import { store } from "@store";
@@ -50,11 +50,21 @@ export async function getAnswers() {
             // 练习已收录
             for (const [index, questionWithAnswer] of returnJson.data.entries()) {
                 // TODO 获取题号
-                logger.question({});
+                // logger.question({
+                //     index: `${index + 1}`,
+                //     answer: questionWithAnswer.answerText,
+                //     info: {
+                //         content: questionWithAnswer.answer_text
+                //             ? "标答"
+                //             : questionWithAnswer.answer_text_gpt
+                //             ? "GPT"
+                //             : "无答案",
+                //     },
+                // });
                 // addMessage(index, "normal");
                 // addMessage(questionWithAnswer.answerText as string, "success");
 
-                await sleep(QUERY_INTERVAL);
+                await sleep(CONSTANT.QUERY_INTERVAL);
             }
         } else {
             // 练习未收录，单题dom查询
@@ -76,7 +86,7 @@ export async function getAnswers() {
                         }
                         // addMessage("", "hr");
 
-                        await sleep(QUERY_INTERVAL);
+                        await sleep(CONSTANT.QUERY_INTERVAL);
                     }
                 } catch (error) {
                     logger.debug(error);

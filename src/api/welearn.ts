@@ -50,7 +50,9 @@ export class WELearnAPI {
         if (returnJson.status === false) {
             throw new Error(returnJson.error);
         } else {
-            logger.info(returnJson.data);
+            for (const message of returnJson.data) {
+                logger.info(message);
+            }
         }
     }
 
@@ -140,7 +142,7 @@ export class WELearnAPI {
                 logger.info("成功上传练习");
             } else {
                 logger.error("练习上传失败");
-                logger.error(returnJson.error);
+                logger.debug(returnJson.error);
             }
         }
     }
