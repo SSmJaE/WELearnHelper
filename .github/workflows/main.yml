@@ -1,0 +1,59 @@
+name : release
+
+on :
+  workflow_dispatch 
+  
+jobs:
+  build_script:
+    name: 输出为userscript
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version : latest
+          run-install : true
+
+      - name: get version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+
+      - name: Build project
+        run: pnpm run build:js
+        
+      - name: 发布userscript
+        uses: softprops/action-gh-release@v1
+        with:
+          tag :  ${{ steps.package-version.outputs.current-version}}
+          files: ./dist/*.js
+          
+      # 发布extension
+      - name: Setup Python # Set Python version
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+          
+      - name: Install dependencies
+        run: pip install python-dotenv
+        
+      - name : 生成manifest.json
+        run: python run ./scripts/metadata.py
+          
+      - name : 发布extension
+        uses: softprops/action-gh-release@v1
+        with:
+          tag :  ${{ steps.package-version.outputs.current-version}}
+          files: |
+            ./dist/*.js
+            ./dist/manifest.json
+      
+
