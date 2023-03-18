@@ -8,7 +8,6 @@ import { commonConfig } from "./vite.common";
 
 dotenv.config(); // load env vars from .env
 
-import typescript from "@rollup/plugin-typescript";
 import { visualizer } from "rollup-plugin-visualizer";
 // console.log(process.env);
 

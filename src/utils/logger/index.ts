@@ -16,6 +16,7 @@ export interface IRecord<T = RecordType, C = any> {
     timestamp: string;
     type: T;
     content: C;
+    extra?: string;
 }
 
 export interface IQuestionContent {
@@ -38,6 +39,12 @@ export interface IQuestionContent {
 export type IQuestionRecord = IRecord<"question", IQuestionContent>;
 
 export type IInfoRecord = IRecord<"info", string>;
+
+export interface IErrorContent {
+    message: string;
+}
+
+export type IErrorRecord = IRecord<"error", IErrorContent>;
 
 export class Logger {
     maxSize: number;
@@ -64,23 +71,22 @@ export class Logger {
         }
     }
 
-    log(option: Pick<IRecord, "type" | "content">) {
+    log(option: Pick<IRecord, "type" | "content" | "extra">) {
         this.addLog({
             ...option,
-            // timestamp: dayjs().toISOString(),
             timestamp: new Date().toISOString(),
             id: `${Math.random()}`,
         });
     }
 
-    info(content: string) {
-        return this.log({ type: "info", content });
+    info(content: string, extra?: string) {
+        return this.log({ type: "info", content, extra });
     }
-    question(content: IQuestionContent) {
-        return this.log({ type: "question", content });
+    question(content: IQuestionContent, extra?: string) {
+        return this.log({ type: "question", content, extra });
     }
-    error(content: string) {
-        return this.log({ type: "error", content });
+    error(content: IErrorContent, extra?: string) {
+        return this.log({ type: "error", content, extra });
     }
     hr() {
         return this.log({ type: "hr", content: "" });

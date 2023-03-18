@@ -369,7 +369,6 @@
 - 类型安全的setting
 - 抽象出projects概念，复用主要逻辑
 - 各种逻辑优化
-- [ ] 可以识别出作文题、翻译题，通过GPT自动完成
 
 ### UI
 
@@ -381,12 +380,6 @@
 
 ### 发布
 
-- [ ] 抽象出metadata，自动生成对应的package.json、manifest.json、userscript的header
-- [ ] github action自动构建，自动发布release
-  - [ ] script cat、greasy fork通过webhook自动更新
-
-### 其他
-
-- [ ] 完善文档
-  - [ ] 提供离线版文档
-- [ ] 提供内置的intro
+- 抽象出metadata，自动生成对应的package.json、manifest.json、userscript的header
+- github action自动构建，自动发布release
+  - script cat、greasy fork通过webhook自动更新

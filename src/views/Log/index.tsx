@@ -15,6 +15,7 @@ import { MenuButton } from "../components/MenuButton";
 import PopOver from "../components/PopOver";
 import { InfoRecord } from "./records/Info";
 import { QuestionRecord } from "./records/Question";
+import { ErrorRecord } from "./records/Error";
 
 function getAppTitle() {
     const defaultTitle = "EOCS网课助手";
@@ -40,6 +41,10 @@ export function dispatchRecord(record: any) {
             recordDisplay = <QuestionRecord record={record} />;
             break;
 
+        case "error":
+            recordDisplay = <ErrorRecord record={record} />;
+            break;
+
         default:
             recordDisplay = (
                 <div
@@ -61,37 +66,6 @@ const buffer = [
         type: "info",
         timestamp: `${Math.random()}`,
         content: "这是一条信息",
-    },
-    {
-        type: "question",
-        timestamp: `${Math.random()}`,
-        content: "这是一条问题",
-    },
-    {
-        type: "question",
-        timestamp: `${Math.random()}`,
-        content: "这是一条问题",
-    },
-    {
-        type: "question",
-        timestamp: `${Math.random()}`,
-        content: "这是一条问题",
-    },
-    {
-        type: "question",
-        timestamp: `${Math.random()}`,
-        content: "这是一条问题",
-    },
-    {
-        type: "question",
-        timestamp: `${Math.random()}`,
-        content: "这是一条问题",
-    },
-    {
-        type: "question",
-        timestamp: `${Math.random()}`,
-        content:
-            "打字效果显示答案，多行支持；打字效果显示答案，多行支持；打字效果显示答案，多行支持；打字效果显示答案，多行支持；打字效果显示答案，多行支持；",
     },
     {
         type: "unknown",
@@ -126,7 +100,10 @@ const buffer = [
     {
         type: "error",
         timestamp: `${Math.random()}`,
-        content: "这是一条未知类型的记录",
+        content: {
+            message: "这是一条未知类型的记录",
+            id: "123",
+        },
     },
     {
         type: "error",
@@ -199,17 +176,17 @@ export function LogPanel() {
 
     const theme = useTheme();
 
-    // useEffect(() => {
-    //     if (status) return;
+    useEffect(() => {
+        if (status) return;
 
-    //     for (const [index, record] of buffer.entries()) {
-    //         setTimeout(() => {
-    //             store.logs.push(record);
-    //         }, index * 200);
-    //     }
+        for (const [index, record] of buffer.entries()) {
+            setTimeout(() => {
+                store.logs.push(record);
+            }, index * 200);
+        }
 
-    //     status = true;
-    // }, []);
+        status = true;
+    }, []);
 
     // logger.debug({
     //     floating,
@@ -354,12 +331,12 @@ export function LogPanel() {
 
                     {logs.map((record, index) => {
                         return (
-                            // TODO hasExtra => !disabled，避免页面上的PopOver过多，略微优化一下性能
+                            // hasExtra => !disabled，避免页面上的PopOver过多，略微优化一下性能
                             <PopOver
                                 key={record.timestamp}
-                                content={"extra"}
+                                content={record.extra}
                                 placement={"right"}
-                                disabled={false}
+                                disabled={record.extra === undefined}
                             >
                                 <RecordContainer
                                     key={record.timestamp}

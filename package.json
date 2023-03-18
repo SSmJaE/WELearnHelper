@@ -28,7 +28,6 @@
         "valtio": "^1.10.3"
     },
     "devDependencies": {
-        "@rollup/plugin-typescript": "^11.0.0",
         "@types/chrome": "^0.0.222",
         "@types/lodash": "^4.14.191",
         "@types/node": "^18.15.1",

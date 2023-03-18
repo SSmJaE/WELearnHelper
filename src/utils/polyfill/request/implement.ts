@@ -23,7 +23,9 @@ export function getFullUrl(url: string, query: any) {
     }
 
     return queryString.stringifyUrl({
-        url: url.startsWith("/") ? `${metadata.apiServer}/${process.env.COMPILE_PLATFORM}` : url,
+        url: url.startsWith("/")
+            ? `${metadata.apiServer}/${process.env.COMPILE_PLATFORM}${url}`
+            : url,
         query: query,
     });
 }

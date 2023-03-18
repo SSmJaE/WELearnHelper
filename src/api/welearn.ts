@@ -4,7 +4,7 @@
 import metadata from "@/metadata.json";
 import logger from "@utils/logger";
 
-import { perSession, requestErrorHandler } from "./decorators";
+import { backendErrorToString, perSession, requestErrorHandler } from "./decorators";
 import request from "@utils/polyfill/request";
 import { ICommonResponse } from "./types";
 
@@ -48,7 +48,7 @@ export class WELearnAPI {
         const returnJson = await response.json();
 
         if (returnJson.status === false) {
-            throw new Error(returnJson.error);
+            throw new Error(backendErrorToString(returnJson.error));
         } else {
             for (const message of returnJson.data) {
                 logger.info(message);
@@ -56,7 +56,7 @@ export class WELearnAPI {
         }
     }
 
-    @requestErrorHandler("答案查询失败", "both")
+    @requestErrorHandler("答案查询失败")
     static async queryByTaskId(taskId: number, isSchoolTest: boolean) {
         const response = await request.post<IQueryByTaskIdResponse>("/query/", {
             body: {
@@ -69,7 +69,7 @@ export class WELearnAPI {
         return await response.json();
     }
 
-    @requestErrorHandler("答案查询失败", "both")
+    @requestErrorHandler("答案查询失败")
     static async queryByQuestionId(questionId: string) {
         const response = await request.post<IQueryByQuestionIdResponse>("/query/", {
             body: {
@@ -81,13 +81,13 @@ export class WELearnAPI {
         const returnJson = await response.json();
 
         if (returnJson.status === false) {
-            throw new Error(returnJson.error);
+            throw new Error(backendErrorToString(returnJson.error));
         } else {
             return returnJson.data;
         }
     }
 
-    @requestErrorHandler("答案查询失败", "both")
+    @requestErrorHandler("答案查询失败")
     static async queryByDomString(domString: string) {
         const response = await request.post<IQueryByDomStringResponse>("/query/", {
             body: {
@@ -99,7 +99,7 @@ export class WELearnAPI {
         const returnJson = await response.json();
 
         if (returnJson.status === false) {
-            throw new Error(returnJson.error);
+            throw new Error(backendErrorToString(returnJson.error));
         } else {
             return returnJson.data;
         }
@@ -118,7 +118,7 @@ export class WELearnAPI {
         const returnJson = await response.json();
 
         if (returnJson.status === false) {
-            throw new Error(returnJson.error);
+            throw new Error(backendErrorToString(returnJson.error));
         } else {
             logger.info(
                 "当前页面答案收录成功，可以切换至下一页面，手动点击查询按钮上传，或者上传其它练习的答案",
@@ -141,13 +141,15 @@ export class WELearnAPI {
             if (returnJson.status) {
                 logger.info("成功上传练习");
             } else {
-                logger.error("练习上传失败");
+                logger.error({
+                    message: "练习上传失败",
+                });
                 logger.debug(returnJson.error);
             }
         }
     }
 
-    @requestErrorHandler("课程目录获取失败", "both")
+    @requestErrorHandler("课程目录获取失败")
     @perSession("HAS_GET_COURSE_CATALOG")
     static async getCourseCatalog() {
         const response = await request.post<IGetCourseCatalogResponse>("/catalog/");
@@ -155,7 +157,7 @@ export class WELearnAPI {
         const returnJson = await response.json();
 
         if (returnJson.status === false) {
-            throw new Error(returnJson.error);
+            throw new Error(backendErrorToString(returnJson.error));
         } else {
             logger.info("成功获取了最新的课程目录");
 

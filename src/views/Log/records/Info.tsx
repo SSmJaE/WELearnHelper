@@ -50,7 +50,7 @@ export function InfoRecord({ record }: { record: IInfoRecord }) {
                     ...spring,
                 }}
                 dangerouslySetInnerHTML={{
-                    __html: `${record.content}<a href="https://github.com/SSmJaE/WELearnHelper" target="_blank"><u>Github</u></a>`,
+                    __html: `${record.content}`,
                 }}
             />
         </div>

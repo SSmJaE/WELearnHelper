@@ -5,7 +5,6 @@ specifiers:
   '@emotion/styled': ^11.10.6
   '@floating-ui/react': ^0.20.1
   '@react-spring/web': ^9.7.1
-  '@rollup/plugin-typescript': ^11.0.0
   '@types/chrome': ^0.0.222
   '@types/lodash': ^4.14.191
   '@types/node': ^18.15.1
@@ -46,7 +45,6 @@ dependencies:
   valtio: registry.npmmirror.com/valtio/1.10.3_react@18.2.0
 
 devDependencies:
-  '@rollup/plugin-typescript': registry.npmmirror.com/@rollup/plugin-typescript/11.0.0_typescript@4.9.5
   '@types/chrome': registry.npmmirror.com/@types/chrome/0.0.222
   '@types/lodash': registry.npmmirror.com/@types/lodash/4.14.191
   '@types/node': registry.npmmirror.com/@types/node/18.15.1
@@ -897,43 +895,6 @@ packages:
       react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
     dev: false
 
-  registry.npmmirror.com/@rollup/plugin-typescript/11.0.0_typescript@4.9.5:
-    resolution: {integrity: sha512-goPyCWBiimk1iJgSTgsehFD5OOFHiAknrRJjqFCudcW8JtWiBlK284Xnn4flqMqg6YAjVG/EE+3aVzrL5qNSzQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@rollup/plugin-typescript/-/plugin-typescript-11.0.0.tgz}
-    id: registry.npmmirror.com/@rollup/plugin-typescript/11.0.0
-    name: '@rollup/plugin-typescript'
-    version: 11.0.0
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^2.14.0||^3.0.0
-      tslib: '*'
-      typescript: '>=3.7.0'
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-      tslib:
-        optional: true
-    dependencies:
-      '@rollup/pluginutils': registry.npmmirror.com/@rollup/pluginutils/5.0.2
-      resolve: registry.npmmirror.com/resolve/1.22.1
-      typescript: registry.npmmirror.com/typescript/4.9.5
-    dev: true
-
-  registry.npmmirror.com/@rollup/pluginutils/5.0.2:
-    resolution: {integrity: sha512-pTd9rIsP92h+B6wWwFbW8RkZv4hiR/xKsqre4SIuAOaOEQRxi0lqLke9k2/7WegC85GgUs9pjmOjCUi3In4vwA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@rollup/pluginutils/-/pluginutils-5.0.2.tgz}
-    name: '@rollup/pluginutils'
-    version: 5.0.2
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-    dependencies:
-      '@types/estree': registry.npmmirror.com/@types/estree/1.0.0
-      estree-walker: registry.npmmirror.com/estree-walker/2.0.2
-      picomatch: registry.npmmirror.com/picomatch/2.3.1
-    dev: true
-
   registry.npmmirror.com/@types/chrome/0.0.222:
     resolution: {integrity: sha512-7XQnS85od1P0aBz0nrl5L7B+p4mKG/g4ya8nrJOJFVFRfVfqZTnp1B8c9JP6gAbHv7LRAeu9/BTPzMLLjHLiZQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/chrome/-/chrome-0.0.222.tgz}
     name: '@types/chrome'
@@ -941,12 +902,6 @@ packages:
     dependencies:
       '@types/filesystem': registry.npmmirror.com/@types/filesystem/0.0.32
       '@types/har-format': registry.npmmirror.com/@types/har-format/1.2.10
-    dev: true
-
-  registry.npmmirror.com/@types/estree/1.0.0:
-    resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/estree/-/estree-1.0.0.tgz}
-    name: '@types/estree'
-    version: 1.0.0
     dev: true
 
   registry.npmmirror.com/@types/filesystem/0.0.32:
@@ -1404,12 +1359,6 @@ packages:
     version: 4.0.0
     engines: {node: '>=10'}
     dev: false
-
-  registry.npmmirror.com/estree-walker/2.0.2:
-    resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/estree-walker/-/estree-walker-2.0.2.tgz}
-    name: estree-walker
-    version: 2.0.2
-    dev: true
 
   registry.npmmirror.com/filter-obj/5.1.0:
     resolution: {integrity: sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/filter-obj/-/filter-obj-5.1.0.tgz}

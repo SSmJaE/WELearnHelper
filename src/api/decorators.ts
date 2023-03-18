@@ -1,39 +1,21 @@
 import logger from "../utils/logger";
+import { IErrorDetail } from "./types";
 
-function errorMessageFactory(
-    error: Error,
-    message: string = "请求异常，稍后再试",
-    mode: "message" | "originError" | "both" = "message",
-) {
-    let toDisplay = "";
-
-    switch (mode) {
-        case "message":
-            toDisplay += message;
-            break;
-
-        case "originError":
-            toDisplay += `${error.message}`;
-            break;
-
-        case "both":
-            toDisplay += message + `<br />${error.message}`;
-            break;
-    }
-
-    logger.error(`${toDisplay}`);
+/** js的throw，似乎只能throw string，没法throw object，数据会丢失 */
+export function backendErrorToString(errorDetail: IErrorDetail | null) {
+    return errorDetail
+        ? `异常id : ${errorDetail.id}\n具体信息 : ${errorDetail.message}`
+        : undefined;
 }
 
-/** 通过装饰器，实现请求失败时，输出定制化的提示信息
+/**
+ * 通过装饰器，实现请求失败时，输出定制化的提示信息
  *
  * 如果不对request进行装饰器包裹，异常直接输出至console
  *
  * 如果使用了装饰器，但是未提供message，输出默认值
  */
-export function requestErrorHandler(
-    message: string = "请求异常，稍后再试",
-    mode: "message" | "originError" | "both" = "message",
-) {
+export function requestErrorHandler(message: string = "请求异常，稍后再试") {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const originalMethod = descriptor.value;
 
@@ -55,7 +37,14 @@ export function requestErrorHandler(
             // }
             const result = originalMethod.apply(this, args);
             result.catch((error: Error) => {
-                errorMessageFactory(error as Error, message, mode);
+                // logger.debug(error);
+
+                logger.error(
+                    {
+                        message,
+                    },
+                    error.message,
+                );
             });
 
             return result;

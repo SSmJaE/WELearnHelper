@@ -80,6 +80,7 @@ export default function PopOver({
                             zIndex: 9999,
                             fontFamily: "华文新魏",
                             lineHeight: "normal",
+                            whiteSpace: "pre-wrap",
                         }}
                         {...getFloatingProps()}
                     >

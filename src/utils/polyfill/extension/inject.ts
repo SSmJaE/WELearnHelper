@@ -15,7 +15,7 @@ function injectJs(source: string) {
     return scriptElement;
 }
 
-injectJs(chrome.runtime.getURL("index.js"));
+injectJs(chrome.runtime?.getURL("index.js"));
 
 const EXTENSION_NAME = "eocs-helper";
 

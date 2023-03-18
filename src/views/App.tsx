@@ -1,17 +1,17 @@
-import { css, Global, ThemeProvider } from "@emotion/react";
+import { css, Global, Theme, ThemeProvider } from "@emotion/react";
 
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfigPanel } from "./Config";
 import { FloatingBall } from "./Floating";
 import { LogPanel } from "./Log";
 
-const theme = {
-    closeButton: "hotpink",
+const theme: Theme = {
     colors: {
         primary: "rgb(255, 255, 255)", // 60%
         secondary: "rgb(230, 230, 230)", // 30%
         active: "#2196f3", // 10%
         activeSecondary: "rgb(231, 243, 255)",
+        error: "rgb(231, 71, 93)",
     },
 };
 

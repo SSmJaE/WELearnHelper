@@ -2,3 +2,7 @@
 import "./exam/initial";
 import "./exercise/initial";
 import "./time/initial";
+
+import { WELearnAPI } from "@/src/api/welearn";
+
+WELearnAPI.checkVersion();
