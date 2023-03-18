@@ -47,7 +47,12 @@ export default function PopOver({
         ],
     });
 
-    const hover = useHover(context);
+    const hover = useHover(context, {
+        delay: {
+            // open: 200,
+            close: 250,
+        },
+    });
 
     const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
 

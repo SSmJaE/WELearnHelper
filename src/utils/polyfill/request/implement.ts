@@ -85,7 +85,11 @@ export function requestForUserscript<T = any>(
         GM_xmlhttpRequest({
             url: getFullUrl(url, query),
             method: method as any,
-            headers,
+            // GM_xmlhttpRequest需要手动设置Content-Type，不然默认是text/plain，后端无法识别
+            headers: {
+                "Content-Type": "application/json;charset=UTF-8",
+                ...headers,
+            },
             data: typeof body === "object" ? JSON.stringify(body) : body,
             timeout: 5000,
             responseType: "json",

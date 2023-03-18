@@ -127,6 +127,7 @@ export class WELearnAPI {
     }
 
     // @requestErrorHandler("上传失败")
+    @perSession("HAS_UPLOAD")
     static async upload(byUser = false) {
         const response = await request.post<ICommonResponse>("/upload/", {
             body: {
