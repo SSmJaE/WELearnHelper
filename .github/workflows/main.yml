@@ -142,18 +142,36 @@ jobs:
           tag_name: ${{ needs.check.outputs.newVersion }}
           files: ./dist/*.zip
 
-      - name: 自动生成release note
-        run: |
-          pnpm install -g conventional-changelog-cli
-          conventional-changelog -p conventionalcommits -o temp.md -r 2 
-          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 2 -a
-          cat temp.md
+      # - name: 自动生成release note
+      #   run: |
+      #     pnpm install -g conventional-changelog-cli
+      #     conventional-changelog -p conventionalcommits -o temp.md -r 2 
+      #     conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 2 -a
+      #     cat temp.md
+
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          github-token: ${{ secrets.github_token }}
+          output-file: "false"
+          preset: "conventionalcommits"
+
+      - run: |
+          echo "changelog: ${{ steps.changelog.outputs.changelog }}"
+          echo "clean_changelog: ${{ steps.changelog.outputs.clean_changelog }}"
+          echo "version: ${{ steps.changelog.outputs.version }}"
+          echo "tag: ${{ steps.changelog.outputs.tag }}"
+          echo "skipped: ${{ steps.changelog.outputs.skipped }}"
+
+
 
       - name: 发布生成的release note
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.check.outputs.newVersion }}
-          body_path: temp.md
+          # body_path: temp.md
+          body: ${{ steps.changelog.outputs.clean_changelog }}
 
   sync:
     name: 同步release到专门的repo中，方便第三方进行webhook
