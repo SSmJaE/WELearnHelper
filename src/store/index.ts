@@ -39,7 +39,7 @@ class Store {
 
     /** 因为subscribe了这个key，如果直接替换(=)，会导致subscribe失效 */
     setUserSettings(userSettings: Partial<IWELearnSettings & ICommonSettings>) {
-        for (const [key, value] of Object.entries(userSettings)) {
+        for (const [key, value] of Object.entries(userSettings || {})) {
             // @ts-ignore
             this.userSettings[key] = value;
         }

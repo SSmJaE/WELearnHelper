@@ -1,12 +1,14 @@
+import { RequestMessagePayload } from "../request/types";
 import { IExtensionMessage } from "./types";
 
-const EXTENSION_NAME = "eocs-helper";
+// 会和inject中出现const冲突，懒得折腾rollup了
+const EXTENSION_NAME_CONTENT = "eocs-helper";
 
 /** 消息来自inject */
 async function fromInjectToContent(messageEvent: MessageEvent<IExtensionMessage>) {
     const message = messageEvent.data;
 
-    if (!message.extensionName || message.extensionName !== EXTENSION_NAME) {
+    if (!message.extensionName || message.extensionName !== EXTENSION_NAME_CONTENT) {
         return;
     }
 
@@ -34,17 +36,26 @@ async function fromInjectToContent(messageEvent: MessageEvent<IExtensionMessage>
                 payload: message.payload,
             };
 
-            returnPayload = await new Promise<IExtensionMessage>((resolve) =>
+            returnPayload = await new Promise<RequestMessagePayload>((resolve, reject) => {
+                // const messageFromBackground = await chrome.runtime.sendMessage<
+                //     IExtensionMessage<any>,
+                //     IExtensionMessage<any>
+                // >(messageToBackground);
+
                 // 原来可以直接获取到response啊，我以为得自己维护一套事件监听
                 chrome.runtime.sendMessage(
                     messageToBackground,
-                    (messageFromBackground: IExtensionMessage) => {
+                    (messageFromBackground: IExtensionMessage<RequestMessagePayload>) => {
+                        if (!messageFromBackground) {
+                            reject("[content] : messageFromBackground is undefined");
+                        }
+
                         console.log("[content] : messageFromBackground");
                         console.log(messageFromBackground);
-                        resolve(messageFromBackground);
+                        resolve(messageFromBackground.payload);
                     },
-                ),
-            );
+                );
+            });
 
             break;
         case "setValue":
@@ -53,6 +64,7 @@ async function fromInjectToContent(messageEvent: MessageEvent<IExtensionMessage>
 
                 returnPayload = await new Promise<void>((resolve) => {
                     // 只有sync api，并不是非要用sync
+                    // value可以是object，但是必须是jsonable的
                     chrome.storage.sync.set({ [key]: value }, function () {
                         console.log(`[content] : ${key} is set to ${value}`);
                         resolve();
@@ -65,7 +77,7 @@ async function fromInjectToContent(messageEvent: MessageEvent<IExtensionMessage>
             {
                 const { key, defaultValue } = payload;
 
-                returnPayload = await new Promise((resolve) => {
+                returnPayload = await new Promise<any>((resolve) => {
                     chrome.storage.sync.get(key, function (result) {
                         // 提前序列化，不用在每次使用时序列化
                         let temp: any;
@@ -75,12 +87,14 @@ async function fromInjectToContent(messageEvent: MessageEvent<IExtensionMessage>
                             temp = result[key];
                         }
 
+                        console.log(`[content] : ${key} is ${temp}`);
+
                         if (!temp) {
                             chrome.storage.sync.set({ [key]: defaultValue });
                             temp = defaultValue;
-                        }
 
-                        console.log(`[content] : ${key} is ${temp}`);
+                            console.log(`[content] : ${key} is set to ${defaultValue}`);
+                        }
 
                         resolve(temp);
                     });
@@ -106,7 +120,7 @@ async function fromInjectToContent(messageEvent: MessageEvent<IExtensionMessage>
         payload: returnPayload,
     };
 
-    window.postMessage(messageToInject, "*");
+    window.postMessage(JSON.parse(JSON.stringify(messageToInject)), "*");
 }
 
 // /** 消息来(返回)自background

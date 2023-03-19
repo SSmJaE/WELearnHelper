@@ -8,6 +8,11 @@ export type CustomRequestInit = {
     body?: any;
 };
 
+export interface RequestMessagePayload {
+    text: string;
+    ok: boolean;
+}
+
 export interface CustomRequestResponse<T = any> {
     json(): Promise<T>;
     text(): Promise<string>;

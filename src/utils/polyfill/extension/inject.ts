@@ -28,14 +28,16 @@ const EXTENSION_NAME = "eocs-helper";
  */
 const sessions = new Map<string, ExtensionMessageCallback>();
 
-export function injectToContent(
+export async function injectToContent<T = any>(
     type: ExtensionMessageType,
     payload: any,
-    callback: ExtensionMessageCallback = async () => {},
+    callback: ExtensionMessageCallback<T> = async () => {},
 ) {
     // 只能发送jsonable的数据，Promise不行
     // 如果无法序列化，让其直接在inject中报错，方便调试
     const jsonablePayload = JSON.parse(JSON.stringify(payload));
+
+    // const isEqual = (await import("lodash/isEqual")).default;
 
     if (!isEqual(jsonablePayload, payload)) {
         throw new Error("payload is not jsonable");
@@ -52,7 +54,7 @@ export function injectToContent(
         payload,
     };
 
-    window.postMessage(messageToContent, "*");
+    window.postMessage(JSON.parse(JSON.stringify(messageToContent)), "*");
 
     sessions.set(sessionId, callback);
 }

@@ -9,4 +9,6 @@ export interface IExtensionMessage<T = any> {
     payload: T;
 }
 
-export type ExtensionMessageCallback = (extensionMessage: IExtensionMessage) => Promise<void>;
+export type ExtensionMessageCallback<T = any> = (
+    extensionMessage: IExtensionMessage<T>,
+) => Promise<void>;

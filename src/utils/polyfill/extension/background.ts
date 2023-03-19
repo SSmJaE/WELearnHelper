@@ -1,3 +1,4 @@
+import { RequestMessagePayload } from "../request/types";
 import { IExtensionMessage } from "./types";
 
 async function handleContentMessage(
@@ -9,13 +10,13 @@ async function handleContentMessage(
         payload: { url, init },
     } = message;
 
-    const messageToContent: IExtensionMessage = {
+    const messageToContent: IExtensionMessage<RequestMessagePayload> = {
         extensionName: message.extensionName,
         sessionId: message.sessionId,
         sessionSource: "background",
         sessionTarget: "content",
         type: "request",
-        payload: undefined,
+        payload: undefined as any,
     };
 
     try {
@@ -35,9 +36,14 @@ async function handleContentMessage(
         };
     }
 
-    sendResponse(messageToContent);
+    console.log("[background] : messageToContent");
+    console.log(messageToContent);
 
-    return true;
+    sendResponse(messageToContent);
 }
 
-chrome.runtime.onMessage.addListener(handleContentMessage);
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    handleContentMessage(message, sender, sendResponse);
+
+    return true;
+});
