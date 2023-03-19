@@ -58,6 +58,13 @@ export interface IErrorContent {
 
 export type IErrorRecord = IRecord<"error", IErrorContent>;
 
+interface ILoggerRecordParams<C = any> {
+    id?: string;
+    content: C;
+    extra?: string;
+    action?: IDynamicButton[];
+}
+
 export class Logger {
     maxSize: number;
     shiftOffset: number;
@@ -83,22 +90,22 @@ export class Logger {
         }
     }
 
-    log(option: Pick<IRecord, "type" | "content" | "extra" | "action">) {
+    log(option: Pick<IRecord, "type" | "content" | "extra" | "action"> & Partial<IRecord>) {
         this.addLog({
             ...option,
             timestamp: new Date().toISOString(),
-            id: `${Math.random()}`,
+            id: option.id ?? `${Math.random()}`,
         });
     }
 
-    info(content: string, extra?: string, action?: IDynamicButton[]) {
-        return this.log({ type: "info", content, extra, action });
+    info({ id, content, extra, action }: ILoggerRecordParams<string>) {
+        return this.log({ type: "info", id, content, extra, action });
     }
-    question(content: IQuestionContent, extra?: string, action?: IDynamicButton[]) {
-        return this.log({ type: "question", content, extra, action });
+    question({ id, content, extra, action }: ILoggerRecordParams<IQuestionContent>) {
+        return this.log({ type: "question", id, content, extra, action });
     }
-    error(content: IErrorContent, extra?: string, action?: IDynamicButton[]) {
-        return this.log({ type: "error", content, extra, action });
+    error({ id, content, extra, action }: ILoggerRecordParams<IErrorContent>) {
+        return this.log({ type: "error", id, content, extra, action });
     }
     hr() {
         return this.log({ type: "hr", content: "" });

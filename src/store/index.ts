@@ -1,4 +1,3 @@
-import { throttle } from "lodash";
 import { proxy, subscribe, useSnapshot } from "valtio";
 import { devtools } from "valtio/utils";
 
@@ -78,6 +77,18 @@ class Store {
             this.logs = [];
         }
     }
+    getRecordById(id: string) {
+        return this.logs.find((record) => record.id === id);
+    }
+    // 不知道是不是因为是proxy，所以这个方法不起作用
+    // updateRecord(record: Pick<IRecord, "id"> & Partial<IRecord>) {
+    //     const index = this.logs.findIndex((log) => log.id === record.id);
+    //     if (index !== -1) {
+    //         logger.debug("in updateRecord", record)
+
+    //         this.logs[index] = { ...this.logs[index], ...record };
+    //     }
+    // }
 }
 
 export const store = proxy(new Store());

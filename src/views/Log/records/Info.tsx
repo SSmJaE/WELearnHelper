@@ -72,8 +72,8 @@ export function InfoRecord({ record }: { record: IInfoRecord }) {
             >
                 {/* hover时，显示在最后一行的最右边 */}
                 {record.action &&
-                    record.action.map(({ children, onClick }, index) => (
-                        <Button key={index} onClick={onClick}>
+                    record.action.map(({ children, ...restProps }, index) => (
+                        <Button key={index} {...restProps}>
                             {children}
                         </Button>
                     ))}

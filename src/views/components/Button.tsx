@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import styled from "@emotion/styled";
 
 const ButtonContainer = styled.span<{ disabled: boolean }>(
@@ -26,7 +28,7 @@ const ButtonContainer = styled.span<{ disabled: boolean }>(
 export interface IButtonProps {
     onClick?: () => void;
     children: React.ReactNode;
-    disabled?: boolean;
+    disabled?: boolean | number;
     style?: React.CSSProperties;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
@@ -39,14 +41,28 @@ export default function Button({
     onMouseEnter,
     onMouseLeave,
 }: IButtonProps) {
+    const [isButtonDisabled, setIsButtonDisabled] = useState(
+        typeof disabled === "number" ? false : !!disabled,
+    );
+
     return (
         <ButtonContainer
             style={{
-                cursor: disabled ? "not-allowed" : "pointer",
+                cursor: isButtonDisabled ? "not-allowed" : "pointer",
                 ...style,
             }}
-            disabled={!!disabled}
-            onClick={onClick}
+            disabled={isButtonDisabled}
+            onClick={() => {
+                onClick && onClick();
+
+                if (typeof disabled === "number") {
+                    setIsButtonDisabled(true);
+
+                    setTimeout(() => {
+                        setIsButtonDisabled(false);
+                    }, disabled);
+                }
+            }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         >

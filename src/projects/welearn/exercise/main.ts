@@ -90,21 +90,23 @@ async function outputAnswers(answers: Answer[]) {
         }
 
         logger.question({
-            order: `${String(answer.index).padStart(2, "0")}`,
-            info: {
-                content: "标答",
-            },
-            answerText: answer.text,
-            raw: {
-                element: answer.element,
-            },
-            solve: {
-                couldSolve: true,
-                hasSolved: true,
-                solveThis: async () => {
-                    logger.debug("solve this");
+            content: {
+                order: `${String(answer.index).padStart(2, "0")}`,
+                info: {
+                    content: "标答",
                 },
-            },
+                answerText: answer.text,
+                raw: {
+                    element: answer.element,
+                },
+                solve: {
+                    couldSolve: true,
+                    hasSolved: true,
+                    solveThis: async () => {
+                        logger.debug("solve this");
+                    },
+                },
+            }
         });
 
         const currentTag = answer.element.tagName;
@@ -160,7 +162,7 @@ export async function determineCourseType(iframeUrl: string) {
             } else {
                 // 两种情况(同步 + 此处的timeout)都没有答案
                 if (!hasAnswer) {
-                    logger.info("此页面已适配，无答案");
+                    logger.info({ content: "此页面已适配，无答案" });
                 }
             }
         }, 2000);
@@ -170,9 +172,9 @@ export async function determineCourseType(iframeUrl: string) {
         dom = await queryData(answerUrl);
         answers = parseReading(dom);
     } else {
-        logger.info(`未适配的课程类型，请在Github反馈`);
-        logger.info(`${courseInfo}`);
-        logger.info(`注意页面上是否有二维码，且注明需在app中使用，这种题型只能用app`);
+        logger.info({ content: `未适配的课程类型，请在Github反馈` });
+        logger.info({ content: `${courseInfo}` });
+        logger.info({ content: `注意页面上是否有二维码，且注明需在app中使用，这种题型只能用app` });
         logger.debug("未处理的课程类型");
         logger.debug(courseInfo);
         logger.debug(identifier);

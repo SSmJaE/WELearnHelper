@@ -40,10 +40,11 @@ export function requestErrorHandler(message: string = "请求异常，稍后再�
                 // logger.debug(error);
 
                 logger.error(
-                    {
+                {
+                    content: {
                         message,
-                    },
-                    error.message,
+                    }, extra: error.message
+                },
                 );
             });
 

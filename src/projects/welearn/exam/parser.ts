@@ -56,25 +56,25 @@ export async function getAnswers() {
 
             for (const [index, questionWithAnswer] of returnJson.data.entries()) {
                 logger.question({
-                    // TODO 获取真实题号，从答题卡上，对应的question_id判断
-                    order: `${String(index + 1).padStart(2, "0")} / ${questionCount}`,
-                    info: {
-                        content: questionWithAnswer.answer_text
-                            ? "标答"
-                            : questionWithAnswer.answer_text_gpt
-                            ? "GPT"
-                            : "无答案",
-                    },
-                    answerText:
-                        questionWithAnswer.answer_text ||
-                        questionWithAnswer.answer_text_gpt ||
-                        "尚未收录答案",
-                    raw: {},
-                    solve: {
-                        couldSolve: false,
-                        hasSolved: false,
-                        solveThis: (answerText: string) => {},
-                    },
+                    content: {
+                        order: `${String(index + 1).padStart(2, "0")} / ${questionCount}`,
+                        info: {
+                            content: questionWithAnswer.answer_text
+                                ? "标答"
+                                : questionWithAnswer.answer_text_gpt
+                                    ? "GPT"
+                                    : "无答案",
+                        },
+                        answerText: questionWithAnswer.answer_text ||
+                            questionWithAnswer.answer_text_gpt ||
+                            "尚未收录答案",
+                        raw: {},
+                        solve: {
+                            couldSolve: false,
+                            hasSolved: false,
+                            solveThis: (answerText: string) => { },
+                        },
+                    }
                 });
 
                 await sleep(CONSTANT.QUERY_INTERVAL);
@@ -98,24 +98,25 @@ export async function getAnswers() {
                         } catch (error) {}
 
                         logger.question({
-                            order: `${questionIndexString}`,
-                            info: {
-                                content: questionWithAnswer.answer_text
-                                    ? "标答"
-                                    : questionWithAnswer.answer_text_gpt
-                                    ? "GPT"
-                                    : "无答案",
-                            },
-                            answerText:
-                                questionWithAnswer.answer_text ||
-                                questionWithAnswer.answer_text_gpt ||
-                                "尚未收录答案",
-                            raw: {},
-                            solve: {
-                                couldSolve: false,
-                                hasSolved: false,
-                                solveThis: (answerText: string) => {},
-                            },
+                            content: {
+                                order: `${questionIndexString}`,
+                                info: {
+                                    content: questionWithAnswer.answer_text
+                                        ? "标答"
+                                        : questionWithAnswer.answer_text_gpt
+                                            ? "GPT"
+                                            : "无答案",
+                                },
+                                answerText: questionWithAnswer.answer_text ||
+                                    questionWithAnswer.answer_text_gpt ||
+                                    "尚未收录答案",
+                                raw: {},
+                                solve: {
+                                    couldSolve: false,
+                                    hasSolved: false,
+                                    solveThis: (answerText: string) => { },
+                                },
+                            }
                         });
 
                         await sleep(CONSTANT.QUERY_INTERVAL);

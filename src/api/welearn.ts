@@ -52,7 +52,7 @@ export class WELearnAPI {
             throw new Error(backendErrorToString(returnJson.error));
         } else {
             for (const message of returnJson.data) {
-                logger.info(message);
+                logger.info({ content: message });
             }
         }
     }
@@ -122,7 +122,7 @@ export class WELearnAPI {
             throw new Error(backendErrorToString(returnJson.error));
         } else {
             logger.info(
-                "当前页面答案收录成功，可以切换至下一页面，手动点击查询按钮上传，或者上传其它练习的答案",
+                { content: "当前页面答案收录成功，可以切换至下一页面，手动点击查询按钮上传，或者上传其它练习的答案" },
             );
         }
     }
@@ -141,10 +141,12 @@ export class WELearnAPI {
 
         if (byUser) {
             if (returnJson.status) {
-                logger.info("成功上传练习");
+                logger.info({ content: "成功上传练习" });
             } else {
                 logger.error({
-                    message: "练习上传失败",
+                    content: {
+                        message: "练习上传失败",
+                    }
                 });
                 logger.debug(returnJson.error);
             }
@@ -161,7 +163,7 @@ export class WELearnAPI {
         if (returnJson.status === false) {
             throw new Error(backendErrorToString(returnJson.error));
         } else {
-            logger.info("成功获取了最新的课程目录");
+            logger.info({ content: "成功获取了最新的课程目录" });
 
             return returnJson.data;
         }
