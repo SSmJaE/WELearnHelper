@@ -145,8 +145,8 @@ jobs:
       - name: 自动生成release note
         run: |
           pnpm install -g conventional-changelog-cli
-          conventional-changelog -p conventionalcommits -o temp.md -r 1 
-          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 1 -a
+          conventional-changelog -p conventionalcommits -o temp.md -r 2 
+          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 2 -a
 
       - name: 发布生成的release note
         uses: softprops/action-gh-release@v1
