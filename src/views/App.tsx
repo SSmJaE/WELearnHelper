@@ -5,13 +5,18 @@ import { ConfigPanel } from "./Config";
 import { FloatingBall } from "./Floating";
 import { LogPanel } from "./Log";
 
-const theme: Theme = {
+export const theme: Theme = {
     colors: {
         primary: "rgb(255, 255, 255)", // 60%
         secondary: "rgb(230, 230, 230)", // 30%
         active: "#2196f3", // 10%
         activeSecondary: "rgb(231, 243, 255)",
         error: "rgb(231, 71, 93)",
+    },
+    answerTypeColorMapping: {
+        GPT: "orange",
+        标答: "limegreen",
+        无答案: "rgb(231, 71, 93)",
     },
 };
 

@@ -1,8 +1,12 @@
+import { useState } from "react";
+
 import { IInfoRecord } from "@/src/utils/logger";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { animated } from "@react-spring/web";
+
 import { InlineTag, useSlideIn } from "../../components/InlineTag";
+import Button from "../../components/Button";
 
 const InfoRecordContainer = styled(animated.span)(
     {
@@ -29,12 +33,16 @@ export function InfoRecord({ record }: { record: IInfoRecord }) {
     const spring = useSlideIn();
     const theme = useTheme();
 
+    const [isHover, setHover] = useState(false);
+
     return (
         <div
             style={{
                 position: "relative",
                 lineHeight: "normal",
             }}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
         >
             <InlineTag
                 style={{
@@ -53,6 +61,23 @@ export function InfoRecord({ record }: { record: IInfoRecord }) {
                     __html: `${record.content}`,
                 }}
             />
+
+            <div
+                style={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    display: isHover ? "flex" : "none",
+                }}
+            >
+                {/* hover时，显示在最后一行的最右边 */}
+                {record.action &&
+                    record.action.map(({ children, onClick }, index) => (
+                        <Button key={index} onClick={onClick}>
+                            {children}
+                        </Button>
+                    ))}
+            </div>
         </div>
     );
 }

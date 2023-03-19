@@ -20,6 +20,7 @@ export default function PopOver({
     disabled = false,
     offsetPixel = 8,
     backgroundColor = "rgba(104, 101, 101, 0.89)",
+    delay = false,
 }: {
     children: React.ReactNode;
     content: React.ReactNode;
@@ -27,6 +28,7 @@ export default function PopOver({
     disabled?: boolean;
     offsetPixel?: number;
     backgroundColor?: string;
+    delay?: boolean;
 }) {
     const theme = useTheme();
 
@@ -50,7 +52,7 @@ export default function PopOver({
     const hover = useHover(context, {
         delay: {
             // open: 200,
-            close: 250,
+            close: delay ? 250 : undefined,
         },
     });
 
@@ -77,7 +79,8 @@ export default function PopOver({
                             left: x ?? 0,
                             backgroundColor,
                             // backgroundColor: theme.colors.secondary,
-                            width: "max-content",
+                            // width: "max-content",
+                            maxWidth: "400px",
                             color: "white",
                             borderRadius: 4,
                             fontSize: 20,

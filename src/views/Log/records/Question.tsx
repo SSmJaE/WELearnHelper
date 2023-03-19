@@ -1,45 +1,43 @@
-import { createRef, useState } from "react";
 import { useHover, useMount } from "ahooks";
-// import Typed from "typed.js";
-import { useRef } from "react";
-// import TypeIt from "typeit-react";
-import TypeIt from "../../components/TypeIt";
+import { createRef, useRef, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
-import Button from "../../components/Button";
-
-import { animated, config, useSpring, useSprings, useTrail } from "@react-spring/web";
-import { useTheme } from "@emotion/react";
 import { store } from "@/src/store";
 import logger, { IQuestionContent, IQuestionRecord } from "@/src/utils/logger";
-import { ErrorBoundary } from "react-error-boundary";
-import { InlineTag, useSlideIn } from "../../components/InlineTag";
+import { useTheme } from "@emotion/react";
+import { animated, config, useSpring, useSprings, useTrail } from "@react-spring/web";
 
-const defaultColorMapping = {
-    GPT: "orange",
-    标答: "limegreen",
-    无答案: "red",
-};
+import { theme } from "../../App";
+import Button from "../../components/Button";
+import { InlineTag, useSlideIn } from "../../components/InlineTag";
+// import TypeIt from "typeit-react";
+import TypeIt from "../../components/TypeIt";
 
 function SolveButton({ content: { solve, answerText } }: { content: IQuestionContent }) {
     const [isHovering, setIsHovering] = useState(false);
 
-    let buttonText: string = "解答该题";
+    // let buttonText: string = "解答该题";
 
-    if (solve.couldSolve) {
-        if (solve.hasSolved) {
-            if (isHovering) {
-                buttonText = "再次解答";
-            } else {
-                buttonText = "已解答👌";
-            }
-        }
-    } else {
-        buttonText = "无法解答";
-    }
+    // if (solve.couldSolve) {
+    //     if (solve.hasSolved) {
+    //         if (isHovering) {
+    //             buttonText = "再次解答";
+    //         } else {
+    //             buttonText = "已解答👌";
+    //         }
+    //     }
+    // } else {
+    //     buttonText = "无法解答";
+    // }
+
+    // TODO 完成这个功能
+    const buttonText = "无法解答";
 
     return (
         <Button
-            disabled={!solve.couldSolve}
+            // TODO
+            disabled
+            // disabled={!solve.couldSolve}
             onClick={() => {
                 solve.solveThis(answerText);
             }}
@@ -128,7 +126,7 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
                     // backgroundColor: "limegreen", // "red" "yellow"
                     backgroundColor: record.content.info.color
                         ? record.content.info.color
-                        : defaultColorMapping[record.content.info.content] ?? "gray",
+                        : theme.answerTypeColorMapping[record.content.info.content] ?? "gray",
                     color: "white",
                     fontFamily: "华文新魏",
                 }}
@@ -181,6 +179,12 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
                 }}
             >
                 {/* hover时，显示在最后一行的最右边 */}
+                {record.action &&
+                    record.action.map(({ children, onClick }, index) => (
+                        <Button key={index} onClick={onClick}>
+                            {children}
+                        </Button>
+                    ))}
                 <SolveButton content={record.content} />
                 <CopyButton answerText={record.content.answerText} />
             </div>

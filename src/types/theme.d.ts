@@ -9,5 +9,10 @@ declare module "@emotion/react" {
             activeSecondary: string;
             error: string;
         };
+        answerTypeColorMapping: {
+            GPT: string;
+            标答: string;
+            无答案: string;
+        };
     }
 }

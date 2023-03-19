@@ -33,7 +33,7 @@ const ConfigPanelContainer = styled(animated.div)<{}>(
         flexDirection: "column",
 
         width: 600,
-        position: "absolute",
+        position: "fixed",
         top: 100,
         right: 100,
         zIndex: 101,

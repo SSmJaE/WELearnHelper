@@ -176,17 +176,17 @@ export function LogPanel() {
 
     const theme = useTheme();
 
-    useEffect(() => {
-        if (status) return;
+    // useEffect(() => {
+    //     if (status) return;
 
-        for (const [index, record] of buffer.entries()) {
-            setTimeout(() => {
-                store.logs.push(record);
-            }, index * 200);
-        }
+    //     for (const [index, record] of buffer.entries()) {
+    //         setTimeout(() => {
+    //             store.logs.push(record);
+    //         }, index * 200);
+    //     }
 
-        status = true;
-    }, []);
+    //     status = true;
+    // }, []);
 
     // logger.debug({
     //     floating,
@@ -240,7 +240,8 @@ export function LogPanel() {
         >
             <animated.div
                 style={{
-                    position: "absolute",
+                    // 页面可能很长，所以这里使用 fixed 定位
+                    position: "fixed",
                     top: 100,
                     left: 100,
                     // minWidth: 300,
@@ -337,6 +338,7 @@ export function LogPanel() {
                                 content={record.extra}
                                 placement={"right"}
                                 disabled={record.extra === undefined}
+                                delay={record.type === "error"}
                             >
                                 <RecordContainer
                                     key={record.timestamp}

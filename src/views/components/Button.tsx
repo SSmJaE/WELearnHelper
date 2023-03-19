@@ -23,6 +23,14 @@ const ButtonContainer = styled.span<{ disabled: boolean }>(
     }),
 );
 
+export interface IButtonProps {
+    onClick?: () => void;
+    children: React.ReactNode;
+    disabled?: boolean;
+    style?: React.CSSProperties;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
+}
 export default function Button({
     onClick,
     children,
@@ -30,14 +38,7 @@ export default function Button({
     style,
     onMouseEnter,
     onMouseLeave,
-}: {
-    onClick?: () => void;
-    children: React.ReactNode;
-    disabled?: boolean;
-    style?: React.CSSProperties;
-    onMouseEnter?: () => void;
-    onMouseLeave?: () => void;
-}) {
+}: IButtonProps) {
     return (
         <ButtonContainer
             style={{
