@@ -11,8 +11,7 @@
   "include": [
     // "metadata", // TODO 必须是metadata，不能是metadata.ts，也不能是*.ts，不知道为什么
     "metadata.json",
-    "vite.common.ts",
-    "vite.extension.ts",
-    "vite.userscript.ts",
+    "scripts/manifest.json",
+    "build/*.ts",
   ]
 }

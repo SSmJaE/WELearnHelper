@@ -1,6 +1,5 @@
 node_modules
 /dist/*
-/build/*
 /private/
 /src/plugins/onetap/*
 

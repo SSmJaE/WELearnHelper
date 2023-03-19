@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "",
-    "version": "",
-    "description": "",
+    "name": "WELearn网课助手",
+    "version": "1.0.0",
+    "description": "显示WE Learn随行课堂题目答案；支持班级测试；自动答题；刷时长；开放自定义设置",
     "icons": {
         "16": "icon.png",
         "32": "icon.png",
@@ -11,14 +11,19 @@
     },
     "action": {
         "default_icon": "icon.png",
-        "default_title": ""
+        "default_title": "WELearn网课助手"
     },
     "background": {
         "service_worker": "background.js"
     },
     "content_scripts": [
         {
-            "matches": [],
+            "matches": [
+                "*://course.sflep.com/*",
+                "*://welearn.sflep.com/*",
+                "*://courseappserver.sflep.com/*",
+                "*://centercourseware.sflep.com/*"
+            ],
             "js": [
                 "inject.js",
                 "content.js"
@@ -30,7 +35,14 @@
     "permissions": [
         "storage"
     ],
-    "host_permissions": [],
+    "host_permissions": [
+        "*://localhost/*",
+        "*://47.100.166.53/*",
+        "*://course.sflep.com/*",
+        "*://welearn.sflep.com/*",
+        "*://courseappserver.sflep.com/*",
+        "*://centercourseware.sflep.com/*"
+    ],
     "web_accessible_resources": [
         {
             "resources": [
@@ -43,6 +55,6 @@
     ],
     "homepage_url": "https://www.github.com/SSmJaE/",
     "content_security_policy": {
-        "extension_pages": "default-src 'self'"
+        "extension_pages": "script-src 'self'; connect-src http://localhost http://47.100.166.53;"
     }
 }

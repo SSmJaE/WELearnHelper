@@ -383,3 +383,4 @@
 - 抽象出metadata，自动生成对应的package.json、manifest.json、userscript的header
 - github action自动构建，自动发布release
   - script cat、greasy fork通过webhook自动更新
+

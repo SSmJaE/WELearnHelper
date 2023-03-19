@@ -4,8 +4,9 @@ import monkey, { cdn } from "vite-plugin-monkey";
 
 import react from "@vitejs/plugin-react";
 
-import metadata from "./metadata.json";
+import metadata from "../metadata.json";
 import { commonConfig } from "./vite.common";
+import visualizer from "rollup-plugin-visualizer";
 
 dotenv.config(); // load env vars from .env
 
@@ -44,5 +45,6 @@ export default defineConfig({
                 fileName: `WELearnHelper${metadata.projects.welearn.version}.user.js`,
             },
         }),
+        // visualizer(),
     ],
 });

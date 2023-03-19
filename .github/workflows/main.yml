@@ -1,6 +1,8 @@
-name: release
+name: 自动发布
 
-on: push
+on:
+  - push
+  - workflow_dispatch
 
 jobs:
   metadata:
@@ -102,6 +104,9 @@ jobs:
           files: ./dist/*.js
 
       # 发布extension
+      - name: build extension
+        run: pnpm run build:crx
+
       - name: Setup Python # Set Python version
         uses: actions/setup-python@v4
         with:
@@ -110,11 +115,11 @@ jobs:
       - name: Install dependencies
         run: pip install python-dotenv
 
+      # 生成并移动manifest.json、icon.png
       - name: 生成manifest.json
-        run: python ./scripts/manifest.py
-
-      - name: build extension
-        run: pnpm run build:crx
+        run: |
+          python ./scripts/manifest.py
+          mv ./scripts/manifest.json ./dist/manifest.json
 
       - name: zip
         run: python ./scripts/zip.py
@@ -125,6 +130,25 @@ jobs:
           tag_name: ${{ needs.check.outputs.newVersion }}
           files: ./dist/*.zip
 
+      - name: 自动生成release note
+        run: |
+          pnpm install -g conventional-changelog-cli
+          conventional-changelog -p conventionalcommits -o temp.md -r 1 
+          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 1 -a
+
+      - name: 发布生成的release note
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.check.outputs.newVersion }}
+          body_path: ./temp.md
+
+  sync:
+    name: 同步release到专门的repo中，方便第三方进行webhook
+    runs-on: ubuntu-latest
+
+    needs: [release]
+
+    steps:
       - name: 同步release到专门的repo中，方便第三方进行webhook
         uses: actions/github-script@v6
         with:
@@ -136,15 +160,3 @@ jobs:
               workflow_id: 'main.yml',
               ref: 'master'
             })
-
-      - name: 自动生成release note
-        run: |
-          pnpm -g conventional-changelog-cli
-          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -o temp.md -r 1
-          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 1 -a
-
-      - name: 发布生成的release note
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ needs.check.outputs.newVersion }}
-          body_path: ./temp.md

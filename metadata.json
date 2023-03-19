@@ -1,11 +1,11 @@
 {
-    "apiServer": "http://127.0.0.1:8000/api",
+    "apiServer": "http://47.100.166.53/api",
     "homepage": "https://www.github.com/SSmJaE/",
     "projects": {
         "welearn": {
             "title": "随行课堂网课助手",
             "name": "WELearn网课助手",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "matches": [
                 "*://course.sflep.com/*",
                 "*://welearn.sflep.com/*",

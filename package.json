@@ -6,9 +6,9 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite --config ./vite.userscript.ts",
-        "build:js": "tsc && vite build --config ./vite.userscript.ts",
-        "build:crx": "tsc && vite build --config ./vite.extension.ts",
+        "dev": "vite --config ./build/vite.userscript.ts",
+        "build:js": "tsc && vite build --config ./build/vite.userscript.ts",
+        "build:crx": "tsc && vite build --config ./build/vite.extension.index.ts --emptyOutDir && vite build --config ./build/vite.extension.inject.ts && vite build --config ./build/vite.extension.content.ts && vite build --config ./build/vite.extension.background.ts",
         "preview": "vite preview"
     },
     "dependencies": {
