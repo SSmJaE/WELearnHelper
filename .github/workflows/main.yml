@@ -62,7 +62,8 @@ jobs:
     runs-on: ubuntu-latest
 
     needs: [check]
-    if: needs.check.outputs.hasNewVersion == 'true'
+    # EndBug的check version似乎只能检查最近的一个commit，所以需要允许用workflow_dispatch来主动触发
+    if: needs.check.outputs.hasNewVersion == 'true' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout repo
