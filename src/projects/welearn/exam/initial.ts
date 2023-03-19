@@ -6,70 +6,67 @@ import { getAnswers, isFinished } from "./parser";
 import { hackPlaySound } from "./utils";
 
 if (location.href.includes(".sflep.com/test/")) {
-    const finished = isFinished();
+    // 确保页面已经加载完成，扩展有可能先于页面加载完成
+    // ~onLoad不一定靠谱，因为页面上本身也会执行js，这就有了额外的延迟~
+    // https://welearn.sflep.com/test/Test.aspx 返回的页面中，直接就可以获取到#aSubmit，所以onLoad很靠谱
+    window.addEventListener("load", () => {
+        logger.debug("页面加载完成，开始检测");
 
-    const recordId = `${Math.random()}`;
+        const finished = isFinished();
 
-    const buttonInfo = {
-        children: `${finished ? "上传" : "查询"}当前Part`,
-        disabled: 5000,
-        onClick() {
-            getAnswers();
+        const recordId = `${Math.random()}`;
 
-            // const currentRecord = store.getRecordById(recordId);
+        const buttonInfo = {
+            children: `${finished ? "上传" : "查询"}当前Part`,
+            disabled: 5000,
+            onClick() {
+                getAnswers();
 
-            // logger.debug(currentRecord);
+                // const currentRecord = store.getRecordById(recordId);
 
-            // if (currentRecord?.action) {
-            //     store.updateRecord({
-            //         id: recordId,
-            //         action: [
-            //             {
-            //                 ...buttonInfo,
-            //                 disabled: true,
-            //             },
-            //         ],
-            //     });
+                // logger.debug(currentRecord);
 
-            //     logger.debug(store.logs);
+                // if (currentRecord?.action) {
+                //     store.updateRecord({
+                //         id: recordId,
+                //         action: [
+                //             {
+                //                 ...buttonInfo,
+                //                 disabled: true,
+                //             },
+                //         ],
+                //     });
 
-            //     setTimeout(() => {
-            //         logger.debug("in timeout", store.logs);
+                //     logger.debug(store.logs);
 
-            //         store.updateRecord({
-            //             id: recordId,
-            //             action: [
-            //                 {
-            //                     ...buttonInfo,
-            //                     disabled: false,
-            //                 },
-            //             ],
-            //         });
-            //     }, 5000);
-            // }
-        },
-    };
+                //     setTimeout(() => {
+                //         logger.debug("in timeout", store.logs);
 
-    logger.info({
-        id: recordId,
-        content:
-            (finished
-                ? "检测到当前位于解析页面，点击本条消息右侧的上传按钮，以收录答案"
-                : "检测到当前位于测试页面，点击本条消息右侧的查询按钮，以开始查询") +
-            "<br />❗❗❗测试的每一个Part，都需要点击一次",
-        extra: undefined,
-        action: [buttonInfo],
+                //         store.updateRecord({
+                //             id: recordId,
+                //             action: [
+                //                 {
+                //                     ...buttonInfo,
+                //                     disabled: false,
+                //                 },
+                //             ],
+                //         });
+                //     }, 5000);
+                // }
+            },
+        };
+
+        logger.info({
+            id: recordId,
+            content:
+                (finished
+                    ? "检测到当前位于解析页面，点击本条消息右侧的上传按钮，以收录答案"
+                    : "检测到当前位于测试页面，点击本条消息右侧的查询按钮，以开始查询") +
+                "<br />❗❗❗测试的每一个Part，都需要点击一次",
+            extra: undefined,
+            action: [buttonInfo],
+        });
     });
-
-    // setTimeout(() => {
-    //     if (isFinished()) {
-    //         getAnswers();
-    //     } else {
-    //         if (store.userSettings.infiniteListening) {
-    //             hackPlaySound();
-    //         }
-    //     }
-    // }, 5000);
 }
 
 if (location.href.includes(".sflep.com/student/course_info.aspx?")) {

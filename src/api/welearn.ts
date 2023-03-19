@@ -121,9 +121,10 @@ export class WELearnAPI {
         if (returnJson.status === false) {
             throw new Error(backendErrorToString(returnJson.error));
         } else {
-            logger.info(
-                { content: "当前页面答案收录成功，可以切换至下一页面，手动点击查询按钮上传，或者上传其它练习的答案" },
-            );
+            logger.info({
+                content:
+                    "当前页面答案收录成功，可以切换至下一页面，手动点击查询按钮上传，或者上传其它练习的答案",
+            });
         }
     }
 
@@ -146,7 +147,7 @@ export class WELearnAPI {
                 logger.error({
                     content: {
                         message: "练习上传失败",
-                    }
+                    },
                 });
                 logger.debug(returnJson.error);
             }
