@@ -1,17 +1,14 @@
-import { useHover, useMount } from "ahooks";
+import { useHover } from "ahooks";
 import { createRef, useRef, useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 
 import { store } from "@/src/store";
 import logger, { IQuestionContent, IQuestionRecord } from "@/src/utils/logger";
 import { useTheme } from "@emotion/react";
 import { animated, config, useSpring, useSprings, useTrail } from "@react-spring/web";
 
-import { theme } from "../../App";
 import Button from "../../components/Button";
 import { InlineTag, useSlideIn } from "../../components/InlineTag";
-// import TypeIt from "typeit-react";
-import TypeIt from "../../components/TypeIt";
+import { TypingAnimation } from "../../components/TypingAnimation";
 
 function SolveButton({ content: { solve, answerText } }: { content: IQuestionContent }) {
     const [isHovering, setIsHovering] = useState(false);
@@ -94,8 +91,6 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
 
     const spring = useSlideIn();
 
-    // TODO 尝试函数式风格声明typedit，避免销毁时报错无法捕获
-
     return (
         <animated.div
             onMouseEnter={() => {
@@ -139,25 +134,11 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
             {/* 不考虑虚拟列表的话，没必要conditional 选择typeit还是普通span */}
 
             {store.userSettings.enableTyping ? (
-                <TypeIt
-                    options={{
-                        startDelay: 600,
-                        // waitUntilVisible: true,
-                        cursorChar: "█",
-                        speed: 25,
-                        lifeLike: true,
-                        afterComplete: (instance: any) => {
-                            try {
-                                instance?.destroy();
-                            } catch (error) {
-                                logger.debug("typeit destroy error");
-                            }
-                        },
-                    }}
-                    style={{}}
-                >
-                    {record.content.answerText}
-                </TypeIt>
+                <TypingAnimation
+                    content={record.content.answerText}
+                    startDelay={600}
+                    interval={35}
+                />
             ) : (
                 <animated.span
                     style={{

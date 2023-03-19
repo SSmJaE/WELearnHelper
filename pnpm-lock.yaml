@@ -13,7 +13,6 @@ specifiers:
   '@vitejs/plugin-react': ^3.1.0
   ahooks: ^3.7.5
   dotenv: ^16.0.3
-  install: ^0.13.0
   lodash: ^4.17.21
   query-string: ^8.1.0
   react: ^18.2.0
@@ -22,7 +21,6 @@ specifiers:
   react-error-boundary: ^3.1.4
   rollup-plugin-visualizer: ^5.9.0
   simplebar-react: ^3.2.1
-  typeit: ^8.7.1
   typescript: ^4.9.5
   valtio: ^1.10.3
   vite: ^4.1.4
@@ -41,7 +39,6 @@ dependencies:
   react-draggable: registry.npmmirror.com/react-draggable/4.4.5_biqbaboplfbrettd7655fr4n2y
   react-error-boundary: registry.npmmirror.com/react-error-boundary/3.1.4_react@18.2.0
   simplebar-react: registry.npmmirror.com/simplebar-react/3.2.1_react@18.2.0
-  typeit: registry.npmmirror.com/typeit/8.7.1
   valtio: registry.npmmirror.com/valtio/1.10.3_react@18.2.0
 
 devDependencies:
@@ -52,7 +49,6 @@ devDependencies:
   '@types/react-dom': registry.npmmirror.com/@types/react-dom/18.0.11
   '@vitejs/plugin-react': registry.npmmirror.com/@vitejs/plugin-react/3.1.0_vite@4.1.4
   dotenv: registry.npmmirror.com/dotenv/16.0.3
-  install: registry.npmmirror.com/install/0.13.0
   rollup-plugin-visualizer: registry.npmmirror.com/rollup-plugin-visualizer/5.9.0
   typescript: registry.npmmirror.com/typescript/4.9.5
   vite: registry.npmmirror.com/vite/4.1.4_@types+node@18.15.1
@@ -1452,13 +1448,6 @@ packages:
       resolve-from: registry.npmmirror.com/resolve-from/4.0.0
     dev: false
 
-  registry.npmmirror.com/install/0.13.0:
-    resolution: {integrity: sha512-zDml/jzr2PKU9I8J/xyZBQn8rPCAY//UOYNmR01XwNwyfhEWObo2SWfSl1+0tm1u6PhxLwDnfsT/6jB7OUxqFA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/install/-/install-0.13.0.tgz}
-    name: install
-    version: 0.13.0
-    engines: {node: '>= 0.10'}
-    dev: true
-
   registry.npmmirror.com/intersection-observer/0.12.2:
     resolution: {integrity: sha512-7m1vEcPCxXYI8HqnL8CKI6siDyD+eIWSwgB3DZA+ZTogxk9I4CDnj4wilt9x/+/QbHI4YG5YZNmC6458/e9Ktg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/intersection-observer/-/intersection-observer-0.12.2.tgz}
     name: intersection-observer
@@ -1991,13 +1980,6 @@ packages:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tslib/-/tslib-2.5.0.tgz}
     name: tslib
     version: 2.5.0
-    dev: false
-
-  registry.npmmirror.com/typeit/8.7.1:
-    resolution: {integrity: sha512-Bx/O4NMz10NWh9FWYtVwV4XwGHF9UDJfpCZPJRtw2/oUcahFAStU8J0t19aroPfTV6s1UlS5ICoqilOqmEnh2Q==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/typeit/-/typeit-8.7.1.tgz}
-    name: typeit
-    version: 8.7.1
-    requiresBuild: true
     dev: false
 
   registry.npmmirror.com/typescript/4.9.5:

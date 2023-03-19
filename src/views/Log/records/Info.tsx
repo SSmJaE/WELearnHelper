@@ -53,6 +53,7 @@ export function InfoRecord({ record }: { record: IInfoRecord }) {
             >
                 提示
             </InlineTag>
+
             <InfoRecordContainer
                 style={{
                     ...spring,
