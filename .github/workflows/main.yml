@@ -44,6 +44,8 @@ jobs:
       - name: Check if version has been updated
         id: check
         uses: EndBug/version-check@v2
+        with:
+          diff-search: true
 
       - name: Log when changed
         if: steps.check.outputs.changed == 'true'
