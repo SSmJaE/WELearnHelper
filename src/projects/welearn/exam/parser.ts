@@ -1,15 +1,16 @@
-import { sleep } from "@utils";
 import { WELearnAPI } from "@api/welearn";
 import { CONSTANT } from "@src/store";
-// import { addMessage, clearMessage } from "@src/store/actions";
-import logger from "@utils/logger";
 import { store } from "@store";
+import { sleep } from "@utils";
+import logger from "@utils/logger";
 
 /** 判断当前页面是否是详情/解析页面，或是答题页面 */
 export function isFinished() {
     return (document.querySelector("#aSubmit") as HTMLElement).style.display == "none"
         ? true
         : false;
+
+    // return false;
 }
 
 function getTaskId() {
@@ -37,7 +38,9 @@ function getQuestionIndex(questionItemDiv: HTMLElement) {
 function getQuestionIds() {}
 
 export async function getAnswers() {
-    store.clearLogs();
+    // 在不同的Part间，保留查询按钮
+    // 不管是测试页面还是解析页面，都会有按钮
+    store.clearLogs(1);
     const { isSchoolTest, taskId } = getTaskId();
 
     if (isFinished()) {
@@ -48,21 +51,31 @@ export async function getAnswers() {
 
         if (returnJson.status === true) {
             // 练习已收录
+
+            const questionCount = returnJson.data.length;
+
             for (const [index, questionWithAnswer] of returnJson.data.entries()) {
-                // TODO 获取题号
-                // logger.question({
-                //     index: `${index + 1}`,
-                //     answer: questionWithAnswer.answerText,
-                //     info: {
-                //         content: questionWithAnswer.answer_text
-                //             ? "标答"
-                //             : questionWithAnswer.answer_text_gpt
-                //             ? "GPT"
-                //             : "无答案",
-                //     },
-                // });
-                // addMessage(index, "normal");
-                // addMessage(questionWithAnswer.answerText as string, "success");
+                logger.question({
+                    // TODO 获取真实题号，从答题卡上，对应的question_id判断
+                    order: `${String(index + 1).padStart(2, "0")} / ${questionCount}`,
+                    info: {
+                        content: questionWithAnswer.answer_text
+                            ? "标答"
+                            : questionWithAnswer.answer_text_gpt
+                            ? "GPT"
+                            : "无答案",
+                    },
+                    answerText:
+                        questionWithAnswer.answer_text ||
+                        questionWithAnswer.answer_text_gpt ||
+                        "尚未收录答案",
+                    raw: {},
+                    solve: {
+                        couldSolve: false,
+                        hasSolved: false,
+                        solveThis: (answerText: string) => {},
+                    },
+                });
 
                 await sleep(CONSTANT.QUERY_INTERVAL);
             }
@@ -75,16 +88,35 @@ export async function getAnswers() {
                     const questionWithAnswers = await WELearnAPI.queryByDomString(domString);
 
                     for (const questionWithAnswer of questionWithAnswers) {
+                        // 获取真实题号
+                        let questionIndex = "_";
+                        let questionIndexString = "_";
+
                         try {
-                            // addMessage(getQuestionIndex(questionItemDiv), "normal");
+                            questionIndex = getQuestionIndex(questionItemDiv);
+                            questionIndexString = String(questionIndex).padStart(2, "0");
                         } catch (error) {}
 
-                        if (questionWithAnswer.answerText) {
-                            // addMessage(questionWithAnswer.answerText as string, "success");
-                        } else {
-                            // addMessage("该题尚未收录答案", "error");
-                        }
-                        // addMessage("", "hr");
+                        logger.question({
+                            order: `${questionIndexString}`,
+                            info: {
+                                content: questionWithAnswer.answer_text
+                                    ? "标答"
+                                    : questionWithAnswer.answer_text_gpt
+                                    ? "GPT"
+                                    : "无答案",
+                            },
+                            answerText:
+                                questionWithAnswer.answer_text ||
+                                questionWithAnswer.answer_text_gpt ||
+                                "尚未收录答案",
+                            raw: {},
+                            solve: {
+                                couldSolve: false,
+                                hasSolved: false,
+                                solveThis: (answerText: string) => {},
+                            },
+                        });
 
                         await sleep(CONSTANT.QUERY_INTERVAL);
                     }

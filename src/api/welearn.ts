@@ -9,10 +9,11 @@ import request from "@utils/polyfill/request";
 import { ICommonResponse } from "./types";
 
 interface IQuestionWithAnswer {
-    questionId: string;
-    questionType: number;
-    answerId?: string;
-    answerText?: string;
+    question_id: string;
+    question_type: number;
+    answer_id?: string;
+    answer_text?: string;
+    answer_text_gpt?: string;
 }
 
 interface IGetCourseCatalog {
@@ -60,9 +61,9 @@ export class WELearnAPI {
     static async queryByTaskId(taskId: number, isSchoolTest: boolean) {
         const response = await request.post<IQueryByTaskIdResponse>("/query/", {
             body: {
-                queryType: QueryTypes.queryByTaskId,
-                taskId: taskId,
-                isSchoolTest,
+                query_type: QueryTypes.queryByTaskId,
+                task_id: taskId,
+                is_school_test: isSchoolTest,
             },
         });
 
@@ -73,8 +74,8 @@ export class WELearnAPI {
     static async queryByQuestionId(questionId: string) {
         const response = await request.post<IQueryByQuestionIdResponse>("/query/", {
             body: {
-                queryType: QueryTypes.queryByQuestionId,
-                questionId: questionId,
+                query_type: QueryTypes.queryByQuestionId,
+                question_id: questionId,
             },
         });
 
@@ -91,8 +92,8 @@ export class WELearnAPI {
     static async queryByDomString(domString: string) {
         const response = await request.post<IQueryByDomStringResponse>("/query/", {
             body: {
-                queryType: QueryTypes.queryByDomString,
-                domString: domString,
+                query_type: QueryTypes.queryByDomString,
+                dom_string: domString,
             },
         });
 
@@ -109,9 +110,9 @@ export class WELearnAPI {
     static async collectAll(taskId: number, domString: string, isSchoolTest: boolean) {
         const response = await request.post<ICommonResponse>("/collect/", {
             body: {
-                taskId: taskId,
-                domString: domString,
-                isSchoolTest,
+                task_id: taskId,
+                dom_string: domString,
+                is_school_test: isSchoolTest,
             },
         });
 

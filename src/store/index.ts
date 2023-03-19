@@ -71,8 +71,12 @@ class Store {
     }
 
     logs: IRecord[] = [];
-    clearLogs() {
-        this.logs = [];
+    clearLogs(remain?: number) {
+        if (remain) {
+            this.logs = this.logs.slice(0, remain);
+        } else {
+            this.logs = [];
+        }
     }
 }
 
