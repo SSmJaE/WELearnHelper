@@ -64,7 +64,7 @@ jobs:
 
     outputs:
       hasNewVersion: ${{ steps.check.outputs.changed || false }}
-      newVersion: ${{ steps.check.outputs.version || steps.package-version.outputs.current-version } }}
+      newVersion: ${{ steps.check.outputs.version || steps.package-version.outputs.current-version }}
 
   release:
     name: 自动release
