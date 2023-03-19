@@ -37,27 +37,34 @@ jobs:
 
     needs: [metadata]
     # 手动触发时，diff-search会失败
-    if: github.event_name == 'push'
+    # release对这个是依赖关系，所以不能是job级的If
+    # if: github.event_name == 'push'
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Check if version has been updated
+        if: github.event_name == 'push'
         id: check
         uses: EndBug/version-check@v2
         with:
           diff-search: true
 
       - name: Log when changed
-        if: steps.check.outputs.changed == 'true'
+        if: github.event_name == 'push' && steps.check.outputs.changed == 'true'
         run: >
           echo "Version change found in commit ${{ steps.check.outputs.commit }}! 
           New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"
 
+      - name: get-npm-version
+        if: github.event_name == "workflow_dispatch"
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+
     outputs:
-      hasNewVersion: ${{ steps.check.outputs.changed }}
-      newVersion: ${{ steps.check.outputs.version }}
+      hasNewVersion: ${{ steps.check.outputs.changed || false }}
+      newVersion: ${{ steps.check.outputs.version || steps.package-version.outputs.current-version } }}
 
   release:
     name: 自动release
