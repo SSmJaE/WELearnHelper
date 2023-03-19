@@ -147,12 +147,13 @@ jobs:
           pnpm install -g conventional-changelog-cli
           conventional-changelog -p conventionalcommits -o temp.md -r 2 
           conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 2 -a
+          cat temp.md
 
       - name: 发布生成的release note
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.check.outputs.newVersion }}
-          body_path: ./temp.md
+          body_path: temp.md
 
   sync:
     name: 同步release到专门的repo中，方便第三方进行webhook
