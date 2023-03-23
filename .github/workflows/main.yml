@@ -117,7 +117,7 @@ jobs:
       - name: 发布userscript
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.check.outputs.newVersion }}
+          tag_name: v${{ needs.check.outputs.newVersion }}
           files: ./dist/*.js
 
       # 发布extension
@@ -144,7 +144,7 @@ jobs:
       - name: 发布extension
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.check.outputs.newVersion }}
+          tag_name: v${{ needs.check.outputs.newVersion }}
           files: ./dist/*.zip
 
       # 只能获取到version，获取不到具体的内容，
@@ -152,8 +152,8 @@ jobs:
       - name: 自动生成release note
         run: |
           pnpm install -g conventional-changelog-cli
-          conventional-changelog -p conventionalcommits -o temp.md -r 2
-          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 2 -a
+          conventional-changelog -p conventionalcommits -o temp.md -r 1
+          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 1 -a
           cat temp.md
 
       # - name: Conventional Changelog Action
@@ -179,7 +179,7 @@ jobs:
       - name: 发布生成的release note
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v${{ steps.changelog.outputs.version }}"
+          tag_name: v${{ steps.changelog.outputs.version }}
           body_path: temp.md
           # body: ${{ steps.changelog.outputs.clean_changelog }}
 
