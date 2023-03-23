@@ -43,12 +43,15 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 50
 
       - name: Check if version has been updated
         if: github.event_name == 'push'
         id: check
         uses: EndBug/version-check@v2
         with:
+          # 这个也需要通过历史commit判断，所以多checkout一些commit
           diff-search: true
 
       - name: Log when changed
@@ -77,6 +80,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 50
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -142,36 +147,41 @@ jobs:
           tag_name: ${{ needs.check.outputs.newVersion }}
           files: ./dist/*.zip
 
-      # - name: 自动生成release note
-      #   run: |
-      #     pnpm install -g conventional-changelog-cli
-      #     conventional-changelog -p conventionalcommits -o temp.md -r 2 
-      #     conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 2 -a
-      #     cat temp.md
+      # 只能获取到version，获取不到具体的内容，
+      # 因为checkout默认只fetch 最新的commit，而需要从历史commit中提取message
+      - name: 自动生成release note
+        run: |
+          pnpm install -g conventional-changelog-cli
+          conventional-changelog -p conventionalcommits -o temp.md -r 2
+          conventional-changelog -p conventionalcommits -i ./docs/CHANGELOG.md -s -r 2 -a
+          cat temp.md
 
-      - name: Conventional Changelog Action
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3
-        with:
-          github-token: ${{ secrets.github_token }}
-          output-file: "false"
-          preset: "conventionalcommits"
+      # - name: Conventional Changelog Action
+      #   id: changelog
+      #   uses: TriPSs/conventional-changelog-action@v3
+      #   with:
+      #     output-file: "false"
+      #     preset: "conventionalcommits"
+      #     # 如果有feat，就会minor，我还是希望手动控制
+      #     skip-commit: "true"
+      #     # Do not update the version file.(package.json)
+      #     skip-version-file: "true"
+      #     # Do not tag the release
+      #     skip-tag: "true"
 
-      - run: |
-          echo "changelog: ${{ steps.changelog.outputs.changelog }}"
-          echo "clean_changelog: ${{ steps.changelog.outputs.clean_changelog }}"
-          echo "version: ${{ steps.changelog.outputs.version }}"
-          echo "tag: ${{ steps.changelog.outputs.tag }}"
-          echo "skipped: ${{ steps.changelog.outputs.skipped }}"
-
-
+      # - run: |
+      #     echo "changelog: ${{ steps.changelog.outputs.changelog }}"
+      #     echo "clean_changelog: ${{ steps.changelog.outputs.clean_changelog }}"
+      #     echo "version: ${{ steps.changelog.outputs.version }}"
+      #     echo "tag: ${{ steps.changelog.outputs.tag }}"
+      #     echo "skipped: ${{ steps.changelog.outputs.skipped }}"
 
       - name: 发布生成的release note
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.check.outputs.newVersion }}
-          # body_path: temp.md
-          body: ${{ steps.changelog.outputs.clean_changelog }}
+          tag_name: "v${{ steps.changelog.outputs.version }}"
+          body_path: temp.md
+          # body: ${{ steps.changelog.outputs.clean_changelog }}
 
   sync:
     name: 同步release到专门的repo中，方便第三方进行webhook
@@ -183,6 +193,7 @@ jobs:
       - name: 同步release到专门的repo中，方便第三方进行webhook
         uses: actions/github-script@v6
         with:
+          # 自带的github-token不够权限，需要自己创建一个
           github-token: ${{ secrets.TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({

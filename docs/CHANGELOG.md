@@ -384,3 +384,19 @@
 - github action自动构建，自动发布release
   - script cat、greasy fork通过webhook自动更新
 
+### [1.0.1](https://github.com/SSmJaE/WELearnHelper/compare/v1.0.0...v1.0.1) (2023-03-20)
+
+### Features
+
+- **ui:** 实现extra字段的换行显示 ([5591f67](https://github.com/SSmJaE/WELearnHelper/commit/5591f679648af86420a4223f8b40878cc545d6f6))
+- 允许动态添加inline button ([54771e6](https://github.com/SSmJaE/WELearnHelper/commit/54771e6f4820710abbc1f57083cf4c914c41b9dd))
+- 实现inline button的动态disable能力 ([e90f86e](https://github.com/SSmJaE/WELearnHelper/commit/e90f86eab0c6312045643e486e543192fa9a649b))
+- 实现纯css的打字效果，解决性能问题 ([e00020c](https://github.com/SSmJaE/WELearnHelper/commit/e00020c533ec02228e008730b2801b755df62e3d))
+
+### Bug Fixes
+
+- 保证测试页面的初始化函数，在页面加载完成之后才执行 ([9bc6018](https://github.com/SSmJaE/WELearnHelper/commit/9bc601896861873a653f12a3997b0ca4a4f71da0))
+- 修复GM_xmlhttpRequest的content_type问题 ([b60e57e](https://github.com/SSmJaE/WELearnHelper/commit/b60e57e6bdead493131da4bc18f2f13b578c0d30))
+- 修复浏览器的兼容性(polyfill)问题，request + getValue ([18eeda3](https://github.com/SSmJaE/WELearnHelper/commit/18eeda37d5b343b163b4e0e69f861be4b8f82708))
+- 确定了班级测试触发查询、上传的交互方式 ([a0492ae](https://github.com/SSmJaE/WELearnHelper/commit/a0492ae2b28792161793f300aa748ee6d894907f))
+
