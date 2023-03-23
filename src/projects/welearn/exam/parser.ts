@@ -2,7 +2,7 @@ import { WELearnAPI } from "@api/welearn";
 import { CONSTANT } from "@src/store";
 import { store } from "@store";
 import { sleep } from "@utils";
-import logger from "@utils/logger";
+import logger, { IDynamicButton } from "@utils/logger";
 
 /** 判断当前页面是否是详情/解析页面，或是答题页面 */
 export function isFinished() {
@@ -62,19 +62,20 @@ export async function getAnswers() {
                             content: questionWithAnswer.answer_text
                                 ? "标答"
                                 : questionWithAnswer.answer_text_gpt
-                                    ? "GPT"
-                                    : "无答案",
+                                ? "GPT"
+                                : "无答案",
                         },
-                        answerText: questionWithAnswer.answer_text ||
+                        answerText:
+                            questionWithAnswer.answer_text ||
                             questionWithAnswer.answer_text_gpt ||
                             "尚未收录答案",
                         raw: {},
                         solve: {
                             couldSolve: false,
                             hasSolved: false,
-                            solveThis: (answerText: string) => { },
+                            solveThis: (answerText: string) => {},
                         },
-                    }
+                    },
                 });
 
                 await sleep(CONSTANT.QUERY_INTERVAL);
@@ -97,6 +98,26 @@ export async function getAnswers() {
                             questionIndexString = String(questionIndex).padStart(2, "0");
                         } catch (error) {}
 
+                        const isListening = !!questionItemDiv.querySelector(
+                            'a[href^="javascript:PlaySound"]',
+                        );
+
+                        const replayButton: IDynamicButton = {
+                            children: "播放音频",
+                            onClick: () => {
+                                const mainAudio = <HTMLElement>(
+                                    questionItemDiv.querySelector('a[href^="javascript:PlaySound"]')
+                                );
+                                const mainAudioFile = /'(.*?)'/.exec(
+                                    <string>mainAudio.getAttribute("href"),
+                                )![1];
+
+                                logger.debug(mainAudioFile);
+
+                                PlaySound(mainAudioFile);
+                            },
+                        };
+
                         logger.question({
                             content: {
                                 order: `${questionIndexString}`,
@@ -104,19 +125,23 @@ export async function getAnswers() {
                                     content: questionWithAnswer.answer_text
                                         ? "标答"
                                         : questionWithAnswer.answer_text_gpt
-                                            ? "GPT"
-                                            : "无答案",
+                                        ? "GPT"
+                                        : "无答案",
                                 },
-                                answerText: questionWithAnswer.answer_text ||
+                                answerText:
+                                    questionWithAnswer.answer_text ||
                                     questionWithAnswer.answer_text_gpt ||
                                     "尚未收录答案",
-                                raw: {},
+                                raw: {
+                                    element: questionItemDiv,
+                                },
                                 solve: {
                                     couldSolve: false,
                                     hasSolved: false,
-                                    solveThis: (answerText: string) => { },
+                                    solveThis: (answerText: string) => {},
                                 },
-                            }
+                            },
+                            action: isListening ? [replayButton] : undefined,
                         });
 
                         await sleep(CONSTANT.QUERY_INTERVAL);

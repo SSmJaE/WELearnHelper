@@ -1,10 +1,8 @@
-import logger from "@/src/utils/logger";
 import { sleep } from "@/src/utils";
+import logger from "@/src/utils/logger";
 import { WELearnAPI } from "@api/welearn";
-import { store } from "@src/store";
 
 import { getAnswers, isFinished } from "./parser";
-import { hackPlaySound } from "./utils";
 
 // 确保页面已经加载完成，扩展有可能先于页面加载完成
 // ~onLoad不一定靠谱，因为页面上本身也会执行js，这就有了额外的延迟~
