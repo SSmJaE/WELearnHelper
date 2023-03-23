@@ -1,42 +1,42 @@
 {
-  "name": "welearn_helper",
-  "version": "1.0.1",
-  "author": "SSmJaE",
-  "license": "GPL-3.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite --config ./build/vite.userscript.ts",
-    "build:js": "tsc && vite build --config ./build/vite.userscript.ts",
-    "build:crx": "tsc && vite build --config ./build/vite.extension.index.ts --emptyOutDir && vite build --config ./build/vite.extension.inject.ts && vite build --config ./build/vite.extension.content.ts && vite build --config ./build/vite.extension.background.ts",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
-    "@floating-ui/react": "^0.20.1",
-    "@react-spring/web": "^9.7.1",
-    "ahooks": "^3.7.5",
-    "lodash": "^4.17.21",
-    "query-string": "^8.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-draggable": "^4.4.5",
-    "react-error-boundary": "^3.1.4",
-    "simplebar-react": "^3.2.1",
-    "valtio": "^1.10.3"
-  },
-  "devDependencies": {
-    "@types/chrome": "^0.0.222",
-    "@types/lodash": "^4.14.191",
-    "@types/node": "^18.15.1",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react": "^3.1.0",
-    "dotenv": "^16.0.3",
-    "rollup-plugin-visualizer": "^5.9.0",
-    "typescript": "^4.9.5",
-    "vite": "^4.1.4",
-    "vite-plugin-monkey": "^2.12.1"
-  }
+    "name": "welearn_helper",
+    "version": "1.0.2",
+    "author": "SSmJaE",
+    "license": "GPL-3.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite --config ./build/vite.userscript.ts",
+        "build:js": "tsc && vite build --config ./build/vite.userscript.ts",
+        "build:crx": "tsc && vite build --config ./build/vite.extension.index.ts --emptyOutDir && vite build --config ./build/vite.extension.inject.ts && vite build --config ./build/vite.extension.content.ts && vite build --config ./build/vite.extension.background.ts",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@emotion/react": "^11.10.6",
+        "@emotion/styled": "^11.10.6",
+        "@floating-ui/react": "^0.20.1",
+        "@react-spring/web": "^9.7.1",
+        "ahooks": "^3.7.5",
+        "lodash": "^4.17.21",
+        "query-string": "^8.1.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-draggable": "^4.4.5",
+        "react-error-boundary": "^3.1.4",
+        "simplebar-react": "^3.2.1",
+        "valtio": "^1.10.3"
+    },
+    "devDependencies": {
+        "@types/chrome": "^0.0.222",
+        "@types/lodash": "^4.14.191",
+        "@types/node": "^18.15.1",
+        "@types/react": "^18.0.28",
+        "@types/react-dom": "^18.0.11",
+        "@vitejs/plugin-react": "^3.1.0",
+        "dotenv": "^16.0.3",
+        "rollup-plugin-visualizer": "^5.9.0",
+        "typescript": "^4.9.5",
+        "vite": "^4.1.4",
+        "vite-plugin-monkey": "^2.12.1"
+    }
 }
