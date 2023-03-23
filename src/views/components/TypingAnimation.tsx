@@ -59,7 +59,7 @@ const TypingAnimationContainer = styled.span<{
     background-clip: text ${(props) => (props.showCursor ? ", padding-box" : undefined)};
     color: transparent;
 
-    background-size: calc(${(props) => props.count} * 1ch) 200%;
+    background-size: calc(${(props) => props.count} * 2ch) 200%;
     background-repeat: no-repeat;
 
     @keyframes typing {
@@ -74,8 +74,8 @@ const TypingAnimationContainer = styled.span<{
         }
     }
 
-    animation: typing ${(props) => props.duration}ms linear 1 alternate;
-    animation-timing-function: steps(${(props) => props.count});
+    animation: typing ${(props) => props.duration * 2}ms linear 1 alternate;
+    animation-timing-function: steps(${(props) => props.count * 2});
 `;
 
 /** 还是纯css实现吧，js的实现，都很卡 */
