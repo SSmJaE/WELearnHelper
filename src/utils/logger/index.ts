@@ -4,7 +4,11 @@ import Button, { IButtonProps } from "@components/Button";
 function scrollDown() {
     //等待message渲染完成，不然不会拉到最底
     setTimeout(() => {
-        document.querySelector("#container-messages")?.scrollBy(0, 1000);
+        logger.debug("scroll down");
+
+        document
+            .querySelector("#log-panel-log-container .simplebar-content-wrapper")
+            ?.scrollBy(0, 1000);
     }, 10);
 }
 

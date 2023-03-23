@@ -314,6 +314,7 @@ export function LogPanel() {
                 </MenuBar>
 
                 <SimpleBar
+                    id="log-panel-log-container"
                     style={{
                         borderTop: "black 2px solid",
                         padding: "4px 8px",
