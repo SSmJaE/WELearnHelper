@@ -179,7 +179,7 @@ jobs:
       - name: 发布生成的release note
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ steps.changelog.outputs.version }}
+          tag_name: v${{ steps.changelog.outputs.newVersion }}
           body_path: temp.md
           # body: ${{ steps.changelog.outputs.clean_changelog }}
 

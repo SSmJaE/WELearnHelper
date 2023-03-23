@@ -244,6 +244,7 @@ export function LogPanel() {
                     position: "fixed",
                     top: 100,
                     left: 100,
+                    zIndex: 99,
                     // minWidth: 300,
                     // maxWidth: 500,
                     width: 600,
