@@ -58,7 +58,10 @@ function notify() {
 }
 
 if (location.href.includes(".sflep.com/test/")) {
-    await watcher();
+    // iife不允许顶层await
+    (async () => {
+        await watcher();
+    })();
 }
 
 if (location.href.includes(".sflep.com/student/course_info.aspx?")) {
