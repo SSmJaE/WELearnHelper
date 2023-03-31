@@ -21,6 +21,7 @@ export default function PopOver({
     offsetPixel = 8,
     backgroundColor = "rgba(104, 101, 101, 0.89)",
     delay = false,
+    border = false,
 }: {
     children: React.ReactNode;
     content: React.ReactNode;
@@ -29,6 +30,7 @@ export default function PopOver({
     offsetPixel?: number;
     backgroundColor?: string;
     delay?: boolean;
+    border?: boolean;
 }) {
     const theme = useTheme();
 
@@ -78,10 +80,12 @@ export default function PopOver({
                             top: y ?? 0,
                             left: x ?? 0,
                             backgroundColor,
+                            // display: "flex",
                             // backgroundColor: theme.colors.secondary,
                             // width: "max-content",
                             maxWidth: "400px",
                             color: "white",
+                            border: border ? "2px solid black" : undefined,
                             borderRadius: 4,
                             fontSize: 20,
                             padding: 8,

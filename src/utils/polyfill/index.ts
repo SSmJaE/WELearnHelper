@@ -57,7 +57,7 @@ async function initializeGetValue() {
  * 调用GM_getValue或者chrome.storage
  *
  * 如果调用的是GM_getValue，返回JSON.parse后的结果 */
-export async function getValue(key: string, defaultValue?: any) {
+export async function getValue<T = any>(key: string, defaultValue?: any) {
     // 确保只初始化一次GM_getValue，并且在调用GM_getValue之前初始化
     if (!hasInitializeGetValue) {
         await initializeGetValue();
@@ -88,5 +88,5 @@ export async function getValue(key: string, defaultValue?: any) {
             returnValue = temp;
         }
     }
-    return returnValue;
+    return returnValue as T;
 }

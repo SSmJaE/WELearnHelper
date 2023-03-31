@@ -3,9 +3,10 @@
 
 import metadata from "@/metadata.json";
 import logger from "@utils/logger";
-
-import { backendErrorToString, perSession, requestErrorHandler } from "./decorators";
 import request from "@utils/polyfill/request";
+
+import { setValue } from "../utils/polyfill";
+import { backendErrorToString, perSession, requestErrorHandler } from "./decorators";
 import { ICommonResponse } from "./types";
 
 interface IQuestionWithAnswer {
@@ -54,6 +55,8 @@ export class WELearnAPI {
             for (const message of returnJson.data) {
                 logger.info({ content: message });
             }
+
+            await setValue("VERSION_INFO", returnJson.data);
         }
     }
 

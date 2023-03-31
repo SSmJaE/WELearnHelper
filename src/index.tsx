@@ -1,7 +1,8 @@
 import "@src/projects/welearn/initial";
+import "@icon-park/react/styles/index.css";
 
 import React from "react";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 
 import logger from "./utils/logger";
 import { initialUserSettings } from "./utils/setting";
@@ -37,7 +38,7 @@ function initialize() {
         return;
     }
 
-    ReactDOM.createRoot(
+    createRoot(
         (() => {
             const app = document.createElement("div");
             app.id = EXTENSION_ID;

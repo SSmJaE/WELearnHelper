@@ -8,7 +8,7 @@ import { animated } from "@react-spring/web";
 import { InlineTag, useSlideIn } from "../../components/InlineTag";
 import Button from "../../components/Button";
 
-const InfoRecordContainer = styled(animated.span)(
+export const InfoRecordContainer = styled(animated.span)(
     {
         lineHeight: "24px",
         position: "relative",
@@ -24,6 +24,8 @@ const InfoRecordContainer = styled(animated.span)(
         "a:hover": {
             // borderBottom: `${theme.colors.active} 2px solid`,
             pointer: "cursor",
+            // transform: "scale(1.1)",
+            // transition: "transform 500ms",
         },
     }),
 );
