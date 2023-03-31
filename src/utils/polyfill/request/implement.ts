@@ -17,8 +17,8 @@ import logger from "../../logger";
  *
  * 不然，则直接使用url，比如 https://www.baidu.com => https://www.baidu.com
  */
-export function getFullUrl(url: string, query: any) {
-    for (const [, value] of Object.entries(query || {})) {
+export function getFullUrl(url: string, query: any = {}) {
+    for (const [, value] of Object.entries(query)) {
         if (typeof value === "object")
             throw new Error("query params不应为嵌套对象，拍平或者手动序列化子对象");
     }
@@ -34,7 +34,12 @@ export function getFullUrl(url: string, query: any) {
 /**对crx sendMessage的封装，以实现一致的fetch风格的request通用接口 */
 export async function requestForExtension<T = any>(
     url: string,
-    { body, query, ...realisticInit }: CustomRequestInit & { method: CustomRequestMethod } = {
+    {
+        method,
+        headers = {},
+        query,
+        body /* = {} */, // 允许undefined，JSON.stringify(undefined)也不会报错
+    }: CustomRequestInit & { method: CustomRequestMethod } = {
         method: "GET",
         headers: {},
         body: undefined,
@@ -47,7 +52,11 @@ export async function requestForExtension<T = any>(
             {
                 url: getFullUrl(url, query),
                 init: {
-                    ...realisticInit,
+                    method,
+                    headers: {
+                        "Content-Type": "application/json;charset=UTF-8",
+                        ...headers,
+                    },
                     body: JSON.stringify(body),
                 },
             },
@@ -97,7 +106,7 @@ async function initializeXhr() {
 /**对GM_xmlhttpRequest的封装，以实现一致的fetch风格的request通用接口 */
 export function requestForUserscript<T = any>(
     url: string,
-    { method, headers, body, query }: CustomRequestInit & { method: CustomRequestMethod } = {
+    { method, headers={}, query, body }: CustomRequestInit & { method: CustomRequestMethod } = {
         method: "GET",
         headers: {},
         body: undefined,

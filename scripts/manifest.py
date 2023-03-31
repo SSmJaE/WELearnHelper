@@ -34,17 +34,11 @@ with open("scripts/manifest.template.json", "r", encoding="utf-8") as f:
     ]
 
     manifest["content_security_policy"]["extension_pages"] = (
+        "default-src 'self'; " + # chrome强制要求，edge不需要
         "script-src 'self'; " +
         f"connect-src {' '.join(map(lambda host: 'http://'+host, PROJECT['connect']))};"
     )
 
-
-    # manifest["icons"]["16"] = f"static/{PLATFORM}.png"
-    # manifest["icons"]["32"] = f"static/{PLATFORM}.png"
-    # manifest["icons"]["48"] = f"static/{PLATFORM}.png"
-    # manifest["icons"]["128"] = f"static/{PLATFORM}.png"
-
-    # manifest["action"]["default_icon"] = f"static/{PLATFORM}.png"
 
     with open("scripts/manifest.json", "w", encoding="utf-8") as f2:
         f2.write(json.dumps(manifest, indent=4, ensure_ascii=False))
