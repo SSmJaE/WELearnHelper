@@ -91,7 +91,8 @@ jobs:
       - name: Install dependencies
         uses: pnpm/action-setup@v2
         with:
-          version: latest
+          # https://github.com/pnpm/action-setup/issues/40
+          version: 7
           run_install: false
 
       - name: Get pnpm store directory
