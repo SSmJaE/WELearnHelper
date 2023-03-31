@@ -1,8 +1,10 @@
+import { store } from "@/src/store";
 import { sleep } from "@/src/utils";
 import logger from "@/src/utils/logger";
 import { WELearnAPI } from "@api/welearn";
 
 import { getAnswers, isFinished } from "./parser";
+import { hackPlaySound } from "./utils";
 
 // 确保页面已经加载完成，扩展有可能先于页面加载完成
 // ~onLoad不一定靠谱，因为页面上本身也会执行js，这就有了额外的延迟~
@@ -37,14 +39,6 @@ function notify() {
 
     const recordId = `${Math.random()}`;
 
-    const buttonInfo = {
-        children: `${finished ? "上传" : "查询"}当前Part`,
-        disabled: 5000,
-        onClick() {
-            getAnswers();
-        },
-    };
-
     logger.info({
         id: recordId,
         content:
@@ -53,15 +47,28 @@ function notify() {
                 : "检测到当前位于测试页面，点击本条消息右侧的查询按钮，以开始查询") +
             "<br />❗❗❗测试的每一个Part，都需要点击一次",
         extra: undefined,
-        action: [buttonInfo],
+        action: [
+            {
+                children: `${finished ? "上传" : "查询"}当前Part`,
+                disabled: 5000,
+                onClick() {
+                    getAnswers();
+                },
+            },
+        ],
     });
+
+    if (store.userSettings.infiniteListening) {
+        hackPlaySound();
+        logger.debug("已开启无限听力");
+    }
 }
 
 if (location.href.includes(".sflep.com/test/")) {
     // iife不允许顶层await
-    (async () => {
-        await watcher();
-    })();
+    // (async () => {
+    await watcher();
+    // })();
 }
 
 if (location.href.includes(".sflep.com/student/course_info.aspx?")) {
