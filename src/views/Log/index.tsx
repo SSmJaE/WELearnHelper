@@ -1,7 +1,7 @@
 import "simplebar-react/dist/simplebar.min.css";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Draggable from "react-draggable";
+import { Rnd } from "react-rnd";
 import SimpleBar from "simplebar-react";
 
 import { Global, useTheme } from "@emotion/react";
@@ -13,9 +13,9 @@ import { store, useStore } from "../../store";
 import { MenuBar } from "../components/MenuBar";
 import { MenuButton } from "../components/MenuButton";
 import PopOver from "../components/PopOver";
+import { ErrorRecord } from "./records/Error";
 import { InfoRecord } from "./records/Info";
 import { QuestionRecord } from "./records/Question";
-import { ErrorRecord } from "./records/Error";
 
 function getAppTitle() {
     const defaultTitle = "EOCS网课助手";
@@ -223,47 +223,62 @@ export function LogPanel() {
     }, [visibility.log]);
 
     return (
-        <Draggable
-            handle="#log-panel-menu-bar"
+        <Rnd
+            default={{
+                x: 100,
+                y: 100,
+                width: 600,
+                height: 100,
+            }}
+            minWidth={350}
+            maxWidth={600}
+            minHeight={100}
+            maxHeight={600}
+            bounds="window"
             cancel="#log-panel-menu-buttons"
-            bounds="body"
-            onStart={() => {
+            dragHandleClassName="log-panel-menu-bar"
+            onDragStart={() => {
                 setIsDragging(true);
             }}
-            onStop={(e, data) => {
+            onDragStop={() => {
                 setIsDragging(false);
-                // store.setPosition("log", {
-                //     x: data.x,
-                //     y: data.y,
-                // });
+            }}
+            // 默认grid为1，导致rerender次数过多，看起来很卡顿
+            // 所以主动调大grid增加卡顿感，掩盖因为render导致的卡顿
+            resizeGrid={[20, 20]}
+            enableResizing={{
+                top: false,
+                right: true,
+                bottom: false,
+                left: true,
+                topRight: false,
+                bottomRight: false,
+                bottomLeft: false,
+                topLeft: false,
             }}
         >
             <animated.div
                 style={{
-                    // 页面可能很长，所以这里使用 fixed 定位
-                    position: "fixed",
-                    top: 100,
-                    left: 100,
                     zIndex: 99,
-                    // minWidth: 300,
-                    // maxWidth: 500,
-                    width: 600,
+                    width: "100%",
                     maxHeight: 600,
 
                     background: "rgba(255, 255, 255, 0.95)",
                     border: "black 2px solid",
                     borderRadius: 10,
-
                     boxShadow:
                         "0 11px 15px -7px rgba(0, 0, 0, 0.2),0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12)",
-                    // display: visibility.log ? "flex" : "none",
                     display: display ? "flex" : "none",
                     flexDirection: "column",
                     lineHeight: "24px !important",
                     ...spring,
                 }}
             >
-                <MenuBar id="log-panel-menu-bar" isDragging={isDragging}>
+                <MenuBar
+                    id="log-panel-menu-bar"
+                    className="log-panel-menu-bar"
+                    isDragging={isDragging}
+                >
                     <div
                         style={{
                             fontSize: 24,
@@ -359,6 +374,6 @@ export function LogPanel() {
                     })}
                 </SimpleBar>
             </animated.div>
-        </Draggable>
+        </Rnd>
     );
 }

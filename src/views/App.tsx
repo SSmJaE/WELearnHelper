@@ -26,10 +26,14 @@ export default function App() {
             <Global
                 // 某些页面，会修改lineHeight，所以手动重置回来
                 styles={css`
-                    #ecos-helper {
+                    #eocs-helper {
                         all: initial;
                         font-family: 华文新魏 !important;
                         line-height: normal !important;
+                        /* 页面可能很长，所以这里使用 fixed 定位 */
+                        position: fixed;
+                        top: 0;
+                        left: 0;
                     }
                 `}
             ></Global>

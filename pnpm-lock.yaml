@@ -19,6 +19,7 @@ specifiers:
   react-dom: ^18.2.0
   react-draggable: ^4.4.5
   react-error-boundary: ^3.1.4
+  react-rnd: ^10.4.1
   rollup-plugin-visualizer: ^5.9.0
   simplebar-react: ^3.2.1
   typescript: ^4.9.5
@@ -38,6 +39,7 @@ dependencies:
   react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
   react-draggable: registry.npmmirror.com/react-draggable/4.4.5_biqbaboplfbrettd7655fr4n2y
   react-error-boundary: registry.npmmirror.com/react-error-boundary/3.1.4_react@18.2.0
+  react-rnd: registry.npmmirror.com/react-rnd/10.4.1_biqbaboplfbrettd7655fr4n2y
   simplebar-react: registry.npmmirror.com/simplebar-react/3.2.1_react@18.2.0
   valtio: registry.npmmirror.com/valtio/1.10.3_react@18.2.0
 
@@ -1356,6 +1358,12 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
+  registry.npmmirror.com/fast-memoize/2.5.2:
+    resolution: {integrity: sha512-Ue0LwpDYErFbmNnZSF0UH6eImUwDmogUO1jyE+JbN2gsQz/jICm1Ve7t9QT0rNSsfJt+Hs4/S3GnsDVjL4HVrw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/fast-memoize/-/fast-memoize-2.5.2.tgz}
+    name: fast-memoize
+    version: 2.5.2
+    dev: false
+
   registry.npmmirror.com/filter-obj/5.1.0:
     resolution: {integrity: sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/filter-obj/-/filter-obj-5.1.0.tgz}
     name: filter-obj
@@ -1710,6 +1718,20 @@ packages:
       split-on-first: registry.npmmirror.com/split-on-first/3.0.0
     dev: false
 
+  registry.npmmirror.com/re-resizable/6.9.6_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-0xYKS5+Z0zk+vICQlcZW+g54CcJTTmHluA7JUUgvERDxnKAnytylcyPsA+BSFi759s5hPlHmBRegFrwXs2FuBQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/re-resizable/-/re-resizable-6.9.6.tgz}
+    id: registry.npmmirror.com/re-resizable/6.9.6
+    name: re-resizable
+    version: 6.9.6
+    peerDependencies:
+      react: ^16.13.1 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      fast-memoize: registry.npmmirror.com/fast-memoize/2.5.2
+      react: registry.npmmirror.com/react/18.2.0
+      react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
+    dev: false
+
   registry.npmmirror.com/react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-dom/-/react-dom-18.2.0.tgz}
     id: registry.npmmirror.com/react-dom/18.2.0
@@ -1763,6 +1785,22 @@ packages:
     version: 0.14.0
     engines: {node: '>=0.10.0'}
     dev: true
+
+  registry.npmmirror.com/react-rnd/10.4.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-0m887AjQZr6p2ADLNnipquqsDq4XJu/uqVqI3zuoGD19tRm6uB83HmZWydtkilNp5EWsOHbLGF4IjWMdd5du8Q==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-rnd/-/react-rnd-10.4.1.tgz}
+    id: registry.npmmirror.com/react-rnd/10.4.1
+    name: react-rnd
+    version: 10.4.1
+    peerDependencies:
+      react: '>=16.3.0'
+      react-dom: '>=16.3.0'
+    dependencies:
+      re-resizable: registry.npmmirror.com/re-resizable/6.9.6_biqbaboplfbrettd7655fr4n2y
+      react: registry.npmmirror.com/react/18.2.0
+      react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
+      react-draggable: registry.npmmirror.com/react-draggable/4.4.5_biqbaboplfbrettd7655fr4n2y
+      tslib: registry.npmmirror.com/tslib/2.3.1
+    dev: false
 
   registry.npmmirror.com/react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react/-/react-18.2.0.tgz}
@@ -1975,6 +2013,12 @@ packages:
     name: to-fast-properties
     version: 2.0.0
     engines: {node: '>=4'}
+
+  registry.npmmirror.com/tslib/2.3.1:
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tslib/-/tslib-2.3.1.tgz}
+    name: tslib
+    version: 2.3.1
+    dev: false
 
   registry.npmmirror.com/tslib/2.5.0:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tslib/-/tslib-2.5.0.tgz}
