@@ -5,7 +5,7 @@ import logger from "@/src/utils/logger";
 import { getValue } from "@/src/utils/polyfill";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import { GithubOne } from "@icon-park/react";
+import GithubOne from "@icon-park/react/es/icons/GithubOne";
 
 import Button from "../../components/Button";
 import { InfoRecordContainer } from "../records/Info";

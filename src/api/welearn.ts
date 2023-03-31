@@ -9,7 +9,7 @@ import { setValue } from "../utils/polyfill";
 import { backendErrorToString, perSession, requestErrorHandler } from "./decorators";
 import { ICommonResponse } from "./types";
 
-interface IQuestionWithAnswer {
+export interface IQuestionWithAnswer {
     question_id: string;
     question_type: number;
     answer_id?: string;
@@ -61,12 +61,27 @@ export class WELearnAPI {
     }
 
     @requestErrorHandler("答案查询失败")
-    static async queryByTaskId(taskId: number, isSchoolTest: boolean) {
+    static async queryByTaskId({
+        typical,
+        is_school_test,
+        tt_id,
+        sheet_id,
+        stt_id,
+    }: {
+        typical: boolean;
+        is_school_test: boolean;
+        tt_id: string | null;
+        sheet_id: string | null;
+        stt_id: string | null;
+    }) {
         const response = await request.post<IQueryByTaskIdResponse>("/query/", {
             body: {
                 query_type: QueryTypes.queryByTaskId,
-                task_id: taskId,
-                is_school_test: isSchoolTest,
+                typical,
+                is_school_test,
+                tt_id,
+                sheet_id,
+                stt_id,
             },
         });
 
@@ -110,7 +125,7 @@ export class WELearnAPI {
     }
 
     @requestErrorHandler("答案收录失败")
-    static async collectAll(taskId: number, domString: string, isSchoolTest: boolean) {
+    static async collectAll(taskId: string, domString: string, isSchoolTest: boolean) {
         const response = await request.post<ICommonResponse>("/collect/", {
             body: {
                 task_id: taskId,

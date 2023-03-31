@@ -111,6 +111,7 @@ export function QuestionRecord({ record }: { record: IQuestionRecord }) {
                     ...spring,
                     backgroundColor: theme.colors.active,
                     color: "white",
+                    fontFamily: "monospace",
                 }}
             >
                 {record.content.order}

@@ -5,7 +5,7 @@
         "welearn": {
             "title": "随行课堂网课助手",
             "name": "WELearn网课助手",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "matches": [
                 "*://course.sflep.com/*",
                 "*://welearn.sflep.com/*",

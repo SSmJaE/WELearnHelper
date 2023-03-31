@@ -6,7 +6,9 @@ import SimpleBar from "simplebar-react";
 
 import { Global, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import { Close, Info, SettingTwo } from "@icon-park/react";
+import Close from "@icon-park/react/es/icons/Close";
+import Info from "@icon-park/react/es/icons/Info";
+import SettingTwo from "@icon-park/react/es/icons/SettingTwo";
 import { animated, config, useSpring } from "@react-spring/web";
 
 import metadata from "../../../metadata.json";

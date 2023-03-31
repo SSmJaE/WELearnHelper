@@ -3,7 +3,7 @@ import Draggable from "react-draggable";
 
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import { Close } from "@icon-park/react";
+import Close from "@icon-park/react/es/icons/Close";
 import { animated, config, useSpring } from "@react-spring/web";
 
 import { store, useStore } from "../../store";

@@ -7,6 +7,7 @@ export const InlineTag = styled(animated.span)({
     // border: "1px dashed black",
     borderRadius: 4,
     padding: "2px 4px",
+    // lineHeight: "24px",
     // lineHeight: "1.5em",
     height: "24px",
     position: "relative",
