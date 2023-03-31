@@ -80,7 +80,7 @@ export function FloatingBall() {
             <animated.div
                 id="floating-ball"
                 style={{
-                    position: "absolute",
+                    position: "fixed",
                     top: 100,
                     right: 100,
                     zIndex: 101,

@@ -1,11 +1,12 @@
 import "simplebar-react/dist/simplebar.min.css";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Rnd } from "react-rnd";
 import SimpleBar from "simplebar-react";
 
 import { Global, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
+import { Close, Info, SettingTwo } from "@icon-park/react";
 import { animated, config, useSpring } from "@react-spring/web";
 
 import metadata from "../../../metadata.json";
@@ -13,6 +14,7 @@ import { store, useStore } from "../../store";
 import { MenuBar } from "../components/MenuBar";
 import { MenuButton } from "../components/MenuButton";
 import PopOver from "../components/PopOver";
+import { About } from "./About";
 import { ErrorRecord } from "./records/Error";
 import { InfoRecord } from "./records/Info";
 import { QuestionRecord } from "./records/Question";
@@ -296,22 +298,48 @@ export function LogPanel() {
                             justifyContent: "center",
                         }}
                     >
-                        <PopOver content="打开设置面板">
+                        <PopOver
+                            key="about"
+                            content={<About />}
+                            delay
+                            backgroundColor="rgba(255, 255, 255, 0.95)"
+                            placement="right"
+                            border
+                        >
+                            <MenuButton>
+                                <Info
+                                    theme="filled"
+                                    size="28"
+                                    fill={theme.colors.active}
+                                    strokeWidth={5}
+                                />
+                            </MenuButton>
+                        </PopOver>
+
+                        <PopOver
+                            key="config"
+                            content={`${visibility.config ? "关闭" : "打开"}设置面板`}
+                        >
                             <MenuButton
                                 onClick={() => {
                                     store.setVisibility("config", !visibility.config);
                                 }}
-                                // disabled={visibility.config}
                                 style={{
                                     lineHeight: "normal",
+                                    marginLeft: 4,
                                 }}
                             >
-                                ⚙️
-                                {/* <Setting theme="filled" size="24" fill={theme.colors.active} /> */}
+                                {/* ⚙️ */}
+                                <SettingTwo
+                                    theme="multi-color"
+                                    size="28"
+                                    fill={["#333", "#E6E6E6", "#000000", "#ffffff"]}
+                                    strokeWidth={3}
+                                />
                             </MenuButton>
                         </PopOver>
 
-                        <PopOver content="最小化当前窗口">
+                        <PopOver key="minimize" content="最小化当前窗口">
                             <MenuButton
                                 onClick={() => {
                                     store.setVisibility("log", false);
@@ -322,8 +350,13 @@ export function LogPanel() {
                                     marginLeft: 4,
                                 }}
                             >
-                                {/* <ClickToFold theme="filled" size="28" fill={theme.colors.active} /> */}
-                                ❌
+                                {/* ❌ */}
+                                <Close
+                                    theme="filled"
+                                    size="28"
+                                    fill={theme.colors.error}
+                                    strokeWidth={7}
+                                />
                             </MenuButton>
                         </PopOver>
                     </div>

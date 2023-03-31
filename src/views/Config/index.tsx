@@ -3,6 +3,7 @@ import Draggable from "react-draggable";
 
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
+import { Close } from "@icon-park/react";
 import { animated, config, useSpring } from "@react-spring/web";
 
 import { store, useStore } from "../../store";
@@ -120,7 +121,7 @@ export function ConfigPanel() {
                         设置面板
                     </div>
 
-                    <PopOver content="关闭设置面板">
+                    <PopOver key="config-panel-close-button" content="关闭设置面板">
                         <MenuButton
                             id="config-panel-close-button"
                             style={{
@@ -130,7 +131,13 @@ export function ConfigPanel() {
                                 store.setVisibility("config", false);
                             }}
                         >
-                            ❌
+                            {/* ❌ */}
+                            <Close
+                                theme="filled"
+                                size="28"
+                                fill={theme.colors.error}
+                                strokeWidth={7}
+                            />
                         </MenuButton>
                     </PopOver>
                 </MenuBar>
