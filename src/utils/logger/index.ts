@@ -113,7 +113,8 @@ export class Logger {
         return this.log({ type: "error", id, content, extra, action });
     }
     hr() {
-        return this.log({ type: "hr", content: "" });
+        // return this.log({ type: "info", content: "即将切换题型" });
+        this.info({ content: "即将切换题型" });
     }
     debug(...content: any) {
         console.log(`[eocs-helper]`, ...content);

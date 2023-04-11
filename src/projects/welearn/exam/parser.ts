@@ -59,8 +59,6 @@ function getQuestionIndex(questionItemDiv: HTMLElement) {
     return indexOfQuestions;
 }
 
-function getQuestionIds() {}
-
 async function querySingleQuestion(questionItemDiv: HTMLElement) {
     const domString = questionItemDiv.outerHTML;
     const questionWithAnswers = await WELearnAPI.queryByDomString(domString);
@@ -128,26 +126,22 @@ export async function getAnswers() {
     const { isSchoolTest, taskId } = getTaskId();
 
     if (isFinished()) {
-        const domString = document.querySelector(".tab-content")!.outerHTML;
-        await WELearnAPI.collectAll(taskId, domString, isSchoolTest);
-    } else {
-        // let hasCollected = false;
-        // let collectedQuestions: IQuestionWithAnswer[] = [];
-
-        const questionItemDivNodes = document.querySelectorAll<HTMLElement>(".itemDiv");
-
         try {
+            const domString = document.querySelector(".tab-content")!.outerHTML;
+            const questionItemDivNodes = document.querySelectorAll<HTMLElement>(".itemDiv");
+
             const html_string = document.head.innerHTML;
 
             const tt_id = /ttid\s*:\s*(-?\d*)/.exec(html_string);
             const sheet_id = /sheetid\s*:\s*(-?\d*)/.exec(html_string);
             const stt_id = /sttid\s*:\s*(-?\d*)/.exec(html_string);
 
-            console.log();
-
-            await WELearnAPI.queryByTaskId({
+            await WELearnAPI.collectAll({
+                dom_string: domString,
                 typical: !!questionItemDivNodes.length,
                 is_school_test: isSchoolTest,
+                part_index: getPartIndex() || null,
+                task_id: taskId,
                 tt_id: tt_id ? tt_id[1] : null,
                 sheet_id: sheet_id ? sheet_id[1] : null,
                 stt_id: stt_id ? stt_id[1] : null,
@@ -155,6 +149,11 @@ export async function getAnswers() {
         } catch (e) {
             logger.debug(e);
         }
+    } else {
+        // let hasCollected = false;
+        // let collectedQuestions: IQuestionWithAnswer[] = [];
+
+        const questionItemDivNodes = document.querySelectorAll<HTMLElement>(".itemDiv");
 
         // 练习未收录，单题dom查询
         for (const [index, questionItemDiv] of questionItemDivNodes.entries()) {

@@ -125,12 +125,35 @@ export class WELearnAPI {
     }
 
     @requestErrorHandler("答案收录失败")
-    static async collectAll(taskId: string, domString: string, isSchoolTest: boolean) {
+    static async collectAll({
+        task_id,
+        dom_string,
+        part_index,
+        typical,
+        is_school_test,
+        tt_id,
+        sheet_id,
+        stt_id,
+    }: {
+        task_id: string;
+        dom_string: string;
+        part_index: number | null;
+        typical: boolean;
+        is_school_test: boolean;
+        tt_id: string | null;
+        sheet_id: string | null;
+        stt_id: string | null;
+    }) {
         const response = await request.post<ICommonResponse>("/collect/", {
             body: {
-                task_id: taskId,
-                dom_string: domString,
-                is_school_test: isSchoolTest,
+                task_id,
+                dom_string,
+                part_index,
+                typical,
+                is_school_test,
+                tt_id,
+                sheet_id,
+                stt_id,
             },
         });
 

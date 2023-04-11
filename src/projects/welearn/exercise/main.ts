@@ -1,4 +1,4 @@
-import { store } from "@src/store";
+import { CONSTANT, store } from "@src/store";
 import { sleep } from "@utils";
 // import {  } from "@src/store/actions";
 
@@ -106,7 +106,7 @@ async function outputAnswers(answers: Answer[]) {
                         logger.debug("solve this");
                     },
                 },
-            }
+            },
         });
 
         const currentTag = answer.element.tagName;
@@ -115,7 +115,7 @@ async function outputAnswers(answers: Answer[]) {
             bufferTag = currentTag;
         }
 
-        await sleep(2000);
+        await sleep(CONSTANT.QUERY_INTERVAL);
     }
 }
 
