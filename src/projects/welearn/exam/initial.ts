@@ -12,16 +12,22 @@ import { hackPlaySound } from "./utils";
 // 手机上(页面加载过慢)，onLoad也不靠谱，还是手动判断一下好了
 let isPageReady = false;
 let elapsedTime = 0;
+const MAX_WAIT_TIME = 10000;
 
 function checkPageReady() {
-    const element = document.querySelector("#aSubmit");
+    const element = document.querySelector("#spTimer");
     if (element) {
         isPageReady = true;
     }
 }
 
 async function watcher() {
-    while (!isPageReady || elapsedTime > 10000) {
+    while (elapsedTime < MAX_WAIT_TIME) {
+        // 哪怕一直没有判断成功，过了MAX_WAIT_TIME也会退出
+        if (isPageReady) {
+            break;
+        }
+
         await sleep(200);
         elapsedTime += 200;
         checkPageReady();
@@ -45,11 +51,13 @@ function notify() {
             (finished
                 ? "检测到当前位于解析页面，点击本条消息右侧的上传按钮，以收录答案"
                 : "检测到当前位于测试页面，点击本条消息右侧的查询按钮，以开始查询") +
-            "<br />❗❗❗测试的每一个Part，都需要点击一次",
+            `<br />❗❗❗即使有多个part，也只需要点击一次，会自动按顺序${
+                finished ? "上传" : "查询"
+            }所有part的题目`,
         extra: undefined,
         action: [
             {
-                children: `${finished ? "上传" : "查询"}当前Part`,
+                children: `${finished ? "上传" : "查询"}答案`,
                 disabled: 5000,
                 onClick() {
                     getAnswers();
@@ -64,7 +72,7 @@ function notify() {
     }
 }
 
-if (location.href.includes(".sflep.com/test/")) {
+if (location.href.includes(".sflep.com/test/") || location.href.includes("wetest.sflep.com/Test")) {
     // iife不允许顶层await
     (async () => {
         await watcher();

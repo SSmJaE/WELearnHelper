@@ -6,9 +6,7 @@ import logger, { IDynamicButton } from "@utils/logger";
 
 /** 判断当前页面是否是详情/解析页面，或是答题页面 */
 export function isFinished() {
-    return (document.querySelector("#aSubmit") as HTMLElement).style.display == "none"
-        ? true
-        : false;
+    return !document.querySelector("#spSubmit");
 
     // return false;
 }
@@ -16,13 +14,17 @@ export function isFinished() {
 function getTaskId() {
     // https://welearn.sflep.com/test/schooltest.aspx?schooltestid=1330
     let isSchoolTest = false;
-    let taskId: string;
+    let taskId: string | null = null;
 
-    if (location.href.includes("schooltest")) {
-        isSchoolTest = true;
-        taskId = /schooltestid=(\d*)/.exec(location.href)![1];
-    } else {
-        taskId = /taskid=(\d*)/.exec(location.href)![1];
+    try {
+        if (location.href.includes("schooltest")) {
+            isSchoolTest = true;
+            taskId = /schooltestid=(\d*)/.exec(location.href)![1];
+        } else {
+            taskId = /testId=(\d*)/.exec(location.href)![1];
+        }
+    } catch {
+        logger.debug("testId获取失败");
     }
 
     return {
@@ -77,14 +79,20 @@ async function querySingleQuestion(questionItemDiv: HTMLElement) {
         const replayButton: IDynamicButton = {
             children: "播放音频",
             onClick: () => {
-                const mainAudio = <HTMLElement>(
-                    questionItemDiv.querySelector('a[href^="javascript:PlaySound"]')
-                );
-                const mainAudioFile = /'(.*?)'/.exec(<string>mainAudio.getAttribute("href"))![1];
+                const mainAudio = <HTMLElement>questionItemDiv.querySelector('a[id*="btnPlay"]');
+                const questionId = /btnPlay_(.*)/.exec(mainAudio.id)![1];
 
-                logger.debug(mainAudioFile);
+                let mainAudioFile: string | null = null;
+                const match = /"(.*?.mp3)"/.exec(<string>mainAudio.getAttribute("href"));
+                if (match) {
+                    mainAudioFile = match[1];
+                } else {
+                    mainAudioFile = mainAudio.getAttribute("data-soundsrc");
+                }
 
-                PlaySound(mainAudioFile);
+                logger.debug(mainAudioFile, questionId);
+
+                PlaySound(mainAudioFile, questionId);
             },
         };
 

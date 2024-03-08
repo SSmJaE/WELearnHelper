@@ -14,6 +14,7 @@ const availableUrls = [
     ".sflep.com/student/course_info.aspx?", //基准页面
     "centercourseware.sflep.com", //练习答题页面，子页面
     ".sflep.com/test/", //考试答题页面
+    "wetest.sflep.com/Test", // 新url，内容未变
 ];
 
 function initialize() {

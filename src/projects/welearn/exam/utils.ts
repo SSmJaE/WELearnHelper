@@ -1,10 +1,4 @@
-// PlaySound使用的全局变量
-// var resPath = "https://courseres.sflep.com/Test/";
-// var soundfile = "";
-// var bufferingTimer: any;
-
 import { store } from "@src/store";
-// import { addMessage } from "@src/store/actions";
 import logger from "@utils/logger";
 
 /**
@@ -12,48 +6,50 @@ import logger from "@utils/logger";
  */
 export function hackPlaySound() {
     ((unsafeWindow || window) as any).PlaySound = (src: string, id: string) => {
-        var count = $("#hdPlay_" + id).val();
-        if (count <= 0) return;
+        //clearTimeout(bufferingTimer);
 
-        if (soundfile == "") {
-            soundfile = resPath + "ItemRes/sound/" + src;
-            createSoundPlayer();
-        } else {
-            soundfile = resPath + "ItemRes/sound/" + src;
-            jwplayer("soundplayer").load([{ file: soundfile }]);
+        // var remainCount = 3;
+        // if (paperAnswer && paperAnswer[id]) {
+        //     try {
+        //         remainCount = parseInt(paperAnswer[id].value);
+        //     } catch (e) {}
+        // }
+
+        // if (remainCount <= 0) return;
+
+        if (soundPlayer) {
+            soundPlayer.stop();
+            try {
+                jwplayer("soundplayer").remove();
+            } catch (e) {}
         }
-        // jwplayer("soundplayer").onPlaylistComplete(function() {
-        //     jwplayer("soundplayer").load([{ file: "" }]);
-        // });
-        jwplayer("soundplayer").onBufferFull(function () {
-            clearTimeout(bufferingTimer);
+        // SetCurrentSoundInfo();
 
-            var sp = $("#btnPlay_" + id);
+        currentSoundId = id;
+        const soundfile = testEnv.resPath + "sound/" + src;
 
-            sp.html('<span class=" fa fa-play-circle play_symble">' + "无限" + "次播放机会</span>");
-            //以下为原生调用
-            // if (sp.length > 0) {
-            //     var count = $("#hdPlay_" + id).val();
-            //     if (count > 0) count--;
-
-            //     //sp.val('播放（' + count + '次机会）');
-
-            //     $("#hdPlay_" + id).val(count);
-            //     if (count == 0) {
-            //         //$('#btnPlay_' + id).attr("disabled", "disabled");
-            //         $("#btnPlay_" + id).attr("href", "javascript:void(0);");
-            //     }
-
-            //     // SaveCurrentPart(false, true); //异步保存，实时更新听力次数
-            // }
-
-            sp.removeClass("loading");
+        soundPlayer = jwplayer("soundplayer").setup({
+            flashplayer: "script/jwplayer.flash.swf?c=" + Math.random(),
+            file: soundfile,
+            height: 0,
+            width: 0,
+            primary: "html5",
         });
+        soundPlayer.play();
 
-        $("#btnPlay_" + id).val("正在加载");
-        bufferingTimer = setTimeout("PlayerExpireCheck('" + id + "', 0)", 1000);
-        $("#btnPlay_" + id).addClass("loading");
+        // soundPlayer.onBufferFull(function () {
+        //     SetCurrentSoundInfo();
+        // });
 
-        jwplayer("soundplayer").play();
+        // $("#btnPlay_" + currentSoundId).html(
+        //     '<span class=" fa fa-play-circle play_symble">正在加载</span>',
+        // );
+        // $("#btnPlay_" + currentSoundId).addClass("loading");
+
+        // remainCount--;
+        // autoSaveSound(currentSoundId, remainCount);
+
+        //if (remainCount <= 0)
+        //    sp.attr("href", "javascript:void(0);");
     };
 }
