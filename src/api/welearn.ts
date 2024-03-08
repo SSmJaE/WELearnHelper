@@ -135,7 +135,7 @@ export class WELearnAPI {
         sheet_id,
         stt_id,
     }: {
-        task_id: string;
+        task_id: string | null;
         dom_string: string;
         part_index: number | null;
         typical: boolean;
