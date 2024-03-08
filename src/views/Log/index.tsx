@@ -303,6 +303,7 @@ export function LogPanel() {
                         <PopOver
                             key="about"
                             content={<About />}
+                            openDelay
                             delay
                             backgroundColor="rgba(255, 255, 255, 0.95)"
                             placement="right"

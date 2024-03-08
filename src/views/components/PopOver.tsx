@@ -21,6 +21,7 @@ export default function PopOver({
     offsetPixel = 8,
     backgroundColor = "rgba(104, 101, 101, 0.89)",
     delay = false,
+    openDelay = false,
     border = false,
 }: {
     children: React.ReactNode;
@@ -30,6 +31,7 @@ export default function PopOver({
     offsetPixel?: number;
     backgroundColor?: string;
     delay?: boolean;
+    openDelay?: boolean;
     border?: boolean;
 }) {
     const theme = useTheme();
@@ -53,7 +55,7 @@ export default function PopOver({
 
     const hover = useHover(context, {
         delay: {
-            // open: 200,
+            open: openDelay ? 500 : undefined,
             close: delay ? 250 : undefined,
         },
     });

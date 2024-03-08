@@ -106,6 +106,7 @@ export function FloatingBall() {
                     disabled={isDragging}
                     placement={"top"}
                     offsetPixel={24}
+                    // openDelay
                 >
                     <div
                         style={{
